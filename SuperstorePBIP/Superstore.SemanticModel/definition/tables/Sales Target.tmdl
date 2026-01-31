@@ -29,8 +29,8 @@ table 'Sales Target'
 		mode: import
 		source =
 			let
-				Source = Excel.Workbook(File.Contents("..\..\Data\Superstore\Sales Target.xlsx"), null, true)
-				Sheet1 = Source{[Item="Sheet1",Kind="Sheet"]}[Data]
+				Source = Excel.Workbook(File.Contents("..\..\Data\Superstore\Sales Target.xlsx"), null, true),
+				Sheet1 = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
 				Promoted = Table.PromoteHeaders(Sheet1, [PromoteAllScalars=true])
 				in
 				Promoted

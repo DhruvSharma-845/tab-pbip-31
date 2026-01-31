@@ -192,8 +192,8 @@ table Orders
 		mode: import
 		source =
 			let
-				Source = Excel.Workbook(File.Contents("..\..\Data\Superstore\Sample - Superstore.xls"), null, true)
-				Orders_Sheet = Source{[Item="Orders",Kind="Sheet"]}[Data]
+				Source = Excel.Workbook(File.Contents("..\..\Data\Superstore\Sample - Superstore.xls"), null, true),
+				Orders_Sheet = Source{[Item="Orders",Kind="Sheet"]}[Data],
 				Promoted = Table.PromoteHeaders(Orders_Sheet, [PromoteAllScalars=true])
 				in
 				Promoted
