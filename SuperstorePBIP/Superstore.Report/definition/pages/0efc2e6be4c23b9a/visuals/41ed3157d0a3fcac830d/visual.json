@@ -5,34 +5,81 @@
     "x": 60,
     "y": 60,
     "z": 0,
-    "height": 140,
-    "width": 280,
+    "height": 300,
+    "width": 520,
     "tabOrder": 0
   },
   "visual": {
-    "visualType": "card",
-    "autoSelectVisualType": true,
-    "drillFilterOtherVisuals": true,
+    "visualType": "columnChart",
     "query": {
       "queryState": {
-        "Values": {
+        "Category": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Source": "Orders"
+                      "Entity": "Orders"
                     }
                   },
-                  "Property": "Orders Sum of Sales"
+                  "Property": "Segment"
                 }
               },
-              "queryRef": "Orders.Orders Sum of Sales"
+              "queryRef": "Orders.Segment",
+              "nativeQueryRef": "Segment",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Sales"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Orders.Sales)",
+              "nativeQueryRef": "Sum of Sales"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "Orders"
+                      }
+                    },
+                    "Property": "Sales"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
       }
-    }
+    },
+    "drillFilterOtherVisuals": true
   }
 }

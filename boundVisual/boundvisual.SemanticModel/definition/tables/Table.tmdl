@@ -1,0 +1,40 @@
+table Table
+	lineageTag: b1132d56-4a1e-44f8-9163-de016ab33405
+
+	column Category
+		dataType: string
+		lineageTag: 42fd88c5-4a7e-4ccb-993f-08204259a026
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segment
+		dataType: int64
+		formatString: 0
+		lineageTag: 332bb7c5-7389-4baa-93dd-0a28bb8923e1
+		summarizeBy: sum
+		sourceColumn: Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Sales target'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5dfda1ec-ad68-48de-86ad-bf983c53af42
+		summarizeBy: sum
+		sourceColumn: Sales target
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Table = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WcistysssKS1KVdJRMgRiIwulWJ1oJeeMxMwiEBeIjU3AQiGJSTkgVcYgbKkUGwsA", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Category = _t, Segment = _t, #"Sales target" = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Category", type text}, {"Segment", Int64.Type}, {"Sales target", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
