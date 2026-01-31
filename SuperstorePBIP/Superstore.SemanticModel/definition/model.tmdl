@@ -21,6 +21,13 @@ table 'Sales Commission'
 		dataType: int64
 	measure 'Sum of Sales' = SUM('Sales Commission'[Sales])
 
+	partition 'FullData'
+		mode: import
+		source =
+			let
+			            Source = #table(type table [Sales Person = text, Calculation_4120925132203686 = text, Sales = number], {})
+			        in
+			            Source
 table 'Orders'
 	column 'Category'
 		dataType: string
@@ -44,3 +51,10 @@ table 'Orders'
 		dataType: string
 	measure 'Sum of Profit' = SUM('Orders'[Profit])
 	measure 'Sum of Sales' = SUM('Orders'[Sales])
+	partition 'FullData'
+		mode: import
+		source =
+			let
+			            Source = #table(type table [Category = text, Profit = number, Customer Name = text, Sales = number, Region = text, Order ID = text, Segment = text, Order Date = datetime, __tableau_internal_object_id__ = text, Product Name = text], {})
+			        in
+			            Source
