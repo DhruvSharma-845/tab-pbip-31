@@ -10,8 +10,29 @@
     "tabOrder": 0
   },
   "visual": {
-    "visualType": "columnChart",
+    "visualType": "card",
     "autoSelectVisualType": true,
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Source": "Orders"
+                    }
+                  },
+                  "Property": "Orders Sum of Sales"
+                }
+              },
+              "queryRef": "Orders.Orders Sum of Sales"
+            }
+          ]
+        }
+      }
+    }
   }
 }
