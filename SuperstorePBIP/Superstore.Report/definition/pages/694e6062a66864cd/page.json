@@ -4,40 +4,5 @@
   "displayName": "Shipping",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280,
-  "visualContainers": [
-    {
-      "id": "d22722b45ee028ce",
-      "x": 3.85,
-      "y": 2.78,
-      "z": 0,
-      "width": 1276.15,
-      "height": 82.01,
-      "config": "{\"name\": \"d22722b45ee028ce\"}",
-      "filters": "[]",
-      "tabOrder": 0
-    },
-    {
-      "id": "fbb804c7272080e7",
-      "x": 3.85,
-      "y": 268.26,
-      "z": 1,
-      "width": 1276.15,
-      "height": 451.74,
-      "config": "{\"name\": \"fbb804c7272080e7\"}",
-      "filters": "[]",
-      "tabOrder": 1
-    },
-    {
-      "id": "da30328a09fc8165",
-      "x": 5.26,
-      "y": 344.46,
-      "z": 2,
-      "width": 1116.12,
-      "height": 372.72,
-      "config": "{\"name\": \"da30328a09fc8165\"}",
-      "filters": "[]",
-      "tabOrder": 2
-    }
-  ]
+  "width": 1280
 }

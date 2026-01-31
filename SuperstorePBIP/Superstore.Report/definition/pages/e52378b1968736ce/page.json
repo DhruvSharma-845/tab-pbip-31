@@ -4,51 +4,5 @@
   "displayName": "Commission Model",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280,
-  "visualContainers": [
-    {
-      "id": "60f6ca08a3e93ae6",
-      "x": 5.27,
-      "y": 104.13,
-      "z": 0,
-      "width": 637.74,
-      "height": 481.07,
-      "config": "{\"name\": \"60f6ca08a3e93ae6\"}",
-      "filters": "[]",
-      "tabOrder": 0
-    },
-    {
-      "id": "29dbf8f3e495877c",
-      "x": 643.01,
-      "y": 104.13,
-      "z": 1,
-      "width": 636.99,
-      "height": 481.07,
-      "config": "{\"name\": \"29dbf8f3e495877c\"}",
-      "filters": "[]",
-      "tabOrder": 1
-    },
-    {
-      "id": "f1303fa0771d46b8",
-      "x": 9.02,
-      "y": 622.33,
-      "z": 2,
-      "width": 633.98,
-      "height": 97.67,
-      "config": "{\"name\": \"f1303fa0771d46b8\"}",
-      "filters": "[]",
-      "tabOrder": 2
-    },
-    {
-      "id": "d6531533ad3d4a01",
-      "x": 643.01,
-      "y": 622.33,
-      "z": 3,
-      "width": 633.24,
-      "height": 97.67,
-      "config": "{\"name\": \"d6531533ad3d4a01\"}",
-      "filters": "[]",
-      "tabOrder": 3
-    }
-  ]
+  "width": 1280
 }

@@ -4,51 +4,5 @@
   "displayName": "Overview",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280,
-  "visualContainers": [
-    {
-      "id": "9f7440800f414705",
-      "x": 5.9,
-      "y": 6.08,
-      "z": 0,
-      "width": 1268.2,
-      "height": 101.62,
-      "config": "{\"name\": \"9f7440800f414705\"}",
-      "filters": "[]",
-      "tabOrder": 0
-    },
-    {
-      "id": "57fb2ffed1a65e34",
-      "x": 5.9,
-      "y": 107.7,
-      "z": 1,
-      "width": 1118.86,
-      "height": 292.7,
-      "config": "{\"name\": \"57fb2ffed1a65e34\"}",
-      "filters": "[]",
-      "tabOrder": 1
-    },
-    {
-      "id": "a0d77ef27f038f9a",
-      "x": 0.0,
-      "y": 352.32,
-      "z": 2,
-      "width": 1280.0,
-      "height": 183.84,
-      "config": "{\"name\": \"a0d77ef27f038f9a\"}",
-      "filters": "[]",
-      "tabOrder": 2
-    },
-    {
-      "id": "46fe27f5f6b0b231",
-      "x": 0.0,
-      "y": 536.16,
-      "z": 3,
-      "width": 1280.0,
-      "height": 183.84,
-      "config": "{\"name\": \"46fe27f5f6b0b231\"}",
-      "filters": "[]",
-      "tabOrder": 3
-    }
-  ]
+  "width": 1280
 }

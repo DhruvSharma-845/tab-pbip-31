@@ -4,29 +4,5 @@
   "displayName": "Product",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280,
-  "visualContainers": [
-    {
-      "id": "2193f2c962752b2b",
-      "x": 5.26,
-      "y": 38.34,
-      "z": 0,
-      "width": 1129.62,
-      "height": 346.67,
-      "config": "{\"name\": \"2193f2c962752b2b\"}",
-      "filters": "[]",
-      "tabOrder": 0
-    },
-    {
-      "id": "dd249d95e192407d",
-      "x": 3.85,
-      "y": 174.55,
-      "z": 1,
-      "width": 1276.15,
-      "height": 545.45,
-      "config": "{\"name\": \"dd249d95e192407d\"}",
-      "filters": "[]",
-      "tabOrder": 1
-    }
-  ]
+  "width": 1280
 }

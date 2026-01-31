@@ -4,18 +4,5 @@
   "displayName": "Order Details",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280,
-  "visualContainers": [
-    {
-      "id": "8228b4c0a4561562",
-      "x": 5.27,
-      "y": 84.27,
-      "z": 0,
-      "width": 1274.73,
-      "height": 635.73,
-      "config": "{\"name\": \"8228b4c0a4561562\"}",
-      "filters": "[]",
-      "tabOrder": 0
-    }
-  ]
+  "width": 1280
 }

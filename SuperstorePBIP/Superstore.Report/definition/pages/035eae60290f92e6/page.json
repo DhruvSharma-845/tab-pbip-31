@@ -4,40 +4,5 @@
   "displayName": "Customers",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280,
-  "visualContainers": [
-    {
-      "id": "16e58e107a619e9c",
-      "x": 5.28,
-      "y": 161.34,
-      "z": 0,
-      "width": 570.12,
-      "height": 558.66,
-      "config": "{\"name\": \"16e58e107a619e9c\"}",
-      "filters": "[]",
-      "tabOrder": 0
-    },
-    {
-      "id": "4e294da4b52f5468",
-      "x": 575.4,
-      "y": 161.34,
-      "z": 1,
-      "width": 569.37,
-      "height": 558.66,
-      "config": "{\"name\": \"4e294da4b52f5468\"}",
-      "filters": "[]",
-      "tabOrder": 1
-    },
-    {
-      "id": "ed86df3636e959a3",
-      "x": 8.82,
-      "y": 55.58,
-      "z": 2,
-      "width": 1271.18,
-      "height": 141.6,
-      "config": "{\"name\": \"ed86df3636e959a3\"}",
-      "filters": "[]",
-      "tabOrder": 2
-    }
-  ]
+  "width": 1280
 }
