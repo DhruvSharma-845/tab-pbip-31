@@ -12,9 +12,9 @@ annotation PBI_ProTooling = ["DevMode"]
 
 annotation PBI_QueryOrder = ["Parameters", "Sales Target", "Orders", "Sales Commission"]
 ref table Parameters
-ref table Sales Target
+ref table 'Sales Target'
 ref table Orders
-ref table Sales Commission
+ref table 'Sales Commission'
 
 ref cultureInfo en-US
 
