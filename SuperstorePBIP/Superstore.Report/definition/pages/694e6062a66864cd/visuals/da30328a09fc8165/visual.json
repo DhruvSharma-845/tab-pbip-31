@@ -1,0 +1,61 @@
+{
+  "visualType": "tableEx",
+  "projections": {
+    "Values": [
+      {
+        "queryRef": "Orders.Product Name"
+      },
+      {
+        "queryRef": "Orders.Sum of Sales"
+      }
+    ]
+  },
+  "prototypeQuery": {
+    "Version": 2,
+    "From": [
+      {
+        "Name": "Orders",
+        "Entity": "Orders"
+      }
+    ],
+    "Select": [
+      {
+        "Column": {
+          "Expression": {
+            "SourceRef": {
+              "Source": "Orders"
+            }
+          },
+          "Property": "Product Name"
+        },
+        "Name": "Orders.Product Name"
+      },
+      {
+        "Measure": {
+          "Expression": {
+            "SourceRef": {
+              "Source": "Orders"
+            }
+          },
+          "Property": "Sum of Sales"
+        },
+        "Name": "Orders.Sum of Sales"
+      }
+    ]
+  },
+  "objects": {
+    "title": [
+      {
+        "properties": {
+          "text": {
+            "expr": {
+              "Literal": {
+                "Value": "'DaystoShip'"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

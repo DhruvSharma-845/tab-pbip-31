@@ -1,0 +1,61 @@
+{
+  "visualType": "tableEx",
+  "projections": {
+    "Values": [
+      {
+        "queryRef": "Sales Commission.Sales Person"
+      },
+      {
+        "queryRef": "Sales Commission.Calculation_4120925132203686"
+      }
+    ]
+  },
+  "prototypeQuery": {
+    "Version": 2,
+    "From": [
+      {
+        "Name": "Sales Commission",
+        "Entity": "Sales Commission"
+      }
+    ],
+    "Select": [
+      {
+        "Column": {
+          "Expression": {
+            "SourceRef": {
+              "Source": "Sales Commission"
+            }
+          },
+          "Property": "Sales Person"
+        },
+        "Name": "Sales Commission.Sales Person"
+      },
+      {
+        "Column": {
+          "Expression": {
+            "SourceRef": {
+              "Source": "Sales Commission"
+            }
+          },
+          "Property": "Calculation_4120925132203686"
+        },
+        "Name": "Sales Commission.Calculation_4120925132203686"
+      }
+    ]
+  },
+  "objects": {
+    "title": [
+      {
+        "properties": {
+          "text": {
+            "expr": {
+              "Literal": {
+                "Value": "'CommissionProjection'"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "visualType": "tableEx",
+  "projections": {
+    "Values": [
+      {
+        "queryRef": "Orders.Category"
+      },
+      {
+        "queryRef": "Orders.Sum of Profit"
+      }
+    ]
+  },
+  "prototypeQuery": {
+    "Version": 2,
+    "From": [
+      {
+        "Name": "Orders",
+        "Entity": "Orders"
+      }
+    ],
+    "Select": [
+      {
+        "Column": {
+          "Expression": {
+            "SourceRef": {
+              "Source": "Orders"
+            }
+          },
+          "Property": "Category"
+        },
+        "Name": "Orders.Category"
+      },
+      {
+        "Measure": {
+          "Expression": {
+            "SourceRef": {
+              "Source": "Orders"
+            }
+          },
+          "Property": "Sum of Profit"
+        },
+        "Name": "Orders.Sum of Profit"
+      }
+    ]
+  },
+  "objects": {
+    "title": [
+      {
+        "properties": {
+          "text": {
+            "expr": {
+              "Literal": {
+                "Value": "'CustomerScatter'"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
