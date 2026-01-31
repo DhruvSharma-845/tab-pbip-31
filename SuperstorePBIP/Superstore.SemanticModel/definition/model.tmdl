@@ -19,7 +19,7 @@ table 'Sales Commission'
 		dataType: string
 	column 'Sales'
 		dataType: int64
-	measure 'Sum of Sales' = SUM('Sales Commission'[Sales])
+	measure 'Sales Commission Sum of Sales' = SUM('Sales Commission'[Sales])
 
 	partition 'FullData'
 		mode: import
@@ -50,7 +50,7 @@ table 'Orders'
 	column 'Product Name'
 		dataType: string
 	measure 'Sum of Profit' = SUM('Orders'[Profit])
-	measure 'Sum of Sales' = SUM('Orders'[Sales])
+	measure 'Orders Sum of Sales' = SUM('Orders'[Sales])
 	partition 'FullData'
 		mode: import
 		source =
