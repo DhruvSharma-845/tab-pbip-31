@@ -80,6 +80,7 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": true
   }
 }
