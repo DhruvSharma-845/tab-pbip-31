@@ -68,7 +68,7 @@ table 'Sales Commission'
 		lineageTag: 6cb25ec4-6855-46b3-b5dc-bf94a091b9c8
 
 	measure 'Sales Commission Sum of Sales' = SUM('Sales Commission'[Sales])
-	partition 'FullData'
+	partition FullData = m
 		mode: import
 		source =
 			let

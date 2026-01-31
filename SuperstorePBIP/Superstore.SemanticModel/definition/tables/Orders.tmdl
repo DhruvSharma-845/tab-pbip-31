@@ -188,7 +188,7 @@ table Orders
 		lineageTag: 2253da9f-8eb3-4b5d-a099-238cebe990cf
 
 	measure 'Orders Sum of Sales' = SUM('Orders'[Sales])
-	partition 'FullData'
+	partition FullData = m
 		mode: import
 		source =
 			let

@@ -37,7 +37,7 @@ table Parameters
 		sourceColumn: Parameter 2
 		lineageTag: d88cbcd4-abcb-4f80-b11e-58c3afe9650b
 
-	partition 'FullData'
+	partition FullData = m
 		mode: import
 		source =
 			let

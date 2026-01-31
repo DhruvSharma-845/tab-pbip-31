@@ -25,7 +25,7 @@ table 'Sales Target'
 		sourceColumn: Segment
 		lineageTag: 0273f0cb-2087-472c-9846-e089e88e2434
 
-	partition 'FullData'
+	partition FullData = m
 		mode: import
 		source =
 			let
