@@ -1,0 +1,13 @@
+## PBIP Converter
+
+Stable PBIP generator from a Tableau TWBX workbook. This output is compatible with official stable Power BI schemas.
+
+### Usage
+
+```
+python3 /Users/dhrsharm/tab-pbip-31/convert_twbx_to_pbip.py \
+  --twbx /Users/dhrsharm/tab-pbip-31/Superstore.twbx \
+  --out /Users/dhrsharm/tab-pbip-31/SuperstorePBIP \
+  --project-name Superstore \
+  --sample-theme /Users/dhrsharm/tab-pbip-31/samplepbipfolder/Sample.Report/StaticResources/SharedResources/BaseThemes/CY25SU12.json
+```
