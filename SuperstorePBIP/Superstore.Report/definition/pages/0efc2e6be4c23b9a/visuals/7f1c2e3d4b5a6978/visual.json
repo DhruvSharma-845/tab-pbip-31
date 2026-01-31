@@ -12,44 +12,6 @@
   "visual": {
     "visualType": "columnChart",
     "autoSelectVisualType": true,
-    "drillFilterOtherVisuals": true,
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Source": "Orders"
-                    }
-                  },
-                  "Property": "Segment"
-                }
-              },
-              "queryRef": "Orders.Segment"
-            }
-          ]
-        },
-        "Values": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Source": "Orders"
-                    }
-                  },
-                  "Property": "Orders Sum of Sales"
-                }
-              },
-              "queryRef": "Orders.Orders Sum of Sales"
-            }
-          ]
-        }
-      }
-    }
+    "drillFilterOtherVisuals": true
   }
 }
