@@ -72,8 +72,8 @@ table 'Sales Commission'
 		mode: import
 		source =
 			let
-				Binary = Binary.Decompress(Binary.FromText("eNp1lU1u2zAQhfcFegfC6wFCUtSPu8sfYiR2WtgBjC7HFmsRoUmDkhvYV+uiR+oVOpSSTUwtDXwezrx5b/Tvz9/vodaB3WGnYal3xjtYodUt+6FD+/Hj6xdxJa64ZPwb53CrXRfQwp13aGu2MN220dbCpFRQCTUZpR2yNdpXHWAiqgqUECPso3bO/KK2rl09tDERPIeST8f+4BvHHr3TLUyKvALJ8xFyblpkCwydoaJKlJArOYIS9cpuCe0bptmmY88vzLZBbdnC+6BhkisBBR8r+4xue2IPGLYGqQVZApdjQqwwYMNWW9911ELOQfExfVfHFkkD3L72eslpBnx0tLWx1uCeveDJepoun0JRlZ/ge2w7uMGwoSbIIL8Niat4BqqYpkhSylt2ba2OyipaQpnmGgzRYHMdpSokZLlKc8G0nT805IN1MLuGJKg4VDlP0bG/mr00fn/o51ciowaKJKo3Psp6XeOeRpK8gOLCij15b80ZN7pryOQ0FwlVTCUIlafgR9zTVO/KUt2yFCB4lUR125otshvsw1BUihYrk6Rv9aFhM4z5ysoM8iIp1pPZb3Sw5Kugdb9+ilfy7TkeaZ0zEwvKSkKlkg//wC4YciiL0RoUnVKXkqfho2XP2g5JLSlUMqn8MuYk1O/502eCSU1FYUnKv/Q0UxclHQoD5yWUKkuxKyrsHXsybkeukgoy+dl9ax39rLvuxG4tZTu2WpCfktwdOkOJfvDuTBfwHBXNExdgYH3wXXOiLYXQhyRXwKdFCp1pigdb+poMfezL0iG8NFTPPmHo2Y0ZFiAp/5VUKXRuXE12Cv7NDZ2qskpxJPyOqpKmjaGDP1EkQH4h6AdK24+BQhopE5TnC6d8gCe22puuoacFXWmRxkz/ldBs7g/95nkcPCnS8kiJm+ngkM7/Od7TCgqZ7HJFCNl5rt9M36VM3PMeHAZhP/0xGiQj1XNRTP4D5srW7w==", BinaryEncoding.Base64), Compression.Deflate),
-				Source = Csv.Document(Binary,[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				Source = Csv.Document(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-v3-visuals\tab-pbip-31-code-v3-visuals\SuperstorePBIP\Data\Superstore\Sales Commission.csv"),[Delimiter=
+, Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
 				in
 				Promoted
