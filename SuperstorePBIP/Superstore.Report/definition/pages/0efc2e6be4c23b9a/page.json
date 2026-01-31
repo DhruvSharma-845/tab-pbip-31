@@ -4,18 +4,5 @@
   "displayName": "Overview",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280,
-  "visualContainers": [
-    {
-      "id": "a1b2c3d4e5f6a7b8",
-      "x": 20,
-      "y": 20,
-      "z": 0,
-      "width": 300,
-      "height": 150,
-      "config": "{\"name\": \"a1b2c3d4e5f6a7b8\"}",
-      "filters": "[]",
-      "tabOrder": 0
-    }
-  ]
+  "width": 1280
 }

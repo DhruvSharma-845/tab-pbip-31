@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "41ed3157d0a3fcac830d",
+  "position": {
+    "x": 60,
+    "y": 60,
+    "z": 0,
+    "height": 140,
+    "width": 280,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Source": "Orders"
+                    }
+                  },
+                  "Property": "Orders Sum of Sales"
+                }
+              },
+              "queryRef": "Orders.Orders Sum of Sales"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
