@@ -1,37 +1,37 @@
 table Parameters
 	lineageTag: bae62f4e-ba77-4d1f-91e6-b7cd1b438e3c
 
-	column Base Salary
+	column 'Base Salary'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Base Salary
 		lineageTag: 145c75c8-75a4-400f-847c-3352a1aee45f
 
-	column Commission Rate
+	column 'Commission Rate'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Commission Rate
 		lineageTag: c0976162-4f5b-45b1-8c78-16ba4637d3b9
 
-	column New Quota
+	column 'New Quota'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: New Quota
 		lineageTag: 32d90d46-9df7-47fc-b024-06b4aa5bcfef
 
-	column Parameter 1 1
+	column 'Parameter 1 1'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Parameter 1 1
 		lineageTag: f0466e0f-81fc-4d4f-8604-566af5c28c5b
 
-	column Parameter 1
+	column 'Parameter 1'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 1
 		lineageTag: b8eed585-0467-4428-ac0e-58bef837a0d4
 
-	column Parameter 2
+	column 'Parameter 2'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 2

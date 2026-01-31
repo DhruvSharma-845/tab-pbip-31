@@ -1,7 +1,7 @@
-table Sales Target
+table 'Sales Target'
 	lineageTag: 742a1554-e728-4fcc-9925-c5c84b6cbeff
 
-	column Sales Target
+	column 'Sales Target'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Sales Target
@@ -13,7 +13,7 @@ table Sales Target
 		sourceColumn: Category
 		lineageTag: e1d42b74-fd61-405e-af97-c94c4c2f351c
 
-	column Order Date
+	column 'Order Date'
 		dataType: dateTime
 		summarizeBy: none
 		sourceColumn: Order Date

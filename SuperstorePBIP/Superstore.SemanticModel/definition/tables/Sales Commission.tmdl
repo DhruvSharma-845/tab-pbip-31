@@ -1,19 +1,19 @@
-table Sales Commission
+table 'Sales Commission'
 	lineageTag: 14a5deb2-6372-4208-8ed8-2d5b190778c0
 
-	column Achievement (copy)
+	column 'Achievement (copy)'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Achievement (copy)
 		lineageTag: 12e6cf46-e5c5-4ecb-9abd-38f6474cf0a1
 
-	column Achievement (variable) (copy)
+	column 'Achievement (variable) (copy)'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Achievement (variable) (copy)
 		lineageTag: b5140bb4-51e8-426d-8c0c-3614c6da4f1a
 
-	column Base (Variable)
+	column 'Base (Variable)'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Base (Variable)
@@ -37,19 +37,19 @@ table Sales Commission
 		sourceColumn: Calculation_8140925133029303
 		lineageTag: 00818e18-0cc0-48f8-9cc9-4501fd7c0971
 
-	column Commission (Variable)
+	column 'Commission (Variable)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Commission (Variable)
 		lineageTag: ba551718-a942-4b36-b940-9a0e6a209915
 
-	column OTE (Variable)
+	column 'OTE (Variable)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: OTE (Variable)
 		lineageTag: 7b025dd3-3293-4bd6-ae7b-1a88f97c56f7
 
-	column Sales Person
+	column 'Sales Person'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Sales Person
@@ -61,7 +61,7 @@ table Sales Commission
 		sourceColumn: Sales
 		lineageTag: 852d0522-35dc-40a2-9137-ed364e35ff01
 
-	column Total Compensation
+	column 'Total Compensation'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Total Compensation
