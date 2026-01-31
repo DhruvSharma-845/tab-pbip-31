@@ -72,7 +72,7 @@ table 'Sales Commission'
 		mode: import
 		source =
 			let
-				Source = Csv.Document(File.Contents("..\..\Data\Superstore\Sales Commission.csv"),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				Source = Csv.Document(File.Contents("/Users/dhrsharm/tab-pbip-31/SuperstorePBIP/Data/Superstore/Sales Commission.csv"),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
 				in
 				Promoted
