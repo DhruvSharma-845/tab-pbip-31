@@ -30,8 +30,9 @@ table 'Sales Target'
 		source =
 			let
 				Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-v3-visuals\tab-pbip-31-code-v3-visuals\SuperstorePBIP\Data\Superstore\Sales Target.xlsx"), null, true),
-				Sheet1 = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
-				Promoted = Table.PromoteHeaders(Sheet1, [PromoteAllScalars=true])
+				Sheet1 = try Source{[Item="Sheet1",Kind="Sheet"]}[Data] otherwise null,
+				Target = if Sheet1 <> null then Sheet1 else Source{0}[Data],
+				Promoted = Table.PromoteHeaders(Target, [PromoteAllScalars=true])
 				in
 				Promoted
 	annotation PBI_ResultType = Table
