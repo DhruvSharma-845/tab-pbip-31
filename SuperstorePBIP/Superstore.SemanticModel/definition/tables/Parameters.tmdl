@@ -1,41 +1,41 @@
 table Parameters
-	lineageTag: 1edc3818-b9b4-4b36-8b99-5469e2e29c56
+	lineageTag: c8d6a3c5-51d8-4cdf-8cb0-e4181763ef17
 
 	column 'Parameter 1'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 1
-		lineageTag: 24a880f7-37f0-496d-a794-05d7b9f95920
+		lineageTag: bcc1a6c6-b32f-4901-9df4-541b144641d8
 
 	column 'Parameter 2'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 2
-		lineageTag: 666776f3-e192-4acd-b386-7f26610bf6ef
+		lineageTag: 06ac3340-65c1-43c4-b42c-baa9c01451fc
 
 	column 'Base Salary'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Base Salary
-		lineageTag: 14330010-6e15-4ccc-8728-5f8c617eab0b
+		lineageTag: 488f524e-ea2c-413a-8ea4-97108daf07ae
 
 	column 'Commission Rate'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Commission Rate
-		lineageTag: a5fed113-416a-4f40-b5bf-a8dd7166c61c
+		lineageTag: 84ef89ae-71ba-41e1-bc59-e306f04d3a5f
 
 	column 'New Quota'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: New Quota
-		lineageTag: 5e6933ce-e48b-4dd4-8a5b-5a4c20d7b9d8
+		lineageTag: c498373f-e6c3-4a6a-8614-d6ff9745bc15
 
 	column 'Parameter 1 1'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Parameter 1 1
-		lineageTag: de2d6036-2c6b-4c23-92b7-2118c6c0bab7
+		lineageTag: 3daa4f8a-625a-4c8d-8a56-a170845dc4b9
 
 	partition FullData = m
 		mode: import

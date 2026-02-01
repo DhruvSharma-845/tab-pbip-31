@@ -1,0 +1,8 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+  "name": "7f1de47eb0c5388b",
+  "displayName": "Tooltip: Profit Ratio by City",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280
+}

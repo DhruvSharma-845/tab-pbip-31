@@ -117,7 +117,7 @@ def parse_dashboard_worksheets(root, worksheet_names):
         dname = d.get("name")
         worksheets = []
         for z in d.findall(".//zone"):
-            wname = z.get("name") or z.get("worksheet")
+            wname = z.get("worksheet") or z.get("name")
             if wname and wname in worksheet_names:
                 worksheets.append(wname)
         dashboards[dname] = list(dict.fromkeys(worksheets))
@@ -392,6 +392,31 @@ def main():
         }
         with open(os.path.join(page_folder, "page.json"), "w") as f:
             json.dump(page_json, f, indent=2)
+    # Add standalone worksheet pages (worksheets not on dashboards)
+    all_ws = set(ws_meta.keys())
+    ws_in_dash = set()
+    for ws_list in dash_ws.values():
+        ws_in_dash.update(ws_list)
+    standalone_ws = sorted(all_ws - ws_in_dash)
+    for ws_name in standalone_ws:
+        page_id = hashlib.sha1(ws_name.encode("utf-8")).hexdigest()[:16]
+        if page_id in page_ids:
+            continue
+        page_ids.append(page_id)
+        page_by_name[ws_name] = page_id
+        page_folder = os.path.join(pages_dir, page_id)
+        os.makedirs(page_folder, exist_ok=True)
+        page_json = {
+            "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+            "name": page_id,
+            "displayName": ws_name,
+            "displayOption": "FitToPage",
+            "height": 720,
+            "width": 1280
+        }
+        with open(os.path.join(page_folder, "page.json"), "w") as f:
+            json.dump(page_json, f, indent=2)
+
     with open(os.path.join(pages_dir, "pages.json"), "w") as f:
         json.dump({
             "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json",
@@ -748,6 +773,53 @@ def main():
                 }
             }
             write_generic(vid, payload)
+
+    # Generic visuals for standalone worksheet pages
+    for ws_name in standalone_ws:
+        if ws_name in ("Overview", "Product"):
+            continue
+        page_id = page_by_name.get(ws_name)
+        if not page_id:
+            continue
+        page_folder = os.path.join(pages_dir, page_id)
+        visuals_dir = os.path.join(page_folder, "visuals")
+        os.makedirs(visuals_dir, exist_ok=True)
+        meta = ws_meta.get(ws_name, {})
+        mark = meta.get("mark")
+        vtype = map_mark_to_visual(mark)
+        category, value = choose_category_value(meta)
+        table = choose_table_for_fields(col_meta, category, value)
+        vid = hashlib.sha1(ws_name.encode("utf-8")).hexdigest()[:16]
+        payload = {
+            "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+            "name": vid,
+            "position": {"x": 20, "y": 60, "z": 1, "height": 600, "width": 1240, "tabOrder": 1},
+            "visual": {
+                "visualType": vtype,
+                "query": {
+                    "queryState": {
+                        "Category": {"projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": category}},
+                            "queryRef": f"{table}.{category}",
+                            "nativeQueryRef": category,
+                            "active": True
+                        }]},
+                        "Y": {"projections": [{
+                            "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": value}}, "Function": 0}},
+                            "queryRef": f"Sum({table}.{value})",
+                            "nativeQueryRef": f"Sum of {value}"
+                        }]}
+                    }
+                },
+                "drillFilterOtherVisuals": True,
+                "autoSelectVisualType": True,
+                "objects": {"title": [{"properties": {"text": {"expr": {"Literal": {"Value": f"'{ws_name}'"}}}, "show": {"expr": {"Literal": {"Value": "true"}}}}}]}
+            }
+        }
+        vdir = os.path.join(visuals_dir, vid)
+        os.makedirs(vdir, exist_ok=True)
+        with open(os.path.join(vdir, "visual.json"), "w") as f:
+            json.dump(payload, f, indent=2)
 
     # Semantic model files
     model_dir = os.path.join(out_root, model_name, "definition")
