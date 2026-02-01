@@ -1,0 +1,47 @@
+table 'Sales Commission'
+	lineageTag: 14a5deb2-6372-4208-8ed8-2d5b190778c0
+
+	measure 'Sales Commission Sum of Sales' = SUM('Sales Commission'[Sales])
+		lineageTag: a9376d55-f4d6-4c4c-9231-883d9474ebe9
+
+	column 'Sales Person'
+		dataType: string
+		lineageTag: 5383e603-d68e-4fc0-889e-598ec7ac374e
+		summarizeBy: none
+		sourceColumn: Sales Person
+
+	column Sales
+		dataType: string
+		lineageTag: 852d0522-35dc-40a2-9137-ed364e35ff01
+		summarizeBy: none
+		sourceColumn: Sales
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Date'
+		dataType: string
+		lineageTag: 82cd8271-73b7-4e9c-8ac3-825dfeba0589
+		summarizeBy: none
+		sourceColumn: Order Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: 3b98e770-1d39-48a2-8cbe-763412c5791f
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FullData = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\Sales Commission.csv"), [Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+					in
+					Promoted
+
+	annotation PBI_ResultType = Table
+

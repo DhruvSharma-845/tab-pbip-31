@@ -1,0 +1,44 @@
+table 'Sales Target'
+	lineageTag: 742a1554-e728-4fcc-9925-c5c84b6cbeff
+
+	column 'Sales Target'
+		dataType: string
+		lineageTag: 4579e6b5-b495-40dc-be76-7a5043685c11
+		summarizeBy: none
+		sourceColumn: Sales Target
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: e1d42b74-fd61-405e-af97-c94c4c2f351c
+		summarizeBy: none
+		sourceColumn: Category
+
+	column 'Order Date'
+		dataType: string
+		lineageTag: 71bc5df9-cf2a-4803-bcce-2925ca4e06ba
+		summarizeBy: none
+		sourceColumn: Order Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segment
+		dataType: string
+		lineageTag: 0273f0cb-2087-472c-9846-e089e88e2434
+		summarizeBy: none
+		sourceColumn: Segment
+
+	partition FullData = m
+		mode: import
+		source =
+				let
+					Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\Sales Target.xlsx"), null, true),
+					Sheet1 = try Source{[Item="Sheet1",Kind="Sheet"]}[Data] otherwise null,
+					Target = if Sheet1 <> null then Sheet1 else Source{0}[Data],
+					Promoted = Table.PromoteHeaders(Target, [PromoteAllScalars=true])
+					in
+					Promoted
+
+	annotation PBI_ResultType = Table
+

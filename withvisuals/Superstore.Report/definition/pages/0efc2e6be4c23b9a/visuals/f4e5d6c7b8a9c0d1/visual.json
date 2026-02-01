@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "f4e5d6c7b8a9c0d1",
+  "position": {
+    "x": 860,
+    "y": 20,
+    "z": 0,
+    "height": 100,
+    "width": 200,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Sales per Customer"
+                }
+              },
+              "queryRef": "Orders.Sales per Customer",
+              "nativeQueryRef": "Sales per Customer"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": true
+  }
+}

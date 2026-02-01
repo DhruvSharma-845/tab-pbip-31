@@ -1,0 +1,25 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-IN
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
+
+annotation PBI_QueryOrder = ["Parameters", "Sales Target", "Orders", "Sales Commission"]
+
+ref table Parameters
+ref table 'Sales Target'
+ref table Orders
+ref table 'Sales Commission'
+ref table DateTableTemplate_a56a1af5-3137-4fc3-84a2-6daa4942963b
+ref table LocalDateTable_a420ff36-3206-4997-b8a9-5db8d75b4819
+ref table LocalDateTable_3d14f7f4-07f1-41b8-9448-94a8f44c1a53
+ref table LocalDateTable_d25cef6f-43c4-468d-a481-0231b421f5f1
+
+ref cultureInfo en-US
+

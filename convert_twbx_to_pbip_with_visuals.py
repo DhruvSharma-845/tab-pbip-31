@@ -240,7 +240,7 @@ def main():
     page_json = {
         "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
         "name": page_id,
-        "displayName": "Page 1",
+        "displayName": "Executive Overview - Profitability (All)",
         "displayOption": "FitToPage",
         "height": 720,
         "width": 1280
@@ -254,7 +254,7 @@ def main():
             "activePageName": page_id
         }, f, indent=2)
 
-    # Overview visuals (Superstore-specific layout)
+    # Overview visuals (Superstore-specific layout + titles)
     visuals_dir = os.path.join(page_folder, "visuals")
     os.makedirs(visuals_dir, exist_ok=True)
     def write_visual(vid, payload):
@@ -291,7 +291,15 @@ def main():
                     }
                 },
                 "drillFilterOtherVisuals": True,
-                "autoSelectVisualType": True
+                "autoSelectVisualType": True,
+                "objects": {
+                    "title": [{
+                        "properties": {
+                            "text": {"expr": {"Literal": {"Value": f"'{measure}'"}}},
+                            "show": {"expr": {"Literal": {"Value": "true"}}}
+                        }
+                    }]
+                }
             }
         })
 
@@ -336,7 +344,15 @@ def main():
                 }
             },
             "drillFilterOtherVisuals": True,
-            "autoSelectVisualType": True
+            "autoSelectVisualType": True,
+            "objects": {
+                "title": [{
+                    "properties": {
+                        "text": {"expr": {"Literal": {"Value": "'Monthly Sales by Segment - States/Provinces: All'"}}},
+                        "show": {"expr": {"Literal": {"Value": "true"}}}
+                    }
+                }]
+            }
         }
     })
 
@@ -381,7 +397,15 @@ def main():
                 }
             },
             "drillFilterOtherVisuals": True,
-            "autoSelectVisualType": True
+            "autoSelectVisualType": True,
+            "objects": {
+                "title": [{
+                    "properties": {
+                        "text": {"expr": {"Literal": {"Value": "'Monthly Sales by Product Category - States/Provinces: All'"}}},
+                        "show": {"expr": {"Literal": {"Value": "true"}}}
+                    }
+                }]
+            }
         }
     })
 
@@ -412,7 +436,15 @@ def main():
                 }
             },
             "drillFilterOtherVisuals": True,
-            "autoSelectVisualType": True
+            "autoSelectVisualType": True,
+            "objects": {
+                "title": [{
+                    "properties": {
+                        "text": {"expr": {"Literal": {"Value": "'Profit Ratio by City'"}}},
+                        "show": {"expr": {"Literal": {"Value": "true"}}}
+                    }
+                }]
+            }
         }
     })
 
