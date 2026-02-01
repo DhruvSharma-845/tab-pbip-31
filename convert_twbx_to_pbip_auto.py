@@ -136,18 +136,84 @@ def parse_dashboard_filters(root):
     return dashboards
 
 
-def parse_worksheet_primary_tables(root, ds_caption):
-    ws_tables = {}
+def parse_worksheet_datasources(root):
+    ws_sources = {}
     for ws in root.findall(".//worksheet"):
         ws_name = ws.get("name")
         if not ws_name:
             continue
         ds = ws.find(".//view/datasources/datasource")
-        if ds is not None:
-            ds_name = ds.get("name")
-            if ds_name:
-                ws_tables[ws_name] = safe_name(ds_caption.get(ds_name, ds_name))
-    return ws_tables
+        if ds is not None and ds.get("name"):
+            ws_sources[ws_name] = ds.get("name")
+    return ws_sources
+
+
+def parse_datasource_tables(root, ds_caption):
+    ds_tables = defaultdict(list)
+    for ds in root.findall(".//datasource"):
+        ds_name = ds.get("name")
+        caption = ds_caption.get(ds_name, ds.get("caption") or ds_name)
+        if not caption:
+            continue
+        for rel in ds.findall(".//connection/relation//relation[@type='table']"):
+            tname = rel.get("name")
+            if tname and tname not in ds_tables[caption]:
+                ds_tables[caption].append(tname)
+    return ds_tables
+
+
+def parse_object_graph_relationships(root):
+    relationships = []
+    for ds in root.findall(".//datasource"):
+        obj_graph = ds.find(".//object-graph")
+        if obj_graph is None:
+            continue
+        object_map = {}
+        for obj in obj_graph.findall(".//objects/object"):
+            obj_id = obj.get("id")
+            caption = obj.get("caption")
+            rel = obj.find(".//properties/relation")
+            rel_name = rel.get("name") if rel is not None else None
+            table_name = safe_name(rel_name or caption)
+            if obj_id and table_name:
+                object_map[obj_id] = table_name
+        for rel in obj_graph.findall(".//relationships/relationship"):
+            expr = rel.find("expression")
+            if expr is None or expr.get("op") != "=":
+                continue
+            expr_children = expr.findall("expression")
+            if len(expr_children) != 2:
+                continue
+            left = expr_children[0].get("op") or ""
+            right = expr_children[1].get("op") or ""
+            left_field = left.strip("[]")
+            right_field = right.strip("[]")
+            first = rel.find("first-end-point")
+            second = rel.find("second-end-point")
+            if first is None or second is None:
+                continue
+            left_table = object_map.get(first.get("object-id"))
+            right_table = object_map.get(second.get("object-id"))
+            if left_table and right_table and left_field and right_field:
+                relationships.append({
+                    "from_table": left_table,
+                    "from_field": left_field,
+                    "to_table": right_table,
+                    "to_field": right_field
+                })
+    return relationships
+
+
+def choose_table_by_fields(fields, candidate_tables, col_meta):
+    best_table = None
+    best_score = -1
+    for table in candidate_tables:
+        cols = col_meta.get(table, {})
+        score = sum(1 for f in fields if f in cols)
+        if score > best_score:
+            best_score = score
+            best_table = table
+    return best_table
 
 
 def parse_dashboard_worksheet_zones(root, worksheet_names):
@@ -393,9 +459,15 @@ def choose_table_for_any(col_meta, fields):
     return "Orders"
 
 
-def resolve_table_for_field(col_meta, field, preferred_table=None):
+def resolve_table_for_field(col_meta, field, preferred_table=None, relationships=None):
     if preferred_table and field in col_meta.get(preferred_table, {}):
         return preferred_table
+    if preferred_table and relationships:
+        for rel in relationships:
+            if rel["from_table"] == preferred_table and field in col_meta.get(rel["to_table"], {}):
+                return rel["to_table"]
+            if rel["to_table"] == preferred_table and field in col_meta.get(rel["from_table"], {}):
+                return rel["from_table"]
     return choose_table_for_field(col_meta, field)
 
 
@@ -597,11 +669,6 @@ def main():
     col_meta = parse_columns(root, ds_caption)
     ws_meta = parse_worksheet_meta(root)
     worksheet_names = set(ws_meta.keys())
-    dash_ws = parse_dashboard_worksheets(root, worksheet_names)
-    dash_filters = parse_dashboard_filters(root)
-    dash_worksheet_zones = parse_dashboard_worksheet_zones(root, worksheet_names)
-    dash_root_sizes = parse_dashboard_root_sizes(root)
-    ws_primary_tables = parse_worksheet_primary_tables(root, ds_caption)
     calc_meta = parse_calculations(root)
     calc_captions = {}
     for ws_name, calcs in calc_meta.items():
@@ -614,6 +681,25 @@ def main():
             caption = calc.get("caption")
             if caption in ("Days to Ship Actual", "Days to Ship Scheduled"):
                 order_calc_columns.add(caption)
+    dash_ws = parse_dashboard_worksheets(root, worksheet_names)
+    dash_filters = parse_dashboard_filters(root)
+    dash_worksheet_zones = parse_dashboard_worksheet_zones(root, worksheet_names)
+    dash_root_sizes = parse_dashboard_root_sizes(root)
+    ws_datasources = parse_worksheet_datasources(root)
+    ds_tables = parse_datasource_tables(root, ds_caption)
+    relationships = parse_object_graph_relationships(root)
+    ws_preferred_tables = {}
+    for ws_name, ds_name in ws_datasources.items():
+        ds_caption_name = ds_caption.get(ds_name, ds_name)
+        candidates = ds_tables.get(ds_caption_name, [])
+        if not candidates:
+            candidates = list(col_meta.keys())
+        fields = extract_fields(ws_meta.get(ws_name, {}).get("rows", "")) + extract_fields(ws_meta.get(ws_name, {}).get("cols", ""))
+        if is_table_worksheet(ws_meta.get(ws_name, {})):
+            fields += ws_measure_names.get(ws_name, [])
+        preferred = choose_table_by_fields(fields, candidates, col_meta)
+        if preferred:
+            ws_preferred_tables[ws_name] = preferred
 
     # Report structure
     pages_dir = os.path.join(out_root, report_name, "definition", "pages")
@@ -1030,8 +1116,8 @@ def main():
         for fidx, flt in enumerate(filters):
             field = flt["field"]
             preferred_ws = flt.get("worksheet") or default_ws
-            preferred_table = ws_primary_tables.get(preferred_ws) if preferred_ws else None
-            table = resolve_table_for_field(col_meta, field, preferred_table)
+            preferred_table = ws_preferred_tables.get(preferred_ws) if preferred_ws else None
+            table = resolve_table_for_field(col_meta, field, preferred_table, relationships)
             rect = scale_rect(flt, root_size, page_size) if flt.get("w") else None
             if rect:
                 x = rect["x"]
@@ -1078,29 +1164,29 @@ def main():
                 row_fields = [f for f in extract_fields(meta.get("rows", "")) if f not in ("Measure Names", "Multiple Values")]
                 measure_fields = ws_measure_names.get(ws_name, [])
                 table_fields = dedupe_preserve(row_fields + measure_fields)
-                preferred_table = ws_primary_tables.get(ws_name)
+                preferred_table = ws_preferred_tables.get(ws_name)
                 table = preferred_table or choose_table_for_any(col_meta, table_fields)
-                column_names = set(col_meta.get(table, {}).keys())
                 extra_columns = set(order_calc_columns or [])
                 measure_overrides = {"Profit Ratio"}
                 projections = []
                 for field in table_fields:
-                    if field in column_names or field in extra_columns:
+                    field_table = resolve_table_for_field(col_meta, field, preferred_table, relationships)
+                    if field in col_meta.get(field_table, {}) or field in extra_columns:
                         projections.append({
-                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": field}},
-                            "queryRef": f"{table}.{field}",
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": field_table}}, "Property": field}},
+                            "queryRef": f"{field_table}.{field}",
                             "nativeQueryRef": field
                         })
                     elif field in measure_overrides:
                         projections.append({
-                            "field": {"Measure": {"Expression": {"SourceRef": {"Entity": table}}, "Property": field}},
-                            "queryRef": f"{table}.{field}",
+                            "field": {"Measure": {"Expression": {"SourceRef": {"Entity": preferred_table or field_table}}, "Property": field}},
+                            "queryRef": f"{preferred_table or field_table}.{field}",
                             "nativeQueryRef": field
                         })
                     else:
                         projections.append({
-                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": field}},
-                            "queryRef": f"{table}.{field}",
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": field_table}}, "Property": field}},
+                            "queryRef": f"{field_table}.{field}",
                             "nativeQueryRef": field
                         })
                 if scaled_ws_rect:
@@ -1128,7 +1214,7 @@ def main():
             else:
                 vtype = determine_visual_type(meta, ws_name)
                 category, value = choose_category_value(meta)
-                preferred_table = ws_primary_tables.get(ws_name)
+                preferred_table = ws_preferred_tables.get(ws_name)
                 table = preferred_table or choose_table_for_fields(col_meta, category, value)
                 fields = extract_fields(meta.get("rows", "")) + extract_fields(meta.get("cols", ""))
                 series = choose_series(fields)

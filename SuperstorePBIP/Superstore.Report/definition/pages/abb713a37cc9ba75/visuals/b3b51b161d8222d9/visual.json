@@ -48,13 +48,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sample - Superstore"
+                      "Entity": "Sales Target"
                     }
                   },
                   "Property": "Order Date"
                 }
               },
-              "queryRef": "Sample - Superstore.Order Date",
+              "queryRef": "Sales Target.Order Date",
               "nativeQueryRef": "Order Date"
             },
             {
@@ -146,13 +146,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sample - Superstore"
+                      "Entity": "Orders"
                     }
                   },
                   "Property": "Days to Ship Scheduled"
                 }
               },
-              "queryRef": "Sample - Superstore.Days to Ship Scheduled",
+              "queryRef": "Orders.Days to Ship Scheduled",
               "nativeQueryRef": "Days to Ship Scheduled"
             },
             {
@@ -160,13 +160,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sample - Superstore"
+                      "Entity": "Orders"
                     }
                   },
                   "Property": "Days to Ship Actual"
                 }
               },
-              "queryRef": "Sample - Superstore.Days to Ship Actual",
+              "queryRef": "Orders.Days to Ship Actual",
               "nativeQueryRef": "Days to Ship Actual"
             }
           ]

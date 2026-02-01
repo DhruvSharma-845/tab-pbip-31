@@ -1,71 +1,71 @@
 table 'Sales Commission'
-	lineageTag: b8117b68-c7da-42cb-aad8-65c6f26609da
+	lineageTag: 47a51cc3-f8fc-426b-9a9a-50749626da15
 
 	column 'Achievement (copy)'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Achievement (copy)
-		lineageTag: c7a98f65-548f-4536-93a4-2e2ea005d9b7
+		lineageTag: b44e6c16-3829-4fc5-a6bf-643237fb1a5d
 
 	column 'Achievement (variable) (copy)'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Achievement (variable) (copy)
-		lineageTag: 26ebeddc-6db6-494e-b2f8-0bb63d82d7df
+		lineageTag: 07297936-2100-42fc-b288-17c7ed9317e9
 
 	column 'Base (Variable)'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Base (Variable)
-		lineageTag: ed00f01a-f817-4f7a-85c5-554a4cd70e38
+		lineageTag: 8c27a837-15a4-48d7-b9ef-a5faf8f90187
 
 	column Calculation_0440925131659539
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_0440925131659539
-		lineageTag: ce2fb3a8-4315-4692-b8bf-d5f7db5ed80a
+		lineageTag: fbcd248e-9293-4417-9d66-3d0005c4f0c7
 
 	column Calculation_4120925132203686
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_4120925132203686
-		lineageTag: cc4834bc-923b-4870-bb32-8962f62351a5
+		lineageTag: 2b929665-5afb-4166-81d3-90147ae7aa16
 
 	column Calculation_8140925133029303
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_8140925133029303
-		lineageTag: 72ffc777-e25c-4d16-a537-f403f57100d0
+		lineageTag: 1af7121d-06fb-4f7d-8966-bcd7d7aaf2bc
 
 	column 'Commission (Variable)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Commission (Variable)
-		lineageTag: 347091b9-943a-4a57-9849-26415e833b41
+		lineageTag: d1cc2fda-1145-4c09-b71a-7b0252f6536f
 
 	column 'OTE (Variable)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: OTE (Variable)
-		lineageTag: 406bd7fe-aa02-4567-9ade-6ddebf684ef1
+		lineageTag: 1d18a58a-5ad0-4535-b91b-849db6ea5d39
 
 	column 'Sales Person'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Sales Person
-		lineageTag: a257d0be-b8a8-4ffc-9756-9502bef61d9f
+		lineageTag: 7a016756-d03f-414b-a21e-2ac9d0b80622
 
 	column Sales
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Sales
-		lineageTag: 8c05c400-ae51-4b6f-b1ff-544314e7ddc3
+		lineageTag: a4984777-c3da-4d5f-8e4f-820406a8aa27
 
 	column 'Total Compensation'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Total Compensation
-		lineageTag: 6a7e82cd-445b-47d9-b510-651621901ffb
+		lineageTag: e5166c1b-574c-4790-a7d9-2403ab4efba9
 
 	partition FullData = m
 		mode: import

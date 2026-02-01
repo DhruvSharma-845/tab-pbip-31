@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sales Commission"
+                      "Entity": "Sample - Superstore"
                     }
                   },
                   "Property": "Sales"
                 }
               },
-              "queryRef": "Sales Commission.Sales",
+              "queryRef": "Sample - Superstore.Sales",
               "nativeQueryRef": "Sales"
             }
           ]
