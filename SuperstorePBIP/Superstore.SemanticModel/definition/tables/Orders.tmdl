@@ -187,6 +187,12 @@ table Orders
 		sourceColumn: Calculation_9330126204734562
 		lineageTag: 2253da9f-8eb3-4b5d-a099-238cebe990cf
 
+	column 'Order Month'
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: Order Month
+		lineageTag: 00000000-0000-0000-0000-000000000002
+
 	measure 'Orders Sum of Sales' = SUM('Orders'[Sales])
 	measure 'Total Sales' = SUM('Orders'[Sales])
 	measure 'Total Profit' = SUM('Orders'[Profit])
@@ -198,12 +204,14 @@ table Orders
 		mode: import
 		source =
 			let
-				Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\Sample - Superstore.xls"), null, true),
+				Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-v3-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\Sample - Superstore.xls"), null, true),
 				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
 				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
 				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
-				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true])
+				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
+				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
+				AddedMonth = Table.AddColumn(ChangedType, "Order Month", each Date.StartOfMonth([Order Date]), type date)
 				in
-				Promoted
+				AddedMonth
 	annotation PBI_ResultType = Table
 

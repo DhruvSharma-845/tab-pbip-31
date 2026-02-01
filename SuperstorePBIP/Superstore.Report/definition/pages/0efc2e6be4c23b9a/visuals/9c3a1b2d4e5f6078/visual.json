@@ -23,11 +23,11 @@
                       "Entity": "Orders"
                     }
                   },
-                  "Property": "Order Date"
+                  "Property": "Order Month"
                 }
               },
-              "queryRef": "Orders.Order Date",
-              "nativeQueryRef": "Order Date",
+              "queryRef": "Orders.Order Month",
+              "nativeQueryRef": "Order Month",
               "active": true
             }
           ]
