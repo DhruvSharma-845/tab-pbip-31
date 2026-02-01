@@ -1,19 +1,38 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "41ed3157d0a3fcac830d",
+  "name": "cd34ef56ab7890cd",
   "position": {
     "x": 40,
-    "y": 30,
-    "z": 0,
-    "height": 140,
-    "width": 300,
-    "tabOrder": 0
+    "y": 520,
+    "z": 3,
+    "height": 170,
+    "width": 1140,
+    "tabOrder": 3
   },
   "visual": {
-    "visualType": "card",
+    "visualType": "map",
     "query": {
       "queryState": {
-        "Values": {
+        "Location": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "City"
+                }
+              },
+              "queryRef": "Orders.City",
+              "nativeQueryRef": "City",
+              "active": true
+            }
+          ]
+        },
+        "Size": {
           "projections": [
             {
               "field": {
