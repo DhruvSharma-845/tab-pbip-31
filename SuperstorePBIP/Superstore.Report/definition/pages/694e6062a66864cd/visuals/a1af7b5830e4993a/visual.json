@@ -10,7 +10,7 @@
     "tabOrder": 3
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "lineChart",
     "query": {
       "queryState": {
         "Category": {

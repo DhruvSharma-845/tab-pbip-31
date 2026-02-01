@@ -189,6 +189,27 @@ def choose_table_for_fields(col_meta, category, value):
             return table
     return "Orders"
 
+
+def choose_series(fields):
+    for f in fields:
+        if f in ("Segment", "Category", "Region"):
+            return f
+    return None
+
+
+def determine_visual_type(meta, ws_name):
+    mark = meta.get("mark")
+    rows = meta.get("rows", "")
+    cols = meta.get("cols", "")
+    fields = extract_fields(rows) + extract_fields(cols)
+    if "Forecast" in ws_name:
+        return "lineChart"
+    if any("Order Date" in f for f in fields):
+        return "lineChart" if mark in (None, "Automatic", "Line") else map_mark_to_visual(mark)
+    if any(f in ("Latitude (generated)", "Longitude (generated)", "State/Province", "City") for f in fields):
+        return "map"
+    return map_mark_to_visual(mark)
+
 def build_table_files(tables_dir, col_meta, windows_data_root):
     tables_dir = os.path.abspath(tables_dir)
     os.makedirs(tables_dir, exist_ok=True)
@@ -717,10 +738,11 @@ def main():
 
         for idx, ws_name in enumerate(ws_list):
             meta = ws_meta.get(ws_name, {})
-            mark = meta.get("mark")
-            vtype = map_mark_to_visual(mark)
+            vtype = determine_visual_type(meta, ws_name)
             category, value = choose_category_value(meta)
             table = choose_table_for_fields(col_meta, category, value)
+            fields = extract_fields(meta.get("rows", "")) + extract_fields(meta.get("cols", ""))
+            series = choose_series(fields)
 
             # map charts on geo fields
             if category in ("City", "State/Province") and vtype in ("tableEx", "map"):
@@ -743,6 +765,12 @@ def main():
                     "nativeQueryRef": f"Sum of {value}"
                 }]}
             }
+            if series and vtype in ("lineChart", "areaChart"):
+                query_state["Series"] = {"projections": [{
+                    "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": series}},
+                    "queryRef": f"{table}.{series}",
+                    "nativeQueryRef": series
+                }]}
 
             # map uses Location/Size
             if vtype == "map":
@@ -790,7 +818,48 @@ def main():
         category, value = choose_category_value(meta)
         table = choose_table_for_fields(col_meta, category, value)
         vid = hashlib.sha1(ws_name.encode("utf-8")).hexdigest()[:16]
-        payload = {
+        # Forecast override: line chart with Order Month + Segment + Sales
+        if ws_name == "Forecast":
+            payload = {
+                "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+                "name": vid,
+                "position": {"x": 20, "y": 60, "z": 1, "height": 600, "width": 1240, "tabOrder": 1},
+                "visual": {
+                    "visualType": "lineChart",
+                    "query": {
+                        "queryState": {
+                            "Category": {"projections": [{
+                                "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Order Month"}},
+                                "queryRef": "Orders.Order Month",
+                                "nativeQueryRef": "Order Month",
+                                "active": True
+                            }]},
+                            "Series": {"projections": [{
+                                "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Segment"}},
+                                "queryRef": "Orders.Segment",
+                                "nativeQueryRef": "Segment"
+                            }]},
+                            "Y": {"projections": [{
+                                "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Sales"}}, "Function": 0}},
+                                "queryRef": "Sum(Orders.Sales)",
+                                "nativeQueryRef": "Sum of Sales"
+                            }]}
+                        },
+                        "sortDefinition": {
+                            "sort": [{
+                                "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Order Month"}},
+                                "direction": "Ascending"
+                            }],
+                            "isDefaultSort": True
+                        }
+                    },
+                    "drillFilterOtherVisuals": True,
+                    "autoSelectVisualType": True,
+                    "objects": {"title": [{"properties": {"text": {"expr": {"Literal": {"Value": "'Sales Forecast'"}}}, "show": {"expr": {"Literal": {"Value": "true"}}}}}]}
+                }
+            }
+        else:
+            payload = {
             "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
             "name": vid,
             "position": {"x": 20, "y": 60, "z": 1, "height": 600, "width": 1240, "tabOrder": 1},
