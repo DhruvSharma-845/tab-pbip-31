@@ -142,11 +142,11 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
             out.append("\t\tformatString: \"$#,0\"")
             out.append("\tmeasure 'Total Profit' = SUM('Orders'[Profit])")
             out.append("\t\tformatString: \"$#,0\"")
-            out.append("\tmeasure 'Profit Ratio' = DIVIDE([Total Profit],[Total Sales])")
+            out.append("\tmeasure 'Profit Ratio' = DIVIDE(SUM('Orders'[Profit]), SUM('Orders'[Sales]))")
             out.append("\t\tformatString: \"0.0%\"")
-            out.append("\tmeasure 'Profit per Order' = DIVIDE([Total Profit], DISTINCTCOUNT('Orders'[Order ID]))")
+            out.append("\tmeasure 'Profit per Order' = DIVIDE(SUM('Orders'[Profit]), DISTINCTCOUNT('Orders'[Order ID]))")
             out.append("\t\tformatString: \"$#,0.00\"")
-            out.append("\tmeasure 'Sales per Customer' = DIVIDE([Total Sales], DISTINCTCOUNT('Orders'[Customer Name]))")
+            out.append("\tmeasure 'Sales per Customer' = DIVIDE(SUM('Orders'[Sales]), DISTINCTCOUNT('Orders'[Customer Name]))")
             out.append("\t\tformatString: \"$#,0.00\"")
             out.append("\tmeasure 'Avg Discount' = AVERAGE('Orders'[Discount])")
             out.append("\t\tformatString: \"0.0%\"")
@@ -184,6 +184,26 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
         out.append("")
 
         (Path(tables_dir) / f"{table}.tmdl").write_text("\n".join(out) + "\n")
+
+
+def normalize_lineage_indentation(tables_dir: str) -> None:
+    tables_path = Path(tables_dir)
+    for path in tables_path.glob("*.tmdl"):
+        lines = path.read_text().splitlines()
+        new = []
+        in_column = False
+        for line in lines:
+            stripped = line.strip()
+            if stripped.startswith("column "):
+                in_column = True
+                new.append("\t" + stripped)
+                continue
+            if stripped.startswith("lineageTag:"):
+                new.append(("\t\t" if in_column else "\t") + stripped)
+                in_column = False
+                continue
+            new.append(line)
+        path.write_text("\n".join(new) + "\n")
 
 
 def main():
@@ -571,7 +591,9 @@ def main():
     with open(os.path.join(model_dir, "model.tmdl"), "w") as f:
         f.write("\n".join(model_lines) + "\n")
 
-    build_table_files(os.path.join(model_dir, "tables"), col_meta, args.windows_data_root)
+    tables_dir = os.path.join(model_dir, "tables")
+    build_table_files(tables_dir, col_meta, args.windows_data_root)
+    normalize_lineage_indentation(tables_dir)
 
     # PBIP file
     with open(os.path.join(out_root, f"{args.project_name}.pbip"), "w") as f:

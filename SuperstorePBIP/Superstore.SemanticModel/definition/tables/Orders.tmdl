@@ -204,11 +204,11 @@ table Orders
 		formatString: "$#,0"
 	measure 'Total Profit' = SUM('Orders'[Profit])
 		formatString: "$#,0"
-	measure 'Profit Ratio' = DIVIDE([Total Profit],[Total Sales])
+	measure 'Profit Ratio' = DIVIDE(SUM('Orders'[Profit]), SUM('Orders'[Sales]))
 		formatString: "0.0%"
-	measure 'Profit per Order' = DIVIDE([Total Profit], DISTINCTCOUNT('Orders'[Order ID]))
+	measure 'Profit per Order' = DIVIDE(SUM('Orders'[Profit]), DISTINCTCOUNT('Orders'[Order ID]))
 		formatString: "$#,0.00"
-	measure 'Sales per Customer' = DIVIDE([Total Sales], DISTINCTCOUNT('Orders'[Customer Name]))
+	measure 'Sales per Customer' = DIVIDE(SUM('Orders'[Sales]), DISTINCTCOUNT('Orders'[Customer Name]))
 		formatString: "$#,0.00"
 	measure 'Avg Discount' = AVERAGE('Orders'[Discount])
 		formatString: "0.0%"
