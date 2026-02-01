@@ -193,13 +193,25 @@ table Orders
 		sourceColumn: Order Month
 		lineageTag: 00000000-0000-0000-0000-000000000002
 
+	column 'Profitability'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Profitability
+		lineageTag: 00000000-0000-0000-0000-000000000003
+
 	measure 'Orders Sum of Sales' = SUM('Orders'[Sales])
 	measure 'Total Sales' = SUM('Orders'[Sales])
+		formatString: "$#,0"
 	measure 'Total Profit' = SUM('Orders'[Profit])
+		formatString: "$#,0"
 	measure 'Profit Ratio' = DIVIDE([Total Profit],[Total Sales])
+		formatString: "0.0%"
 	measure 'Profit per Order' = DIVIDE([Total Profit], DISTINCTCOUNT('Orders'[Order ID]))
+		formatString: "$#,0.00"
 	measure 'Sales per Customer' = DIVIDE([Total Sales], DISTINCTCOUNT('Orders'[Customer Name]))
+		formatString: "$#,0.00"
 	measure 'Avg Discount' = AVERAGE('Orders'[Discount])
+		formatString: "0.0%"
 	partition FullData = m
 		mode: import
 		source =
@@ -210,8 +222,9 @@ table Orders
 				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
 				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
 				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
-				AddedMonth = Table.AddColumn(ChangedType, "Order Month", each Date.StartOfMonth([Order Date]), type date)
+				AddedMonth = Table.AddColumn(ChangedType, "Order Month", each Date.StartOfMonth([Order Date]), type date),
+				AddedProfitability = Table.AddColumn(AddedMonth, "Profitability", each if [Profit] >= 0 then "Profitable" else "Unprofitable", type text)
 				in
-				AddedMonth
+				AddedProfitability
 	annotation PBI_ResultType = Table
 

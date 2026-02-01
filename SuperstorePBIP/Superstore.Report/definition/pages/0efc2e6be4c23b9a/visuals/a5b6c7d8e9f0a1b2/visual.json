@@ -17,22 +17,17 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Orders"
-                        }
-                      },
-                      "Property": "Discount"
+                    "SourceRef": {
+                      "Entity": "Orders"
                     }
                   },
-                  "Function": 1
+                  "Property": "Avg Discount"
                 }
               },
-              "queryRef": "Agg(Orders.Discount)",
-              "nativeQueryRef": "Agg Discount"
+              "queryRef": "Orders.Avg Discount",
+              "nativeQueryRef": "Avg Discount"
             }
           ]
         }

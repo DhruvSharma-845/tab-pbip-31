@@ -10,7 +10,7 @@
     "tabOrder": 3
   },
   "visual": {
-    "visualType": "filledMap",
+    "visualType": "map",
     "query": {
       "queryState": {
         "Location": {
@@ -23,35 +23,30 @@
                       "Entity": "Orders"
                     }
                   },
-                  "Property": "State/Province"
+                  "Property": "City"
                 }
               },
-              "queryRef": "Orders.State/Province",
-              "nativeQueryRef": "State/Province",
+              "queryRef": "Orders.City",
+              "nativeQueryRef": "City",
               "active": true
             }
           ]
         },
-        "Color": {
+        "Size": {
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Orders"
-                        }
-                      },
-                      "Property": "Profit"
+                    "SourceRef": {
+                      "Entity": "Orders"
                     }
                   },
-                  "Function": 0
+                  "Property": "Profit Ratio"
                 }
               },
-              "queryRef": "Sum(Orders.Profit)",
-              "nativeQueryRef": "Sum of Profit"
+              "queryRef": "Orders.Profit Ratio",
+              "nativeQueryRef": "Profit Ratio"
             }
           ]
         }

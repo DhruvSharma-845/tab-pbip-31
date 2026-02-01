@@ -10,7 +10,7 @@
     "tabOrder": 2
   },
   "visual": {
-    "visualType": "lineChart",
+    "visualType": "areaChart",
     "query": {
       "queryState": {
         "Category": {
@@ -70,6 +70,24 @@
               },
               "queryRef": "Sum(Orders.Sales)",
               "nativeQueryRef": "Sum of Sales"
+            }
+          ]
+        },
+        "Legend": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Profitability"
+                }
+              },
+              "queryRef": "Orders.Profitability",
+              "nativeQueryRef": "Profitability"
             }
           ]
         }
