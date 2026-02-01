@@ -1,50 +1,57 @@
 table Parameters
-	lineageTag: bae62f4e-ba77-4d1f-91e6-b7cd1b438e3c
-
-	column 'Base Salary'
-		dataType: int64
-		summarizeBy: sum
-		sourceColumn: Base Salary
-		lineageTag: 145c75c8-75a4-400f-847c-3352a1aee45f
-
-	column 'Commission Rate'
-		dataType: double
-		summarizeBy: sum
-		sourceColumn: Commission Rate
-		lineageTag: c0976162-4f5b-45b1-8c78-16ba4637d3b9
-
-	column 'New Quota'
-		dataType: int64
-		summarizeBy: sum
-		sourceColumn: New Quota
-		lineageTag: 32d90d46-9df7-47fc-b024-06b4aa5bcfef
-
-	column 'Parameter 1 1'
-		dataType: string
-		summarizeBy: none
-		sourceColumn: Parameter 1 1
-		lineageTag: f0466e0f-81fc-4d4f-8604-566af5c28c5b
+	lineageTag: 00000000-0000-0000-0000-000000000000
 
 	column 'Parameter 1'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 1
-		lineageTag: b8eed585-0467-4428-ac0e-58bef837a0d4
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column 'Parameter 2'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 2
-		lineageTag: d88cbcd4-abcb-4f80-b11e-58c3afe9650b
+		lineageTag: 00000000-0000-0000-0000-000000000001
+
+	column 'Base Salary'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Base Salary
+		lineageTag: 00000000-0000-0000-0000-000000000001
+
+	column 'Commission Rate'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Commission Rate
+		lineageTag: 00000000-0000-0000-0000-000000000001
+
+	column 'New Quota'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: New Quota
+		lineageTag: 00000000-0000-0000-0000-000000000001
+
+	column 'Parameter 1 1'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Parameter 1 1
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	partition FullData = m
 		mode: import
 		source =
 			let
-				Source = #table(type table [Base Salary = number, Commission Rate = number, New Quota = number, Parameter 1 1 = text, Parameter 1 = number, Parameter 2 = number], {{50000, 18.4, 500000, "Names", 0.6, 0.064}})
+				Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\\Sample - Superstore.xls"), null, true),
+				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
+				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
+				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
+				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
+				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
+				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}}),
+				AddedMonth = Table.AddColumn(CleanNumbers, "Order Month", each Date.StartOfMonth([Order Date]), type date),
+				AddedProfitability = Table.AddColumn(AddedMonth, "Profitability", each if [Profit] >= 0 then "Profitable" else "Unprofitable", type text),
+				AddedYear = Table.AddColumn(AddedProfitability, "Order Year", each Date.Year([Order Date]), Int64.Type)
 			in
-				Source
-
-
+				AddedYear
 	annotation PBI_ResultType = Table
 

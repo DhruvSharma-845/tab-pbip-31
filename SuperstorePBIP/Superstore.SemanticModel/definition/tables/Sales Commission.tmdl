@@ -1,80 +1,79 @@
 table 'Sales Commission'
-	lineageTag: 14a5deb2-6372-4208-8ed8-2d5b190778c0
+	lineageTag: 00000000-0000-0000-0000-000000000000
 
 	column 'Achievement (copy)'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Achievement (copy)
-		lineageTag: 12e6cf46-e5c5-4ecb-9abd-38f6474cf0a1
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column 'Achievement (variable) (copy)'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Achievement (variable) (copy)
-		lineageTag: b5140bb4-51e8-426d-8c0c-3614c6da4f1a
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column 'Base (Variable)'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Base (Variable)
-		lineageTag: f66d3c50-afe4-413d-b9d2-31a8d8744ae6
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column Calculation_0440925131659539
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_0440925131659539
-		lineageTag: 39a919e6-4b28-49f0-9733-47adffea92d2
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column Calculation_4120925132203686
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_4120925132203686
-		lineageTag: 35cb8067-e101-45dc-a044-017dc46675f7
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column Calculation_8140925133029303
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_8140925133029303
-		lineageTag: 00818e18-0cc0-48f8-9cc9-4501fd7c0971
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column 'Commission (Variable)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Commission (Variable)
-		lineageTag: ba551718-a942-4b36-b940-9a0e6a209915
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column 'OTE (Variable)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: OTE (Variable)
-		lineageTag: 7b025dd3-3293-4bd6-ae7b-1a88f97c56f7
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column 'Sales Person'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Sales Person
-		lineageTag: 5383e603-d68e-4fc0-889e-598ec7ac374e
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column Sales
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Sales
-		lineageTag: 852d0522-35dc-40a2-9137-ed364e35ff01
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
 	column 'Total Compensation'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Total Compensation
-		lineageTag: 6cb25ec4-6855-46b3-b5dc-bf94a091b9c8
+		lineageTag: 00000000-0000-0000-0000-000000000001
 
-	measure 'Sales Commission Sum of Sales' = SUM('Sales Commission'[Sales])
 	partition FullData = m
 		mode: import
 		source =
 			let
-				Source = Csv.Document(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\Sales Commission.csv"), [Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				Source = Csv.Document(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\\Sales Commission.csv"), [Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
-				in
+			in
 				Promoted
 	annotation PBI_ResultType = Table
 

@@ -8,12 +8,10 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_ProTooling = ["DevMode"]
-
-annotation PBI_QueryOrder = ["Parameters", "Sales Target", "Orders", "Sales Commission"]
+annotation PBI_QueryOrder = ["Parameters", "Sales Target", "Sample - Superstore", "Sales Commission"]
 ref table Parameters
 ref table 'Sales Target'
-ref table Orders
+ref table 'Sample - Superstore'
 ref table 'Sales Commission'
 
 ref cultureInfo en-US
