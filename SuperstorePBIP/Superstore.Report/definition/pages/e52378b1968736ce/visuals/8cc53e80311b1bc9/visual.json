@@ -4,10 +4,10 @@
   "position": {
     "x": 640,
     "y": 360,
-    "z": 3,
+    "z": 4,
     "height": 260,
     "width": 600,
-    "tabOrder": 3
+    "tabOrder": 4
   },
   "visual": {
     "visualType": "tableEx",
@@ -23,11 +23,12 @@
                       "Entity": "Orders"
                     }
                   },
-                  "Property": "Order Month"
+                  "Property": "Category"
                 }
               },
-              "queryRef": "Orders.Order Month",
-              "nativeQueryRef": "Order Month"
+              "queryRef": "Orders.Category",
+              "nativeQueryRef": "Category",
+              "active": true
             }
           ]
         },

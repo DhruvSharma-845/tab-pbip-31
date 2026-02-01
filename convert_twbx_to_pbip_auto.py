@@ -156,6 +156,29 @@ def extract_fields(expr: str):
     return fields
 
 
+def choose_category_value(meta, default_category="Category", default_value="Sales"):
+    row_fields = extract_fields(meta.get("rows", ""))
+    col_fields = extract_fields(meta.get("cols", ""))
+    fields = row_fields + col_fields
+    category = default_category
+    value = default_value
+    # Prefer date for category if present
+    for f in fields:
+        if "Order Date" in f:
+            category = "Order Month"
+            break
+    # Prefer dimension-like fields for category
+    for f in fields:
+        if f in ("Category", "Segment", "Region", "State/Province", "City", "Product Name"):
+            category = f if f != "Order Date" else "Order Month"
+            break
+    # Prefer measures for value
+    for f in fields:
+        if f in ("Sales", "Profit", "Quantity", "Sales Target"):
+            value = f
+            break
+    return category, value
+
 def build_table_files(tables_dir, col_meta, windows_data_root):
     tables_dir = os.path.abspath(tables_dir)
     os.makedirs(tables_dir, exist_ok=True)
@@ -632,40 +655,81 @@ def main():
             with open(os.path.join(vdir, "visual.json"), "w") as f:
                 json.dump(payload, f, indent=2)
 
+        # page title textbox
+        title_vid = hashlib.sha1((dash_name + "_title").encode("utf-8")).hexdigest()[:16]
+        write_generic(title_vid, {
+            "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+            "name": title_vid,
+            "position": {"x": 0, "y": 0, "z": 0, "height": 40, "width": 1280, "tabOrder": 0},
+            "visual": {
+                "visualType": "textbox",
+                "objects": {
+                    "general": [{
+                        "properties": {
+                            "paragraphs": [{
+                                "textRuns": [{
+                                    "value": dash_name,
+                                    "textStyle": {"fontWeight": "bold", "fontSize": "18pt"}
+                                }]
+                            }]
+                        }
+                    }]
+                },
+                "drillFilterOtherVisuals": True
+            }
+        })
+
         for idx, ws_name in enumerate(ws_list):
             meta = ws_meta.get(ws_name, {})
             mark = meta.get("mark")
             vtype = map_mark_to_visual(mark)
-            row_fields = extract_fields(meta.get("rows", ""))
-            col_fields = extract_fields(meta.get("cols", ""))
+            category, value = choose_category_value(meta)
 
-            # choose category/value fields
-            category = (row_fields + col_fields + ["Order Month"])[0]
-            value = "Sales"
+            # map charts on geo fields
+            if category in ("City", "State/Province") and vtype in ("tableEx", "map"):
+                vtype = "map"
+
             vid = hashlib.sha1(f"{dash_name}:{ws_name}".encode("utf-8")).hexdigest()[:16]
             x = 20 + (idx % 2) * 620
             y = 60 + (idx // 2) * 300
 
+            query_state = {
+                "Category": {"projections": [{
+                    "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": category}},
+                    "queryRef": f"Orders.{category}",
+                    "nativeQueryRef": category,
+                    "active": True
+                }]},
+                "Y": {"projections": [{
+                    "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": value}}, "Function": 0}},
+                    "queryRef": f"Sum(Orders.{value})",
+                    "nativeQueryRef": f"Sum of {value}"
+                }]}
+            }
+
+            # map uses Location/Size
+            if vtype == "map":
+                query_state = {
+                    "Location": {"projections": [{
+                        "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": category}},
+                        "queryRef": f"Orders.{category}",
+                        "nativeQueryRef": category,
+                        "active": True
+                    }]},
+                    "Size": {"projections": [{
+                        "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": value}}, "Function": 0}},
+                        "queryRef": f"Sum(Orders.{value})",
+                        "nativeQueryRef": f"Sum of {value}"
+                    }]}
+                }
+
             payload = {
                 "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
                 "name": vid,
-                "position": {"x": x, "y": y, "z": idx, "height": 260, "width": 600, "tabOrder": idx},
+                "position": {"x": x, "y": y, "z": idx + 1, "height": 260, "width": 600, "tabOrder": idx + 1},
                 "visual": {
                     "visualType": vtype,
-                    "query": {
-                        "queryState": {
-                            "Category": {"projections": [{
-                                "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": category}},
-                                "queryRef": f"Orders.{category}",
-                                "nativeQueryRef": category
-                            }]},
-                            "Y": {"projections": [{
-                                "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": value}}, "Function": 0}},
-                                "queryRef": f"Sum(Orders.{value})",
-                                "nativeQueryRef": f"Sum of {value}"
-                            }]}
-                        }
-                    },
+                    "query": {"queryState": query_state},
                     "drillFilterOtherVisuals": True,
                     "autoSelectVisualType": True,
                     "objects": {"title": [{"properties": {"text": {"expr": {"Literal": {"Value": f"'{ws_name}'"}}}, "show": {"expr": {"Literal": {"Value": "true"}}}}}]}

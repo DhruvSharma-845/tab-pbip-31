@@ -4,10 +4,10 @@
   "position": {
     "x": 20,
     "y": 360,
-    "z": 2,
+    "z": 3,
     "height": 260,
     "width": 600,
-    "tabOrder": 2
+    "tabOrder": 3
   },
   "visual": {
     "visualType": "tableEx",
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Orders.Region",
-              "nativeQueryRef": "Region"
+              "nativeQueryRef": "Region",
+              "active": true
             }
           ]
         },
