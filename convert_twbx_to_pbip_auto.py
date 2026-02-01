@@ -136,6 +136,20 @@ def parse_dashboard_filters(root):
     return dashboards
 
 
+def parse_worksheet_primary_tables(root, ds_caption):
+    ws_tables = {}
+    for ws in root.findall(".//worksheet"):
+        ws_name = ws.get("name")
+        if not ws_name:
+            continue
+        ds = ws.find(".//view/datasources/datasource")
+        if ds is not None:
+            ds_name = ds.get("name")
+            if ds_name:
+                ws_tables[ws_name] = safe_name(ds_caption.get(ds_name, ds_name))
+    return ws_tables
+
+
 def parse_dashboard_worksheet_zones(root, worksheet_names):
     dashboards = defaultdict(dict)
     for d in root.findall(".//dashboard"):
@@ -379,6 +393,12 @@ def choose_table_for_any(col_meta, fields):
     return "Orders"
 
 
+def resolve_table_for_field(col_meta, field, preferred_table=None):
+    if preferred_table and field in col_meta.get(preferred_table, {}):
+        return preferred_table
+    return choose_table_for_field(col_meta, field)
+
+
 def choose_series(fields):
     for f in fields:
         if f in ("Segment", "Category", "Region"):
@@ -581,6 +601,7 @@ def main():
     dash_filters = parse_dashboard_filters(root)
     dash_worksheet_zones = parse_dashboard_worksheet_zones(root, worksheet_names)
     dash_root_sizes = parse_dashboard_root_sizes(root)
+    ws_primary_tables = parse_worksheet_primary_tables(root, ds_caption)
     calc_meta = parse_calculations(root)
     calc_captions = {}
     for ws_name, calcs in calc_meta.items():
@@ -1005,9 +1026,12 @@ def main():
         filter_y = 45
         filter_height = 60
         max_filter_bottom = 0
+        default_ws = ws_list[0] if ws_list else None
         for fidx, flt in enumerate(filters):
             field = flt["field"]
-            table = choose_table_for_field(col_meta, field)
+            preferred_ws = flt.get("worksheet") or default_ws
+            preferred_table = ws_primary_tables.get(preferred_ws) if preferred_ws else None
+            table = resolve_table_for_field(col_meta, field, preferred_table)
             rect = scale_rect(flt, root_size, page_size) if flt.get("w") else None
             if rect:
                 x = rect["x"]
@@ -1054,7 +1078,8 @@ def main():
                 row_fields = [f for f in extract_fields(meta.get("rows", "")) if f not in ("Measure Names", "Multiple Values")]
                 measure_fields = ws_measure_names.get(ws_name, [])
                 table_fields = dedupe_preserve(row_fields + measure_fields)
-                table = choose_table_for_any(col_meta, table_fields)
+                preferred_table = ws_primary_tables.get(ws_name)
+                table = preferred_table or choose_table_for_any(col_meta, table_fields)
                 column_names = set(col_meta.get(table, {}).keys())
                 extra_columns = set(order_calc_columns or [])
                 measure_overrides = {"Profit Ratio"}
@@ -1103,7 +1128,8 @@ def main():
             else:
                 vtype = determine_visual_type(meta, ws_name)
                 category, value = choose_category_value(meta)
-                table = choose_table_for_fields(col_meta, category, value)
+                preferred_table = ws_primary_tables.get(ws_name)
+                table = preferred_table or choose_table_for_fields(col_meta, category, value)
                 fields = extract_fields(meta.get("rows", "")) + extract_fields(meta.get("cols", ""))
                 series = choose_series(fields)
 
