@@ -14,64 +14,7 @@
     "query": {
       "queryState": {
         "Values": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Sample - Superstore"
-                    }
-                  },
-                  "Property": "Region"
-                }
-              },
-              "queryRef": "Sample - Superstore.Region",
-              "nativeQueryRef": "Region"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Sample - Superstore"
-                    }
-                  },
-                  "Property": "Sales"
-                }
-              },
-              "queryRef": "Sample - Superstore.Sales",
-              "nativeQueryRef": "Sales"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Sample - Superstore"
-                    }
-                  },
-                  "Property": "Quantity"
-                }
-              },
-              "queryRef": "Sample - Superstore.Quantity",
-              "nativeQueryRef": "Quantity"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Sample - Superstore"
-                    }
-                  },
-                  "Property": "Profit"
-                }
-              },
-              "queryRef": "Sample - Superstore.Profit",
-              "nativeQueryRef": "Profit"
-            }
-          ]
+          "projections": []
         }
       }
     },

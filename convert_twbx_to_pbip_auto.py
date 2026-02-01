@@ -1165,28 +1165,21 @@ def main():
                 measure_fields = ws_measure_names.get(ws_name, [])
                 table_fields = dedupe_preserve(row_fields + measure_fields)
                 preferred_table = ws_preferred_tables.get(ws_name)
-                table = preferred_table or choose_table_for_any(col_meta, table_fields)
+                primary_table = preferred_table or choose_table_for_any(col_meta, table_fields)
                 extra_columns = set(order_calc_columns or [])
                 measure_overrides = {"Profit Ratio"}
                 projections = []
                 for field in table_fields:
-                    field_table = resolve_table_for_field(col_meta, field, preferred_table, relationships)
-                    if field in col_meta.get(field_table, {}) or field in extra_columns:
+                    if field in col_meta.get(primary_table, {}) or field in extra_columns:
                         projections.append({
-                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": field_table}}, "Property": field}},
-                            "queryRef": f"{field_table}.{field}",
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": primary_table}}, "Property": field}},
+                            "queryRef": f"{primary_table}.{field}",
                             "nativeQueryRef": field
                         })
-                    elif field in measure_overrides:
+                    elif field in measure_overrides and field in col_meta.get(primary_table, {}):
                         projections.append({
-                            "field": {"Measure": {"Expression": {"SourceRef": {"Entity": preferred_table or field_table}}, "Property": field}},
-                            "queryRef": f"{preferred_table or field_table}.{field}",
-                            "nativeQueryRef": field
-                        })
-                    else:
-                        projections.append({
-                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": field_table}}, "Property": field}},
-                            "queryRef": f"{field_table}.{field}",
+                            "field": {"Measure": {"Expression": {"SourceRef": {"Entity": primary_table}}, "Property": field}},
+                            "queryRef": f"{primary_table}.{field}",
                             "nativeQueryRef": field
                         })
                 if scaled_ws_rect:
