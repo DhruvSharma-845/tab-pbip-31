@@ -335,8 +335,9 @@ table 'Metric Lookup (Metric List)'
 		mode: import
 		source =
 			let
-				Source = try Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\\Data\\EXEC KPI SCORECARD - NewDataSource2.twb Files\\Metric Lookup (Metric List).hyper"), null, true)
-					otherwise Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\\EXEC KPI SCORECARD - NewDataSource2.twb Files\\Metric Lookup (Metric List).hyper"), null, true),
+				Source = try Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\tab-pbip-31\ExecutiveKPITest\Data\Data\EXEC KPI SCORECARD - NewDataSource2.twb Files\Metric Lookup (Metric List).hyper"), null, true)
+					otherwise try Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\Data\EXEC KPI SCORECARD - NewDataSource2.twb Files\Metric Lookup (Metric List).hyper"), null, true)
+					otherwise Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\EXEC KPI SCORECARD - NewDataSource2.twb Files\Metric Lookup (Metric List).hyper"), null, true),
 				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
 				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
 				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],

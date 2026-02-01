@@ -212,6 +212,56 @@ Strict schema rules prevent invalid PBIP output:
 - Dashboard zones are mapped to page coordinates, ensuring pixel alignment.
 - Relationships are generated explicitly in model.tmdl to match logical data model behavior.
 
+## Schema Examples: TWB vs PBIP
+### Tableau TWB (XML) excerpt
+```
+<datasource name="ds1" caption="Orders">
+  <column name="[Sales]" datatype="real" role="measure" />
+  <calculation name="[Profit Ratio]" formula="[Profit] / [Sales]" />
+</datasource>
+<worksheet name="Overview">
+  <table>
+    <rows>[Sales]</rows>
+    <cols>[Order Date]</cols>
+    <panes>
+      <pane>
+        <mark class="bar" />
+      </pane>
+    </panes>
+  </table>
+</worksheet>
+```
+
+### Power BI PBIP (TMDL + PBIR) excerpts
+**TMDL table (`tables/Orders.tmdl`):**
+```
+table 'Orders'
+  column 'Sales'
+    dataType: double
+    summarizeBy: sum
+    sourceColumn: Sales
+  measure 'Profit Ratio' = DIVIDE(SUM('Orders'[Profit]), SUM('Orders'[Sales]))
+    formatString: "0.0%"
+```
+
+**PBIR visual (`visuals/<visualId>/visual.json`):**
+```
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "sales_by_date",
+  "position": { "x": 40, "y": 80, "width": 520, "height": 320, "z": 0 },
+  "visual": {
+    "visualType": "columnChart",
+    "query": {
+      "queryState": {
+        "Values": { "projections": [ { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Orders" } }, "Property": "Total Sales" } } } ] },
+        "Category": { "projections": [ { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "Orders" } }, "Property": "Order Date" } } } ] }
+      }
+    }
+  }
+}
+```
+
 ## Folder Output (PBIP)
 ```
 <Project>.pbip
