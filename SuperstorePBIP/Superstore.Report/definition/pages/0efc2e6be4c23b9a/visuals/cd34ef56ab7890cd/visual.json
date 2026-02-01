@@ -54,5 +54,42 @@
     },
     "drillFilterOtherVisuals": true,
     "autoSelectVisualType": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "map_location_filter",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "State/Province"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "map_profit_filter",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Orders"
+                  }
+                },
+                "Property": "Profit"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }
