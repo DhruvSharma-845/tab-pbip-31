@@ -53,7 +53,29 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true
+    "autoSelectVisualType": true,
+    "objects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Profit Ratio by City'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

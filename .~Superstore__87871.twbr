@@ -3756,7 +3756,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
             </groupfilter>
           </filter>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Action (State/Province)]'>
-            <groupfilter function='level-members' level='[State/Province]' user:ui-action-filter='[Action1]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+            <groupfilter function='member' level='[State/Province]' member='&quot;Manitoba&quot;' user:ui-action-filter='[Action1]' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
           </filter>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Calculation_9060122104947471:nk]' filter-group='6'>
             <groupfilter function='union' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate'>
@@ -3914,7 +3914,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
             </groupfilter>
           </filter>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Action (State/Province)]'>
-            <groupfilter function='level-members' level='[State/Province]' user:ui-action-filter='[Action1]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+            <groupfilter function='member' level='[State/Province]' member='&quot;Manitoba&quot;' user:ui-action-filter='[Action1]' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
           </filter>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Calculation_9060122104947471:nk]' filter-group='6'>
             <groupfilter function='union' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate'>
@@ -4336,8 +4336,8 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
           </datasource-dependencies>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Tooltip (Country/Region,State/Province)]'>
             <groupfilter function='crossjoin' user:ui-action-filter='[Action - Tooltip: Profit Ratio by City]' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate'>
-              <groupfilter function='member' level='[Country/Region]' member='&quot;United States&quot;' />
-              <groupfilter function='member' level='[State/Province]' member='&quot;Texas&quot;' />
+              <groupfilter function='member' level='[Country/Region]' member='&quot;Canada&quot;' />
+              <groupfilter function='member' level='[State/Province]' member='&quot;Manitoba&quot;' />
             </groupfilter>
           </filter>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Tooltip (State/Province)]'>
@@ -4517,7 +4517,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
             </groupfilter>
           </filter>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Action (State/Province)]'>
-            <groupfilter function='level-members' level='[State/Province]' user:ui-action-filter='[Action1]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+            <groupfilter function='member' level='[State/Province]' member='&quot;Manitoba&quot;' user:ui-action-filter='[Action1]' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
           </filter>
           <filter class='quantitative' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Order Date:qk]' filter-group='8' included-values='in-range'>
             <min>#2022-01-03#</min>

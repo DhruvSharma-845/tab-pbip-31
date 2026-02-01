@@ -34,6 +34,28 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true
+    "autoSelectVisualType": true,
+    "objects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sales per Customer'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

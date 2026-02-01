@@ -112,7 +112,29 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true
+    "autoSelectVisualType": true,
+    "objects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Monthly Sales by Segment - States/Provinces: All'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
