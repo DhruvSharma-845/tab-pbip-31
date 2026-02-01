@@ -18,6 +18,7 @@ python3 convert_twbx_to_pbip_auto.py \
   --windows-data-root "C:\\Users\\Name\\Downloads\\Project\\SuperstorePBIP\\Data\\Superstore"
 """
 import argparse
+import uuid
 import hashlib
 import json
 import os
@@ -104,7 +105,7 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
         tname = quote(table)
         out = []
         out.append(f"table {tname}")
-        out.append("\tlineageTag: 00000000-0000-0000-0000-000000000000")
+        out.append(f\"\tlineageTag: {uuid.uuid4()}\")
         out.append("")
         for col, dtype in cols.items():
             cname = quote(col)
@@ -113,7 +114,7 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
             out.append(f"\t\tdataType: {map_type(dtype)}")
             out.append(f"\t\tsummarizeBy: {summarize}")
             out.append(f"\t\tsourceColumn: {col}")
-            out.append(f"\t\tlineageTag: 00000000-0000-0000-0000-000000000001")
+            out.append(f\"\t\tlineageTag: {uuid.uuid4()}\")
             out.append("")
 
         # Add derived columns for monthly/legend if Orders table exists
@@ -122,19 +123,19 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
             out.append("\t\tdataType: dateTime")
             out.append("\t\tsummarizeBy: none")
             out.append("\t\tsourceColumn: Order Month")
-            out.append("\t\tlineageTag: 00000000-0000-0000-0000-000000000002")
+            out.append(f\"\t\tlineageTag: {uuid.uuid4()}\")
             out.append("")
             out.append("\tcolumn 'Order Year'")
             out.append("\t\tdataType: int64")
             out.append("\t\tsummarizeBy: none")
             out.append("\t\tsourceColumn: Order Year")
-            out.append("\t\tlineageTag: 00000000-0000-0000-0000-000000000004")
+            out.append(f\"\t\tlineageTag: {uuid.uuid4()}\")
             out.append("")
             out.append("\tcolumn 'Profitability'")
             out.append("\t\tdataType: string")
             out.append("\t\tsummarizeBy: none")
             out.append("\t\tsourceColumn: Profitability")
-            out.append("\t\tlineageTag: 00000000-0000-0000-0000-000000000003")
+            out.append(f\"\t\tlineageTag: {uuid.uuid4()}\")
             out.append("")
             # Measures
             out.append("\tmeasure 'Total Sales' = SUM('Orders'[Sales])")

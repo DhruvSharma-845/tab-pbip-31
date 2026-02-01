@@ -1,203 +1,203 @@
 table Orders
-	lineageTag: 3a9fffdb-d2f7-42e8-a770-1aae2c2ba02e
+	lineageTag: a4242067-c9a5-4e08-a523-6237dc6d3627
 
 	column Category
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Category
-		lineageTag: 89ac0175-2577-4062-a173-0cc72f79a067
+	lineageTag: d7125b24-d383-41b2-91d3-857edefd55fa
 
 	column 'Order Date'
 		dataType: dateTime
 		summarizeBy: none
 		sourceColumn: Order Date
-		lineageTag: a368dae3-dcd6-4544-a3ee-6ad724afa6ce
+	lineageTag: 5eb7a2c4-e433-4558-87c3-5110a6228803
 
 	column Segment
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Segment
-		lineageTag: 297028b3-4d95-4dd9-a4d0-7aabc5ca9ae4
+	lineageTag: 9863743f-e225-441e-b139-577e33192547
 
 	column Region
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Region
-		lineageTag: e6b6b1bb-0ad0-4389-a21d-6a1849168416
+	lineageTag: 87366c7e-afef-4aa7-9205-32274e126dc0
 
 	column 'State/Province'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: State/Province
-		lineageTag: 96022f2f-7dbf-4683-9d99-f6f4a3f37930
+	lineageTag: 078d285b-d15f-4e2d-b607-b62b4ce1733a
 
 	column Calculation_0831103151444568
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Calculation_0831103151444568
-		lineageTag: 87f9c661-bd8a-4ee6-b309-288bb04666b5
+	lineageTag: da4b0379-b7be-4e1b-b2b3-8897eff40513
 
 	column Calculation_6861103170623145
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Calculation_6861103170623145
-		lineageTag: 9c071cf3-a65b-4791-9a35-c165d5f0291c
+	lineageTag: df6b4d3c-72ba-4632-af29-4c33aad27377
 
 	column Calculation_9321103144526191
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_9321103144526191
-		lineageTag: 86d72f92-fc7f-4408-978e-3f12303ffd62
+	lineageTag: 97f4da37-2de6-45ac-bcfe-8b2b78a9be06
 
 	column Calculation_9921103144103743
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_9921103144103743
-		lineageTag: 3d275171-140e-44c8-809c-e01dfede8966
+	lineageTag: 2e7cad04-6c21-4ed3-9e8c-f552fc1091be
 
 	column 'Customer Name'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Customer Name
-		lineageTag: 32c99e78-4937-4d08-bec6-b1c351fad08b
+	lineageTag: dc7f078d-2b04-4521-974a-875895deedf9
 
 	column Profit
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Profit
-		lineageTag: 0471c07a-1176-48d2-a28b-8b8e1418385c
+	lineageTag: d9ac71b9-6c98-4b74-bd32-d98f59691c1c
 
 	column Quantity
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Quantity
-		lineageTag: 48424ae9-d114-4f22-9e47-be0a5666d344
+	lineageTag: ce903df4-875a-46c4-a0f5-ab8b1ea24b2a
 
 	column Sales
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Sales
-		lineageTag: b0fece9b-f5b1-442e-a185-ac89d8a6fa4d
+	lineageTag: f3a2fb40-3986-4a55-9c03-f08ea8908911
 
 	column 'Ship Date'
 		dataType: dateTime
 		summarizeBy: none
 		sourceColumn: Ship Date
-		lineageTag: bc2f94c0-02f2-46e7-b02a-66d6944ddc53
+	lineageTag: 47524377-7d00-4c8f-9a64-495b9bb28497
 
 	column 'Ship Mode'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Ship Mode
-		lineageTag: f3e2b713-6afc-4c0e-9a62-395b306f694e
+	lineageTag: 258c864a-a88c-4e68-9382-23ffaecebb62
 
 	column Calculation_6401103171259723
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Calculation_6401103171259723
-		lineageTag: b21e6039-a0a0-4ab3-bf62-c09b0020c1af
+	lineageTag: 7204310c-e9af-44fc-9b6b-b61a069e1cf8
 
 	column 'Order ID'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Order ID
-		lineageTag: 55f2303f-7257-42a5-83ed-3a169604b8a8
+	lineageTag: e6cfda1d-042e-41da-95a1-be1e57e3a288
 
 	column 'Product Name'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Product Name
-		lineageTag: deb36621-7673-49e9-a3cb-9541336491bc
+	lineageTag: 72f88a40-3e50-44dc-a895-4d9c7b417c68
 
 	column Calculation_5144658905056067585
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_5144658905056067585
-		lineageTag: d1a3339b-3e8e-4331-a495-eaf7d50c47f9
+	lineageTag: 63537e2b-6846-447a-b30b-b5e2301a05fd
 
 	column Calculation_9951107165644870
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Calculation_9951107165644870
-		lineageTag: a80f6841-414e-4952-b382-e694ea833cd2
+	lineageTag: e149ff67-8639-4c24-8b3f-c7c1d5c7fa4e
 
 	column Calculation_9060122104947471
 		dataType: boolean
 		summarizeBy: none
 		sourceColumn: Calculation_9060122104947471
-		lineageTag: aa9fa49c-ec01-4738-92d2-beebbb5c4ffb
+	lineageTag: f2594792-ff14-4e62-bd8d-dc0a12810173
 
 	column City
 		dataType: string
 		summarizeBy: none
 		sourceColumn: City
-		lineageTag: 81e3024f-7d9c-4256-a9f5-19a996a4d6ea
+	lineageTag: 30faebe6-c92e-44a1-8ecd-3eae3133d06f
 
 	column Discount
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Discount
-		lineageTag: 87c9a3b1-2246-41c5-a79e-02713136f802
+	lineageTag: c1a3543a-0be0-4b23-948b-3a16c601c8db
 
 	column 'Postal Code'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Postal Code
-		lineageTag: f5406e9b-b7fd-4bed-b677-736a076083a1
+	lineageTag: 4583b409-e070-446b-afba-cb5056e56403
 
 	column 'Sub-Category'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Sub-Category
-		lineageTag: 52f03e58-f74e-4219-92fd-27fe038bcc28
+	lineageTag: 027b3e3b-12e2-460b-bfde-655cdda49d82
 
 	column 'Country/Region'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Country/Region
-		lineageTag: 1f3f9fbd-e73e-4a5c-b518-7471ee9ebbc0
+	lineageTag: 767b4c32-a054-44ec-ac29-8ec88f61e974
 
 	column '__tableau_internal_object_id__].[Orders_6D2EF74F348B46BDA976A7AEEA6FB5C9'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: __tableau_internal_object_id__].[Orders_6D2EF74F348B46BDA976A7AEEA6FB5C9
-		lineageTag: 73c222a8-0ebc-445c-868a-63eb91cf511b
+	lineageTag: 91553ea4-ec96-464b-8f6b-a3d8d5e55823
 
 	column Calculation_5421109230915137
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_5421109230915137
-		lineageTag: 8f72f983-e987-482d-8e59-6d88e8bd652b
+	lineageTag: 9d567a72-30f0-4140-8a2f-587003ee8d86
 
 	column 'Sales est (copy)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Sales est (copy)
-		lineageTag: 80a4622e-25de-456c-b277-688ef221eebf
+	lineageTag: e06e5fc6-5084-4196-9337-46ccad49e34b
 
 	column 'Sales per Customer (copy)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Sales per Customer (copy)
-		lineageTag: 0e8f0ee0-cc25-4141-aa0f-4519c731642a
+	lineageTag: 8779caeb-62f4-4ffa-8109-900a293e662a
 
 	column Calculation_9330126204734562
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_9330126204734562
-		lineageTag: 2253da9f-8eb3-4b5d-a099-238cebe990cf
+	lineageTag: a9f5f689-9311-4746-9058-127320e0f747
 
 	column 'Order Month'
 		dataType: dateTime
 		summarizeBy: none
 		sourceColumn: Order Month
-		lineageTag: 00000000-0000-0000-0000-000000000002
+	lineageTag: 51188087-2b11-44d4-91aa-da1e7349a10b
 
 	column 'Profitability'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Profitability
-		lineageTag: 00000000-0000-0000-0000-000000000003
+	lineageTag: 69b0d1c5-d4ae-476a-8829-bba2624d1b33
 
 	measure 'Orders Sum of Sales' = SUM('Orders'[Sales])
 	measure 'Total Sales' = SUM('Orders'[Sales])
