@@ -335,9 +335,9 @@ table 'Metric Lookup (Metric List)'
 		mode: import
 		source =
 			let
-				Direct1 = "C:\Users\dhrsharm\Downloads\tab-pbip-31\ExecutiveKPITest\Data\HyperExports\Metric Lookup (Metric List).csv",
-				Direct2 = "C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\HyperExports\Metric Lookup (Metric List).csv",
-				Direct3 = "C:\Users\dhrsharm\Downloads\tab-pbip-31-code-new-visuals\ExecutiveKPITest\Data\HyperExports\Metric Lookup (Metric List).csv",
+				Direct1 = "C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\ExecutiveKPITest\Data\HyperExports\Metric Lookup (Metric List).csv",
+				Direct2 = "C:\Users\dhrsharm\Downloads\tab-pbip-31\ExecutiveKPITest\Data\HyperExports\Metric Lookup (Metric List).csv",
+				Direct3 = "C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\HyperExports\Metric Lookup (Metric List).csv",
 				Source = try Csv.Document(File.Contents(Direct1), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None])
 					otherwise try Csv.Document(File.Contents(Direct2), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None])
 					otherwise try Csv.Document(File.Contents(Direct3), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None])
