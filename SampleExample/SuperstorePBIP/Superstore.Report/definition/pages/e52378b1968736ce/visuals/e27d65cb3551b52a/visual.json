@@ -1,0 +1,75 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "e27d65cb3551b52a",
+  "position": {
+    "x": 0,
+    "y": 535,
+    "z": 2,
+    "height": 200,
+    "width": 1280,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Commission"
+                    }
+                  },
+                  "Property": "Sales Person"
+                }
+              },
+              "queryRef": "Sales Commission.Sales Person",
+              "nativeQueryRef": "Sales Person"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Commission"
+                    }
+                  },
+                  "Property": "Commission (Variable)"
+                }
+              },
+              "queryRef": "Sales Commission.Commission (Variable)",
+              "nativeQueryRef": "Commission (Variable)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": true,
+    "objects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'CommissionProjection'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

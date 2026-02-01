@@ -1,0 +1,79 @@
+table 'Sales Commission'
+	lineageTag: 118a3365-83cd-42d6-8c96-4d96be64e96b
+
+	column 'Achievement (copy)'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Achievement (copy)
+		lineageTag: 1b1c9055-8e7a-4513-aa18-d8b470f0fdf0
+
+	column 'Achievement (variable) (copy)'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Achievement (variable) (copy)
+		lineageTag: 388aac6c-c8da-4316-8bba-7dad4852e843
+
+	column 'Base (Variable)'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Base (Variable)
+		lineageTag: bcb7ca65-1821-4b2d-9cd2-df8b6da9b399
+
+	column Calculation_0440925131659539
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_0440925131659539
+		lineageTag: 90426342-54a1-4be3-990c-4f79098eadbc
+
+	column Calculation_4120925132203686
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_4120925132203686
+		lineageTag: c62f27cd-ce77-4255-b073-aaca091b163d
+
+	column Calculation_8140925133029303
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_8140925133029303
+		lineageTag: fdf0dffb-cd7a-4f8d-9069-3ae764a50a04
+
+	column 'Commission (Variable)'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Commission (Variable)
+		lineageTag: de1d774e-919a-4ee0-9db0-112caf45ff8d
+
+	column 'OTE (Variable)'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: OTE (Variable)
+		lineageTag: 6a80c02f-64f4-450d-92ff-fd5f9d1910cf
+
+	column 'Sales Person'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Sales Person
+		lineageTag: 62897002-d9d7-4e23-8629-ddb651dd5d40
+
+	column Sales
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Sales
+		lineageTag: 3450764a-166d-4191-bc80-9605431b4534
+
+	column 'Total Compensation'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Total Compensation
+		lineageTag: 4ceef6b1-ca05-4d3f-ba39-694f16148c19
+
+	partition FullData = m
+		mode: import
+		source =
+			let
+				Source = Csv.Document(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\\Sales Commission.csv"), [Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+			in
+				Promoted
+	annotation PBI_ResultType = Table
+

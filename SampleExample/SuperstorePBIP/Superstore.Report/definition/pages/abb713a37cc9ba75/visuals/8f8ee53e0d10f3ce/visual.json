@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "8f8ee53e0d10f3ce",
+  "position": {
+    "x": 1139,
+    "y": 36,
+    "z": 12,
+    "height": 51,
+    "width": 135,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Segment"
+                }
+              },
+              "queryRef": "Sales Target.Segment",
+              "nativeQueryRef": "Segment",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": true
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "profit_ratio_city",
+  "position": {
+    "x": 20,
+    "y": 130,
+    "z": 1,
+    "height": 260,
+    "width": 1240,
+    "tabOrder": 10
+  },
+  "visual": {
+    "visualType": "map",
+    "query": {
+      "queryState": {
+        "Location": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "City"
+                }
+              },
+              "queryRef": "Orders.City",
+              "nativeQueryRef": "City",
+              "active": true
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Profit Ratio"
+                }
+              },
+              "queryRef": "Orders.Profit Ratio",
+              "nativeQueryRef": "Profit Ratio"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": true
+  }
+}

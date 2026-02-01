@@ -1,0 +1,54 @@
+table Parameters
+	lineageTag: 1c022b05-8739-4fd5-8b70-483988f6d0af
+
+	column 'Parameter 1'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Parameter 1
+		lineageTag: 6201b486-190e-4317-86f4-cb528047315f
+
+	column 'Parameter 2'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Parameter 2
+		lineageTag: 894d4997-78f5-450f-b7d4-2fa6e284d120
+
+	column 'Base Salary'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Base Salary
+		lineageTag: 03c10a07-3694-436c-bfcb-6984a0defc24
+
+	column 'Commission Rate'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Commission Rate
+		lineageTag: 80d58696-bba2-4751-ac7c-c1e3aa89b9ba
+
+	column 'New Quota'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: New Quota
+		lineageTag: ec66382a-1a3d-4f76-8426-5571c3ebd6ec
+
+	column 'Parameter 1 1'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Parameter 1 1
+		lineageTag: 7886ba30-c903-428c-967a-5ba1a0bc2511
+
+	partition FullData = m
+		mode: import
+		source =
+			let
+				Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\\Sample - Superstore.xls"), null, true),
+				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
+				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
+				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
+				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
+				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
+				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}})
+			in
+				CleanNumbers
+	annotation PBI_ResultType = Table
+

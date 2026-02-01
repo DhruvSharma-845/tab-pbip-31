@@ -1,0 +1,201 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "b3b51b161d8222d9",
+  "position": {
+    "x": 6,
+    "y": 107,
+    "z": 1,
+    "height": 638,
+    "width": 1268,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Order ID"
+                }
+              },
+              "queryRef": "Sample - Superstore.Order ID",
+              "nativeQueryRef": "Order ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Customer Name"
+                }
+              },
+              "queryRef": "Sample - Superstore.Customer Name",
+              "nativeQueryRef": "Customer Name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Order Date"
+                }
+              },
+              "queryRef": "Sales Target.Order Date",
+              "nativeQueryRef": "Order Date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Ship Date"
+                }
+              },
+              "queryRef": "Sample - Superstore.Ship Date",
+              "nativeQueryRef": "Ship Date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Ship Mode"
+                }
+              },
+              "queryRef": "Sample - Superstore.Ship Mode",
+              "nativeQueryRef": "Ship Mode"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Sales"
+                }
+              },
+              "queryRef": "Sample - Superstore.Sales",
+              "nativeQueryRef": "Sales"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Quantity"
+                }
+              },
+              "queryRef": "Sample - Superstore.Quantity",
+              "nativeQueryRef": "Quantity"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Discount"
+                }
+              },
+              "queryRef": "Sample - Superstore.Discount",
+              "nativeQueryRef": "Discount"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Profit"
+                }
+              },
+              "queryRef": "Sample - Superstore.Profit",
+              "nativeQueryRef": "Profit"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Days to Ship Scheduled"
+                }
+              },
+              "queryRef": "Orders.Days to Ship Scheduled",
+              "nativeQueryRef": "Days to Ship Scheduled"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Days to Ship Actual"
+                }
+              },
+              "queryRef": "Orders.Days to Ship Actual",
+              "nativeQueryRef": "Days to Ship Actual"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": true,
+    "objects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Product Detail Sheet'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

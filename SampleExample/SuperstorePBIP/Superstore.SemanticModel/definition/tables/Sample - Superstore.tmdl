@@ -1,0 +1,204 @@
+table 'Sample - Superstore'
+	lineageTag: bcf22cb2-f284-4f97-bf23-d8e41661a879
+
+	column Category
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Category
+		lineageTag: 4fa98eab-e3a9-4cbe-a370-f44de65481ab
+
+	column 'Order Date'
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: Order Date
+		lineageTag: 26ac342d-a05a-44ca-8c21-870c75221358
+
+	column Segment
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Segment
+		lineageTag: ac5f524e-dafe-4520-a056-2a066ded5b30
+
+	column Region
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Region
+		lineageTag: 382c159d-4b3e-49e8-a27e-93e455145df1
+
+	column 'State/Province'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: State/Province
+		lineageTag: fb85ef5e-5d0f-4006-85b2-a0e38f672712
+
+	column Calculation_0831103151444568
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Calculation_0831103151444568
+		lineageTag: be196f42-6672-4701-b664-60b72f72559f
+
+	column Calculation_6861103170623145
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Calculation_6861103170623145
+		lineageTag: 85f3267c-9e4d-4c3f-a4f9-86b87175766d
+
+	column Calculation_9321103144526191
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_9321103144526191
+		lineageTag: 8b01f023-b393-4b86-8234-39cbb469b9ef
+
+	column Calculation_9921103144103743
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_9921103144103743
+		lineageTag: 9a6c95ce-edd1-4830-b1e1-4a85ed457918
+
+	column 'Customer Name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Customer Name
+		lineageTag: 36a9bf40-0a43-4231-9f3d-23906f1ff8bd
+
+	column Profit
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Profit
+		lineageTag: d64c42ab-4645-45c7-9bda-51f8e82246ab
+
+	column Quantity
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Quantity
+		lineageTag: fdeba8e5-b9ee-4edd-830e-c6412529ff93
+
+	column Sales
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Sales
+		lineageTag: edbbe669-febc-4226-b1c1-7c0306228fd1
+
+	column 'Ship Date'
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: Ship Date
+		lineageTag: d4771a04-db50-4056-9261-aa5247ce7ec9
+
+	column 'Ship Mode'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Ship Mode
+		lineageTag: cb472610-c72a-4ef1-bf16-152de798876e
+
+	column Calculation_6401103171259723
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Calculation_6401103171259723
+		lineageTag: 3b15370b-fe6d-4e50-aff5-4f23876e871c
+
+	column 'Order ID'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Order ID
+		lineageTag: b2094927-48b7-473e-90a6-4e510d3d4fa4
+
+	column 'Product Name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Product Name
+		lineageTag: a5ca97eb-2189-471e-ade0-bb17109ce1a3
+
+	column Calculation_5144658905056067585
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_5144658905056067585
+		lineageTag: c0c9d08b-c13a-4706-af83-8f492ef8ba13
+
+	column Calculation_9951107165644870
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Calculation_9951107165644870
+		lineageTag: 2f7db9db-d5d0-4efc-aa7f-4514e31b20dd
+
+	column Calculation_9060122104947471
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Calculation_9060122104947471
+		lineageTag: 5ed5d9ef-8411-4852-b287-81e7bb7adb34
+
+	column City
+		dataType: string
+		summarizeBy: none
+		sourceColumn: City
+		lineageTag: 66f84e74-0350-4be1-8c9e-83f1fdcd5bf6
+
+	column Discount
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Discount
+		lineageTag: cada27db-b584-41b9-803d-00b5a3438125
+
+	column 'Postal Code'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Postal Code
+		lineageTag: 893fb4cc-12bf-44bd-854f-eaa37b969974
+
+	column 'Sub-Category'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Sub-Category
+		lineageTag: 15739723-7626-4ad2-87e2-c5f56e0c276c
+
+	column 'Country/Region'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Country/Region
+		lineageTag: f85307d3-a8e5-433f-bea4-dd6c95a97e1f
+
+	column '__tableau_internal_object_id__].[Orders_6D2EF74F348B46BDA976A7AEEA6FB5C9'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: __tableau_internal_object_id__].[Orders_6D2EF74F348B46BDA976A7AEEA6FB5C9
+		lineageTag: e576443b-b90c-4640-a29e-cf142d320dd7
+
+	column Calculation_5421109230915137
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_5421109230915137
+		lineageTag: 671f0082-d52c-44fe-a02e-24236b95f809
+
+	column 'Sales est (copy)'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Sales est (copy)
+		lineageTag: eee981a3-01e5-4ce6-9e51-f65d3712c97d
+
+	column 'Sales per Customer (copy)'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Sales per Customer (copy)
+		lineageTag: bd88b40a-9612-45a6-9818-16566718772a
+
+	column Calculation_9330126204734562
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_9330126204734562
+		lineageTag: 998f8d8c-6d65-4886-b0a3-48e622f04894
+
+	partition FullData = m
+		mode: import
+		source =
+			let
+				Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\\Sample - Superstore.xls"), null, true),
+				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
+				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
+				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
+				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
+				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
+				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}})
+			in
+				CleanNumbers
+	annotation PBI_ResultType = Table
+
