@@ -97,6 +97,65 @@ def parse_columns(root, ds_caption):
     return col_meta
 
 
+def parse_worksheet_meta(root):
+    meta = {}
+    for ws in root.findall(".//worksheet"):
+        name = ws.get("name")
+        rows = (ws.findtext("table/rows") or "").strip()
+        cols = (ws.findtext("table/cols") or "").strip()
+        mark = None
+        pane = ws.find("table/panes/pane")
+        if pane is not None and pane.find("mark") is not None:
+            mark = pane.find("mark").get("class")
+        meta[name] = {"rows": rows, "cols": cols, "mark": mark}
+    return meta
+
+
+def parse_dashboard_worksheets(root):
+    dashboards = {}
+    for d in root.findall(".//dashboard"):
+        dname = d.get("name")
+        worksheets = []
+        for z in d.findall(".//zone"):
+            wname = z.get("name") or z.get("worksheet")
+            if wname:
+                worksheets.append(wname)
+        dashboards[dname] = list(dict.fromkeys(worksheets))
+    return dashboards
+
+
+def map_mark_to_visual(mark: str) -> str:
+    if mark in ("Bar",):
+        return "columnChart"
+    if mark in ("Line",):
+        return "lineChart"
+    if mark in ("Area",):
+        return "areaChart"
+    if mark in ("Pie",):
+        return "pieChart"
+    if mark in ("Square", "Circle"):
+        return "scatterChart"
+    if mark in ("Multipolygon",):
+        return "map"
+    return "tableEx"
+
+
+def extract_fields(expr: str):
+    # Extract Tableau field references like [none:Field:nk]
+    fields = []
+    if not expr:
+        return fields
+    for token in re.findall(r"\[([^\]]+)\]", expr):
+        # token looks like federated.ds].[none:Field:nk
+        if "none:" in token or "sum:" in token or "avg:" in token or "cnt:" in token:
+            parts = token.split(":")
+            if len(parts) >= 2:
+                field = parts[1]
+                if field not in ("Measure Names", "Multiple Values"):
+                    fields.append(field)
+    return fields
+
+
 def build_table_files(tables_dir, col_meta, windows_data_root):
     tables_dir = os.path.abspath(tables_dir)
     os.makedirs(tables_dir, exist_ok=True)
@@ -105,7 +164,7 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
         tname = quote(table)
         out = []
         out.append(f"table {tname}")
-        out.append(f\"\tlineageTag: {uuid.uuid4()}\")
+        out.append("\tlineageTag: " + str(uuid.uuid4()))
         out.append("")
         for col, dtype in cols.items():
             cname = quote(col)
@@ -114,7 +173,7 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
             out.append(f"\t\tdataType: {map_type(dtype)}")
             out.append(f"\t\tsummarizeBy: {summarize}")
             out.append(f"\t\tsourceColumn: {col}")
-            out.append(f\"\t\tlineageTag: {uuid.uuid4()}\")
+            out.append("\t\tlineageTag: " + str(uuid.uuid4()))
             out.append("")
 
         # Add derived columns for monthly/legend if Orders table exists
@@ -123,19 +182,19 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
             out.append("\t\tdataType: dateTime")
             out.append("\t\tsummarizeBy: none")
             out.append("\t\tsourceColumn: Order Month")
-            out.append(f\"\t\tlineageTag: {uuid.uuid4()}\")
+            out.append("\t\tlineageTag: " + str(uuid.uuid4()))
             out.append("")
             out.append("\tcolumn 'Order Year'")
             out.append("\t\tdataType: int64")
             out.append("\t\tsummarizeBy: none")
             out.append("\t\tsourceColumn: Order Year")
-            out.append(f\"\t\tlineageTag: {uuid.uuid4()}\")
+            out.append("\t\tlineageTag: " + str(uuid.uuid4()))
             out.append("")
             out.append("\tcolumn 'Profitability'")
             out.append("\t\tdataType: string")
             out.append("\t\tsummarizeBy: none")
             out.append("\t\tsourceColumn: Profitability")
-            out.append(f\"\t\tlineageTag: {uuid.uuid4()}\")
+            out.append("\t\tlineageTag: " + str(uuid.uuid4()))
             out.append("")
             # Measures
             out.append("\tmeasure 'Total Sales' = SUM('Orders'[Sales])")
@@ -226,6 +285,8 @@ def main():
     root = ET.parse(twb_path).getroot()
     ds_caption = parse_datasources(root)
     col_meta = parse_columns(root, ds_caption)
+    ws_meta = parse_worksheet_meta(root)
+    dash_ws = parse_dashboard_worksheets(root)
 
     # Report structure
     pages_dir = os.path.join(out_root, report_name, "definition", "pages")
@@ -553,6 +614,64 @@ def main():
                 "objects": {"title": [{"properties": {"text": {"expr": {"Literal": {"Value": "'Sales and Profit by Product Names'"}}}, "show": {"expr": {"Literal": {"Value": "true"}}}}}]}
             }
         })
+
+    # Generic visuals for remaining pages (best-effort)
+    for dash_name, ws_list in dash_ws.items():
+        if dash_name in ("Overview", "Product"):
+            continue
+        page_id = page_by_name.get(dash_name)
+        if not page_id:
+            continue
+        page_folder = os.path.join(pages_dir, page_id)
+        visuals_dir = os.path.join(page_folder, "visuals")
+        os.makedirs(visuals_dir, exist_ok=True)
+
+        def write_generic(vid, payload):
+            vdir = os.path.join(visuals_dir, vid)
+            os.makedirs(vdir, exist_ok=True)
+            with open(os.path.join(vdir, "visual.json"), "w") as f:
+                json.dump(payload, f, indent=2)
+
+        for idx, ws_name in enumerate(ws_list):
+            meta = ws_meta.get(ws_name, {})
+            mark = meta.get("mark")
+            vtype = map_mark_to_visual(mark)
+            row_fields = extract_fields(meta.get("rows", ""))
+            col_fields = extract_fields(meta.get("cols", ""))
+
+            # choose category/value fields
+            category = (row_fields + col_fields + ["Order Month"])[0]
+            value = "Sales"
+            vid = hashlib.sha1(f"{dash_name}:{ws_name}".encode("utf-8")).hexdigest()[:16]
+            x = 20 + (idx % 2) * 620
+            y = 60 + (idx // 2) * 300
+
+            payload = {
+                "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+                "name": vid,
+                "position": {"x": x, "y": y, "z": idx, "height": 260, "width": 600, "tabOrder": idx},
+                "visual": {
+                    "visualType": vtype,
+                    "query": {
+                        "queryState": {
+                            "Category": {"projections": [{
+                                "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": category}},
+                                "queryRef": f"Orders.{category}",
+                                "nativeQueryRef": category
+                            }]},
+                            "Y": {"projections": [{
+                                "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": value}}, "Function": 0}},
+                                "queryRef": f"Sum(Orders.{value})",
+                                "nativeQueryRef": f"Sum of {value}"
+                            }]}
+                        }
+                    },
+                    "drillFilterOtherVisuals": True,
+                    "autoSelectVisualType": True,
+                    "objects": {"title": [{"properties": {"text": {"expr": {"Literal": {"Value": f"'{ws_name}'"}}}, "show": {"expr": {"Literal": {"Value": "true"}}}}}]}
+                }
+            }
+            write_generic(vid, payload)
 
     # Semantic model files
     model_dir = os.path.join(out_root, model_name, "definition")

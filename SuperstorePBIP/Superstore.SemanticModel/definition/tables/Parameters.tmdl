@@ -1,41 +1,41 @@
 table Parameters
-	lineageTag: 51559ff6-d554-4a90-b96d-194c5f7eee35
+	lineageTag: 1a9a7da8-d807-4616-9394-db3e61036afe
 
 	column 'Parameter 1'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 1
-		lineageTag: ab42bdb1-d600-49f6-9273-1bfeb236a268
+		lineageTag: 00793e33-6279-4d90-8dfc-f5376ae1bfce
 
 	column 'Parameter 2'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 2
-		lineageTag: a9c528ab-4506-4eff-af5b-4f1cd5d3a321
+		lineageTag: 816878e0-4dc2-4998-abeb-af013ccea770
 
 	column 'Base Salary'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Base Salary
-		lineageTag: acc5915b-039a-41c5-ae48-700e4cc262b2
+		lineageTag: 39b84a41-ecd3-452c-8ad8-edbbe4a28349
 
 	column 'Commission Rate'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Commission Rate
-		lineageTag: ebaa4e05-a527-4bed-9b5c-2c91a2be297e
+		lineageTag: c3ea42b9-270d-4e4e-b675-06f361db2950
 
 	column 'New Quota'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: New Quota
-		lineageTag: 1fbc639f-a704-4058-a966-c6769c1d62b7
+		lineageTag: ee7b0e22-f26e-48e9-8f7e-a9fd6b19cfa4
 
 	column 'Parameter 1 1'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Parameter 1 1
-		lineageTag: 01bb562d-1574-41d1-9584-d1dafcc5bab4
+		lineageTag: 846e31c1-b6c5-4fa4-91c2-6844536d5929
 
 	partition FullData = m
 		mode: import
@@ -49,8 +49,9 @@ table Parameters
 				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
 				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}}),
 				AddedMonth = Table.AddColumn(CleanNumbers, "Order Month", each Date.StartOfMonth([Order Date]), type date),
-				AddedProfitability = Table.AddColumn(AddedMonth, "Profitability", each if [Profit] >= 0 then "Profitable" else "Unprofitable", type text)
+				AddedProfitability = Table.AddColumn(AddedMonth, "Profitability", each if [Profit] >= 0 then "Profitable" else "Unprofitable", type text),
+				AddedYear = Table.AddColumn(AddedProfitability, "Order Year", each Date.Year([Order Date]), Int64.Type)
 			in
-				AddedProfitability
+				AddedYear
 	annotation PBI_ResultType = Table
 
