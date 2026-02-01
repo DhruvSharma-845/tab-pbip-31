@@ -3,11 +3,11 @@
   "name": "9c3a1b2d4e5f6078",
   "position": {
     "x": 20,
-    "y": 140,
-    "z": 1,
-    "height": 260,
-    "width": 600,
-    "tabOrder": 1
+    "y": 400,
+    "z": 2,
+    "width": 610,
+    "height": 300,
+    "tabOrder": 20
   },
   "visual": {
     "visualType": "areaChart",

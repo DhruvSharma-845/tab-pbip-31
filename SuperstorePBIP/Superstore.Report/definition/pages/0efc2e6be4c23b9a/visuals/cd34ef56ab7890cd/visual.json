@@ -3,11 +3,11 @@
   "name": "cd34ef56ab7890cd",
   "position": {
     "x": 20,
-    "y": 410,
-    "z": 3,
+    "y": 130,
+    "z": 1,
+    "width": 1240,
     "height": 260,
-    "width": 1220,
-    "tabOrder": 3
+    "tabOrder": 10
   },
   "visual": {
     "visualType": "map",
