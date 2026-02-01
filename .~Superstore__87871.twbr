@@ -6306,7 +6306,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
       </device-preview>
       <simple-id uuid='{3D156B5C-8BC3-47BC-B79E-A1BE50D692DC}' />
     </window>
-    <window class='dashboard' maximized='true' name='Product'>
+    <window class='dashboard' name='Product'>
       <viewpoints>
         <viewpoint name='ProductDetails'>
           <zoom type='entire-view' />
@@ -6315,13 +6315,13 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
           <zoom type='entire-view' />
         </viewpoint>
       </viewpoints>
-      <active id='1' />
+      <active id='8' />
       <device-preview>
         <device is-portrait='false' name='iPhone 6' type='Phone' />
       </device-preview>
       <simple-id uuid='{FEA277C3-7B16-4040-A038-EBB39F245F48}' />
     </window>
-    <window class='dashboard' name='Customers'>
+    <window class='dashboard' maximized='true' name='Customers'>
       <viewpoints>
         <viewpoint name='CustomerOverview'>
           <zoom type='fit-width' />
