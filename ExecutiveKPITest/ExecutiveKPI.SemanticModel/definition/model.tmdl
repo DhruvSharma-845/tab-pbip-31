@@ -1,0 +1,17 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-IN
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Parameters", "Metric Lookup (Metric List)", "ATData+ (Accelerator Data)"]
+ref table Parameters
+ref table 'Metric Lookup (Metric List)'
+ref table 'ATData+ (Accelerator Data)'
+
+ref cultureInfo en-US
+

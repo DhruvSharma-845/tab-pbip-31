@@ -1,0 +1,348 @@
+table 'Metric Lookup (Metric List)'
+	lineageTag: 1f5c2815-ba59-482c-80c8-343fdcea4f08
+
+	column Calculation_571675699479650349
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699479650349
+		lineageTag: 22a6a5b2-5d98-4b1e-b72e-c5fde95fa6c2
+
+	column Calculation_571675699480363056
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Calculation_571675699480363056
+		lineageTag: f3629ed5-e7d6-404f-9850-ba7858396fc3
+
+	column 'Reset (copy)_571675699484540977'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Reset (copy)_571675699484540977
+		lineageTag: 9c2a9013-42c7-4bb4-8c9f-c4015a00c4a7
+
+	column Calculation_1429611422894678023
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Calculation_1429611422894678023
+		lineageTag: c8318245-334e-431a-bba1-78e7347eddec
+
+	column Calculation_1558526964368723970
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Calculation_1558526964368723970
+		lineageTag: 1010a395-d98c-4a83-b2f4-41d19e99f226
+
+	column Calculation_571675699473780736
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Calculation_571675699473780736
+		lineageTag: e7085adf-5483-454a-9261-9cc5870a6572
+
+	column Calculation_571675699474571268
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699474571268
+		lineageTag: ef5de384-a5b9-47af-b8bc-1075c9470e3a
+
+	column Metric
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Metric
+		lineageTag: 8039992c-2e10-4ab0-aa20-359b96b65459
+
+	column Metric_ID
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Metric_ID
+		lineageTag: 5b65be60-5468-4761-8520-3b74b9c55631
+
+	column Pillar
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Pillar
+		lineageTag: d460a319-040a-46f1-8ae1-d1935fa2601c
+
+	column Calculation_1558526964362117120
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Calculation_1558526964362117120
+		lineageTag: 9c9eef40-b17a-4619-8e90-72d50a59d640
+
+	column Calculation_571675699476213771
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699476213771
+		lineageTag: 30e9fc7e-ed19-4aed-836e-96f3f5f363e6
+
+	column 'M1Title (copy)_78531536883646465'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: M1Title (copy)_78531536883646465
+		lineageTag: 36b45e65-46a0-4a21-9586-e7b7a981015b
+
+	column Calculation_571675699476455437
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699476455437
+		lineageTag: 6daf2d10-485b-46aa-a77f-656c5216283d
+
+	column 'P1M2Title (copy)_78531536884060162'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M2Title (copy)_78531536884060162
+		lineageTag: 16cc98fe-79da-48d3-aae4-61bbc2c0f56f
+
+	column Calculation_571675699476590607
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699476590607
+		lineageTag: b63cb1c2-75fb-48db-933a-4a0ef09101b9
+
+	column 'P1 Colour (copy)_571675699475509253'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1 Colour (copy)_571675699475509253
+		lineageTag: 06962dbb-0f66-4c4c-b9e1-5988cb11fbe9
+
+	column 'P1 Filter (copy)_1429611422895149064'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1 Filter (copy)_1429611422895149064
+		lineageTag: b8961ed0-f40f-4a94-a00e-768d385e4a04
+
+	column 'P1M1Title (copy 2)_78531536884838417'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M1Title (copy 2)_78531536884838417
+		lineageTag: e794cb07-4807-4da0-b406-e5237959eb18
+
+	column Calculation_571675699476770833
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699476770833
+		lineageTag: d8ba3f6b-3436-498c-9b18-023668f6ce58
+
+	column 'P1M2Title (copy 2)_78531536884817936'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M2Title (copy 2)_78531536884817936
+		lineageTag: 2af5f14a-5d39-44d0-8fec-82cc198892a3
+
+	column Calculation_571675699476901907
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699476901907
+		lineageTag: 96a4244f-6906-4674-9a62-3e8e00000738
+
+	column 'P1M3Title (copy)_78531536884273155'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M3Title (copy)_78531536884273155
+		lineageTag: a72ab306-f1e2-4dd3-8ff7-7cd166bb9ddc
+
+	column Calculation_571675699477213205
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699477213205
+		lineageTag: 618636b0-8993-4105-af73-3123be104a61
+
+	column 'P1 Colour (copy) (copy)_571675699475525638'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1 Colour (copy) (copy)_571675699475525638
+		lineageTag: 80631f26-5ca0-48fe-b9ea-e15af8d618fa
+
+	column 'P1 Filter (copy)_1429611422896226313'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1 Filter (copy)_1429611422896226313
+		lineageTag: bf3264be-42ca-49fd-8c33-d10e9d01b718
+
+	column 'P1M1Title (copy)_78531536884727812'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M1Title (copy)_78531536884727812
+		lineageTag: 878fd971-9fd5-467c-9aa1-59d7431772f2
+
+	column Calculation_571675699477405719
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699477405719
+		lineageTag: 76ab1781-de2d-4621-b30f-3dde3c74e896
+
+	column 'P1M2Title (copy)_78531536884727813'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M2Title (copy)_78531536884727813
+		lineageTag: 9c079e01-e758-45f2-9ce7-7b693938fb3b
+
+	column Calculation_571675699477532697
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699477532697
+		lineageTag: 95eae121-1097-4f7e-8471-b375d95b8c1d
+
+	column 'P1M3Title (copy)_78531536884727814'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M3Title (copy)_78531536884727814
+		lineageTag: 7c5fa9f1-774f-4fe1-a2d4-878011b93809
+
+	column Calculation_571675699477651483
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699477651483
+		lineageTag: c82ff72c-c201-4d18-a94c-ee0553d75b22
+
+	column 'P1 Colour (copy) (copy) (copy)_571675699475542023'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1 Colour (copy) (copy) (copy)_571675699475542023
+		lineageTag: d2255748-fce2-4797-af37-76e225984106
+
+	column 'P1 Filter (copy) (copy)_1429611422896234507'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1 Filter (copy) (copy)_1429611422896234507
+		lineageTag: 4628f7cd-e8e7-4859-83a0-f08b4aff3ebd
+
+	column 'P1M1Title (copy) (copy)_78531536884744199'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M1Title (copy) (copy)_78531536884744199
+		lineageTag: 15c59f63-145b-4f8f-86b9-5846e9e71e77
+
+	column Calculation_571675699477811229
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699477811229
+		lineageTag: 4159a5ee-ba7d-49c1-9aff-de90d3201f38
+
+	column 'P1M2Title (copy) (copy)_78531536884744200'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M2Title (copy) (copy)_78531536884744200
+		lineageTag: 191aa24a-2214-4a72-b76b-3c3408ec19ec
+
+	column Calculation_571675699477917727
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699477917727
+		lineageTag: 4248a2cb-a3ef-4262-9ea3-2569269e0cb8
+
+	column 'P1M3Title (copy) (copy)_78531536884744201'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M3Title (copy) (copy)_78531536884744201
+		lineageTag: 5884d991-03cd-4efe-a978-eae89a9ae95d
+
+	column Calculation_571675699478487073
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699478487073
+		lineageTag: d7315970-ecf9-47bf-8b99-fd4c56e0ffa0
+
+	column 'P1 Colour (copy) (copy) (copy) (copy)_571675699475550216'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1 Colour (copy) (copy) (copy) (copy)_571675699475550216
+		lineageTag: df6ab594-06d9-42ea-912e-a4ccb483bae0
+
+	column 'P2 Filter (copy)_1429611422896226314'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P2 Filter (copy)_1429611422896226314
+		lineageTag: 8c3992dd-4628-4350-ac73-40cba6d30464
+
+	column 'P1M1Title (copy) (copy) (copy)_78531536884756490'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M1Title (copy) (copy) (copy)_78531536884756490
+		lineageTag: 6ae248db-c69f-4a1b-b302-7c63ee4ad679
+
+	column Calculation_571675699478655011
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699478655011
+		lineageTag: 486b96f9-dd17-4354-b629-4626df7b7fcd
+
+	column 'P1M2Title (copy) (copy) (copy)_78531536884756491'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M2Title (copy) (copy) (copy)_78531536884756491
+		lineageTag: ce71144b-e6fe-4a3d-b1cf-e79db950c03d
+
+	column Calculation_571675699478757413
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699478757413
+		lineageTag: 6d1a4b87-0bf4-44a8-90b4-095ad1fcfe12
+
+	column 'P1M3Title (copy) (copy) (copy)_78531536884756492'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M3Title (copy) (copy) (copy)_78531536884756492
+		lineageTag: 1b2d2f68-0eb8-4e8b-94a8-890ea4086895
+
+	column Calculation_571675699478872103
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699478872103
+		lineageTag: bb56cf6e-ee8b-4ff0-9ba1-07a82e0efddf
+
+	column 'P1 Colour (copy) (copy) (copy) (copy) (copy)_571675699475558409'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1 Colour (copy) (copy) (copy) (copy) (copy)_571675699475558409
+		lineageTag: 1f63548a-9e77-42c7-822f-5268e6f498a8
+
+	column 'P2 Filter (copy) (copy)_1429611422896234508'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P2 Filter (copy) (copy)_1429611422896234508
+		lineageTag: 7b4bf3f8-2f8d-41c8-872b-3530dd0e3a02
+
+	column 'P1M1Title (copy) (copy) (copy) (copy)_78531536884772877'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M1Title (copy) (copy) (copy) (copy)_78531536884772877
+		lineageTag: 1ce7bced-ae86-47a6-ae4b-762f648f028d
+
+	column Calculation_571675699479031849
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699479031849
+		lineageTag: 11683685-45b7-48d8-9fce-0d79a7c19ac6
+
+	column 'P1M2Title (copy) (copy) (copy) (copy)_78531536884772878'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M2Title (copy) (copy) (copy) (copy)_78531536884772878
+		lineageTag: c0c19f23-4c2c-4d04-976f-9f6d0ce31bfc
+
+	column Calculation_571675699479130155
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_571675699479130155
+		lineageTag: a1005d38-866b-4cb7-816e-8c49e71041d3
+
+	column 'P1M3Title (copy) (copy) (copy) (copy)_78531536884772879'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: P1M3Title (copy) (copy) (copy) (copy)_78531536884772879
+		lineageTag: fe713715-7689-49ff-96ac-566f260db6ec
+
+	partition FullData = m
+		mode: import
+		source =
+			let
+				Source = Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\\Sample - Superstore.xls"), null, true),
+				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
+				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
+				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
+				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
+				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
+				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}})
+			in
+				CleanNumbers
+	annotation PBI_ResultType = Table
+

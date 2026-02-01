@@ -1,0 +1,180 @@
+table Parameters
+	lineageTag: 7d3c02c4-7146-495a-ae16-632f15a9047b
+
+	column 'Months Back (copy)_468655857391050752'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Months Back (copy)_468655857391050752
+		lineageTag: 2f5d5901-12a8-4ac8-a615-a78145e9c999
+
+	column 'Parameter 1'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Parameter 1
+		lineageTag: 3036a524-a7e9-4f26-b0ec-b4eee12b34ac
+
+	column 'Parameter 3'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Parameter 3
+		lineageTag: dddd7602-781f-4aca-bccf-8a057f771705
+
+	column 'Parameter 4'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Parameter 4
+		lineageTag: c309284a-90d2-4b69-938d-b9c6a051af59
+
+	column 'Parameter 7'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Parameter 7
+		lineageTag: 6f32796c-9a80-450f-9289-8fe868016b93
+
+	column 'Parameter 8'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Parameter 8
+		lineageTag: 153ba9a1-ff01-4c03-9fba-77dbf3280c03
+
+	column 'p.P1M1Selection (copy)_1429611422903926798'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P1M1Selection (copy)_1429611422903926798
+		lineageTag: 034ebe37-4f5d-4afe-8b85-31ec1a40974e
+
+	column 'p.P1M1Selection (copy)_1429611422904180756'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P1M1Selection (copy)_1429611422904180756
+		lineageTag: e796fd4e-b722-4fd6-9276-761af7d0dda6
+
+	column 'p.P1M2Selection (copy)_1429611422903877645'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P1M2Selection (copy)_1429611422903877645
+		lineageTag: 16e08501-2f75-415f-80d3-473b7bb0845b
+
+	column 'p.P1M2Selection (copy)_1429611422903926799'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P1M2Selection (copy)_1429611422903926799
+		lineageTag: 88743026-1e6b-46ec-a317-cbaa9145791c
+
+	column 'p.P1M2Selection (copy)_1429611422904180757'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P1M2Selection (copy)_1429611422904180757
+		lineageTag: e89c1553-3242-4c4b-aea4-ff32804eb54a
+
+	column 'p.P1M3Selection (copy)_1429611422903926800'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P1M3Selection (copy)_1429611422903926800
+		lineageTag: c0528714-8d21-464e-9f06-30f9659b8846
+
+	column 'p.P1M3Selection (copy)_1429611422904180759'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P1M3Selection (copy)_1429611422904180759
+		lineageTag: 8d2a538d-c708-40c3-bb87-d6860fc45b3f
+
+	column 'p.P2M1Selection (copy)_1429611422904061969'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P2M1Selection (copy)_1429611422904061969
+		lineageTag: 48e9ed10-61ba-4ced-9573-5ab474e1a375
+
+	column 'p.P2M1Selection (copy)_1429611422904180758'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P2M1Selection (copy)_1429611422904180758
+		lineageTag: 9a4bdf89-fc71-40b8-9645-1e553f1e7977
+
+	column 'p.P2M2Selection (copy)_1429611422904061970'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P2M2Selection (copy)_1429611422904061970
+		lineageTag: fd679ad7-f649-4553-bc0f-70bd0ccc4f86
+
+	column 'p.P2M2Selection (copy)_1429611422904180760'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P2M2Selection (copy)_1429611422904180760
+		lineageTag: 75deb9bf-addb-4901-87b8-7f97cd4f8101
+
+	column 'p.P2M3Selection (copy)_1429611422904061971'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P2M3Selection (copy)_1429611422904061971
+		lineageTag: 3b408323-fde2-4241-aab2-862013664dec
+
+	column 'p.P2M3Selection (copy)_1429611422904180761'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P2M3Selection (copy)_1429611422904180761
+		lineageTag: 3d7dcd11-3bc7-4e95-bb67-6aef807e0c95
+
+	column 'p.P3M1Selection (copy)_1429611422904180762'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P3M1Selection (copy)_1429611422904180762
+		lineageTag: 333a016c-25d8-47c5-99b4-2230108e4ba8
+
+	column 'p.P3M2Selection (copy)_1429611422904180763'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P3M2Selection (copy)_1429611422904180763
+		lineageTag: 38ea2091-df3c-4ae0-929d-4bf1e3579412
+
+	column 'p.P3M3Selection (copy)_1429611422904180764'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: p.P3M3Selection (copy)_1429611422904180764
+		lineageTag: f12d54f4-4195-44aa-8c81-c8f5972aae1c
+
+	column 'p.Pillar1 (copy) (copy) (copy) (copy) (copy)_1101693074698227730'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: p.Pillar1 (copy) (copy) (copy) (copy) (copy)_1101693074698227730
+		lineageTag: 8f7d303d-04da-4beb-a26f-a6ed7078d937
+
+	column 'p.Pillar1 (copy) (copy) (copy) (copy)_1101693074698219537'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: p.Pillar1 (copy) (copy) (copy) (copy)_1101693074698219537
+		lineageTag: 12b24689-ea5f-40c2-aa1a-c59e0bfc11d2
+
+	column 'p.Pillar1 (copy) (copy) (copy)_1101693074698211344'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: p.Pillar1 (copy) (copy) (copy)_1101693074698211344
+		lineageTag: 04314be2-b4c3-453b-8813-d4117db96b5e
+
+	column 'p.Pillar1 (copy) (copy)_1101693074698203151'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: p.Pillar1 (copy) (copy)_1101693074698203151
+		lineageTag: 52ca4c48-f439-4a92-9e37-32a2f3c45d1f
+
+	column 'p.Pillar1 (copy)_1101693074698190862'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: p.Pillar1 (copy)_1101693074698190862
+		lineageTag: ed52a9a0-a397-4b15-a215-b4cbd41f2258
+
+	partition FullData = m
+		mode: import
+		source =
+			let
+				Source = Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\\Sample - Superstore.xls"), null, true),
+				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
+				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
+				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
+				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
+				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
+				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}})
+			in
+				CleanNumbers
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,570 @@
+table 'ATData+ (Accelerator Data)'
+	lineageTag: 72ef8146-33d4-4648-ac17-31085448db5b
+
+	column Attrition
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Attrition
+		lineageTag: 7732e432-813b-4a58-acc7-3dc05c2d69a6
+
+	column Calculation_1172624773731799054
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: Calculation_1172624773731799054
+		lineageTag: a9b0657a-31fb-4641-b2e3-35d1065a4fe2
+
+	column Calculation_1172624773744074773
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Calculation_1172624773744074773
+		lineageTag: e78c8660-1524-4f30-b0bb-310c2e2b7af5
+
+	column Calculation_486670254084108304
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Calculation_486670254084108304
+		lineageTag: cb906b83-e472-45e0-a6d5-57f70a638253
+
+	column Calculation_602637946597855232
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Calculation_602637946597855232
+		lineageTag: 8bb32c86-83a5-4dfa-b936-8b0d3d8c396a
+
+	column Calculation_740279210193760257
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Calculation_740279210193760257
+		lineageTag: 27fce269-0fa6-4bef-8975-b7af610e7996
+
+	column Calculation_866942947302453248
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Calculation_866942947302453248
+		lineageTag: 274bfa76-fa4d-4b47-bd92-c568735efa88
+
+	column Calculation_930556292295581696
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: Calculation_930556292295581696
+		lineageTag: 320cf1f5-6659-4eec-94e1-a4cb287f6e92
+
+	column ChoiceID
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: ChoiceID
+		lineageTag: 069f8039-a09a-4878-8ca1-be90aac30e31
+
+	column 'Csat Score'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Csat Score
+		lineageTag: fb29a167-78d6-4547-99b4-9617ac26b8de
+
+	column Date
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Date
+		lineageTag: 89c90bc1-5e87-446d-9271-97cd73b9b6a7
+
+	column 'Dynamic Dimension (copy)_1343480084965511168'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic Dimension (copy)_1343480084965511168
+		lineageTag: 9dc06378-c0c1-4925-aeba-98484d5b6d77
+
+	column 'Dynamic KPI Suffix (copy)_1494069197481185280'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic KPI Suffix (copy)_1494069197481185280
+		lineageTag: 27b20d9d-6625-4350-a3f7-60c93e156dae
+
+	column 'Dynamic TT Label (copy)_1172624773745606683'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic TT Label (copy)_1172624773745606683
+		lineageTag: 325fc03d-68fa-4155-9572-11b9e05a9347
+
+	column 'Dynamic TT Suffix (copy)_1172624773752295456'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic TT Suffix (copy)_1172624773752295456
+		lineageTag: 85032247-750a-4e7b-895b-34686787834c
+
+	column 'Dynamic Values (copy)_486670254112174097'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic Values (copy)_486670254112174097
+		lineageTag: f9d53799-07e4-4f0f-a005-c917ab41a952
+
+	column 'Environment Satisfaction'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Environment Satisfaction
+		lineageTag: 6a0d5742-7ad7-4030-98d6-dedafd7f81b6
+
+	column 'Filter Sheet A (copy)_1172624773740150803'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Filter Sheet A (copy)_1172624773740150803
+		lineageTag: 4650e44c-f36e-4312-97ba-5599cc73bec7
+
+	column Gender
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Gender
+		lineageTag: 32e024e4-3ea9-4637-8122-30ce078335b4
+
+	column 'Job Involvement'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Job Involvement
+		lineageTag: 85ef1182-a374-4017-8801-fa449e1d7941
+
+	column 'Job Satisfaction'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Job Satisfaction
+		lineageTag: 865af431-f614-4576-a560-3730de00fd82
+
+	column Pillar
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Pillar
+		lineageTag: ff4ad838-8a63-4e92-bd15-c360d3d90069
+
+	column Race
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Race
+		lineageTag: 3a119bc1-0dae-4a27-8705-06ac71a5d9ae
+
+	column 'Relationship Satisfaction'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Relationship Satisfaction
+		lineageTag: c16a7927-95f8-4944-83c6-fd9f868620b9
+
+	column 'Response Time'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Response Time
+		lineageTag: 8684becf-e061-4008-871d-096ece7795f0
+
+	column Sentiment
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Sentiment
+		lineageTag: 3ed40880-d260-41c4-abf3-dc7c8a5eaa9a
+
+	column Severity
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Severity
+		lineageTag: 552531a9-9527-468f-aa45-68e450c85c32
+
+	column 'Statisfaction Score'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Statisfaction Score
+		lineageTag: 1681f6a7-78c0-4358-935b-5f9a9b4f9cf3
+
+	column 'Ticket Status'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Ticket Status
+		lineageTag: 4de7daee-315a-4600-8c0f-dffe51f6e54e
+
+	column 'Total-Lower'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Total-Lower
+		lineageTag: 955da32f-20db-461c-b685-ca5e5bf9cb54
+
+	column Values
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Values
+		lineageTag: 69246c10-73de-4bdc-b499-907ceee3be8a
+
+	column 'Work Life Balance'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Work Life Balance
+		lineageTag: 4f3f6804-93b5-4ce6-95a4-b60d07251259
+
+	column Calculation_1172624773676371968
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Calculation_1172624773676371968
+		lineageTag: 7e96dec3-3cab-4a8a-a9a2-534380468cf0
+
+	column Calculation_1172624773753921572
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Calculation_1172624773753921572
+		lineageTag: b887a111-7f20-49c7-bd65-63c910ecb23f
+
+	column Calculation_486670254058663936
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Calculation_486670254058663936
+		lineageTag: ff840a59-4e41-4e15-9326-93e872c672d8
+
+	column 'Dynamic Columns (copy)_1172624773758930984'
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: Dynamic Columns (copy)_1172624773758930984
+		lineageTag: 1f0c4bad-dbff-4cac-84ff-fe322c5ed1e8
+
+	column 'Dynamic Columns A (copy)_1172624773762838570'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Dynamic Columns A (copy)_1172624773762838570
+		lineageTag: 09e7064a-14d8-4c40-987f-1dbe6137c1c7
+
+	column 'Dynamic Dimension (copy)_1172624773753626657'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Dynamic Dimension (copy)_1172624773753626657
+		lineageTag: eaf8d41c-89bd-43a2-94b2-91a599126d34
+
+	column 'Dynamic TT Label (copy)_1172624773733384208'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic TT Label (copy)_1172624773733384208
+		lineageTag: 0e189587-fa3c-43e5-867d-1ade218b2a44
+
+	column 'Dynamic TT Value (copy)_1172624773728133130'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic TT Value (copy)_1172624773728133130
+		lineageTag: fb643bdf-cfbf-41b6-8cb9-3c1ab209ddcf
+
+	column 'Dynamic Values (copy)_1172624773727506441'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Dynamic Values (copy)_1172624773727506441
+		lineageTag: 10a76223-0aea-4c23-8fb2-700403d48207
+
+	column 'Gender Colour (copy)_1172624773754064933'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Gender Colour (copy)_1172624773754064933
+		lineageTag: 98ee666b-7585-4a74-a00e-0fbdaeab54e5
+
+	column Metric
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Metric
+		lineageTag: 50a08664-7cf1-4bd9-8e23-f45bf1ad63e7
+
+	column 'Race Colour (copy)_1445374026211987456'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Race Colour (copy)_1445374026211987456
+		lineageTag: fea2c747-8ab4-4565-8f24-f2f7bbb12e37
+
+	column 'Response Colour (copy)_1445374026222034946'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Response Colour (copy)_1445374026222034946
+		lineageTag: cb0da913-e1a1-4dc6-914a-04eacca5c086
+
+	column 'Satisfaction Colour (copy)_1343480084970881027'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Satisfaction Colour (copy)_1343480084970881027
+		lineageTag: b01fc657-0e4e-4025-8b4b-e29af3f0d1bd
+
+	column 'Sentiment Colour (copy)_1343480084969295874'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Sentiment Colour (copy)_1343480084969295874
+		lineageTag: 6cdafc06-cda5-457a-9050-c33906a71d2c
+
+	column 'Sentiment Colour (copy)_887490622636527617'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Sentiment Colour (copy)_887490622636527617
+		lineageTag: aae5873c-58a6-48c9-a3af-0448a481c667
+
+	column '16P Profile'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: 16P Profile
+		lineageTag: 2f308f63-6949-4363-b81f-8d3b6d79362e
+
+	column 'Age (bin)'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Age (bin)
+		lineageTag: 520762d5-f3e3-44c5-bfdf-128c3c9256f9
+
+	column Calculation_1172624773730148364
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Calculation_1172624773730148364
+		lineageTag: a4d43957-a31f-451a-9a6d-0fa57cfe3830
+
+	column Calculation_602637946600284163
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Calculation_602637946600284163
+		lineageTag: 8d7cb7f7-59dd-428a-a68a-2430b6c944ab
+
+	column 'Days Open Bin (copy)_602637946603446276'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Days Open Bin (copy)_602637946603446276
+		lineageTag: 6aba6c4a-0529-4650-bc00-635626c8dea1
+
+	column 'Dynamic Columns B (copy)_740279210191249408'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic Columns B (copy)_740279210191249408
+		lineageTag: 249fccc5-06d0-46ca-a9c2-a0b29f21b0be
+
+	column 'Dynamic TT Label (copy)_1172624773729112075'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic TT Label (copy)_1172624773729112075
+		lineageTag: dee0d8b6-2ac6-42c6-a3cd-4cd1abe2fe0c
+
+	column 'Dynamic Values (copy)_1172624773690847239'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic Values (copy)_1172624773690847239
+		lineageTag: aa378f27-b16c-4133-a0cc-d9a366812677
+
+	column 'Dynamic Values (copy)_486670254113632275'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dynamic Values (copy)_486670254113632275
+		lineageTag: 150286c5-97c8-4139-b581-730f7130ffcd
+
+	column 'Energy Desc'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Energy Desc
+		lineageTag: 94249b96-005b-4356-bdc6-a32b78c012d7
+
+	column 'Energy Tag'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Energy Tag
+		lineageTag: ec5cc26e-ea92-42c6-9456-87d468eff2ed
+
+	column 'Identity Desc'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Identity Desc
+		lineageTag: a7784589-9729-4265-b387-65dd0121f2bd
+
+	column 'Identity Tag'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Identity Tag
+		lineageTag: 3ac307e2-cf67-4c13-9120-8a915d3fef21
+
+	column 'Mind Desc'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Mind Desc
+		lineageTag: 1b13ce1a-a773-40d2-bf65-c8c90cb91e1a
+
+	column 'Mind Tag'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Mind Tag
+		lineageTag: aa8665d0-1b16-4592-a314-40aa7cf9381d
+
+	column 'Nature Desc'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Nature Desc
+		lineageTag: 1c75e012-1b9c-44e1-9335-06866b053109
+
+	column 'Nature Tag'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Nature Tag
+		lineageTag: 3b0a04bf-fadc-449f-b836-1a6f60128dcd
+
+	column 'Profile Code'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Profile Code
+		lineageTag: de32b6c3-40e8-4422-929a-ae317617b94d
+
+	column 'Profile Desc'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Profile Desc
+		lineageTag: 89f696d0-db09-420b-a187-8caf16d2dd37
+
+	column 'Show Sheet A (copy)_1172624773676642305'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Show Sheet A (copy)_1172624773676642305
+		lineageTag: a354b3f1-e42e-470d-a4dd-d50f7c502cb6
+
+	column 'Tactics Desc'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Tactics Desc
+		lineageTag: 6a8d18ed-bbb8-476a-9b82-7ee351b9a2e5
+
+	column 'Tactics Tag'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Tactics Tag
+		lineageTag: 663666c0-4b63-4cc4-b70e-0a812aa6d206
+
+	column 'Tenure (bin)'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: Tenure (bin)
+		lineageTag: 6db7072f-d27a-428e-9960-ae813453ce02
+
+	column 'P1M1Boolean (copy)_602637946607476746'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M1Boolean (copy)_602637946607476746
+		lineageTag: 6f131ac4-1242-4a66-9e70-03c4fd20c877
+
+	column 'P1M2Boolean (copy)_602637946607566859'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M2Boolean (copy)_602637946607566859
+		lineageTag: c0a12b72-5012-40c7-9504-0cbd45405abc
+
+	column 'P1Chart Check (copy 2)_602637946607054854'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1Chart Check (copy 2)_602637946607054854
+		lineageTag: c2afc466-c933-4adb-864e-410b41e97d02
+
+	column 'P1M2Boolean (copy)_602637946607861773'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M2Boolean (copy)_602637946607861773
+		lineageTag: 6df96a49-530b-4342-9a95-28d09863510f
+
+	column 'P1M3Boolean (copy)_602637946607861774'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M3Boolean (copy)_602637946607861774
+		lineageTag: d6d30c4f-1999-438d-b444-ddb51e75eb07
+
+	column 'P1Chart Check (copy)_602637946607030277'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1Chart Check (copy)_602637946607030277
+		lineageTag: 5d36b4e2-5073-4ee6-b38a-141596d0022c
+
+	column 'P1M1Boolean (copy)_602637946608648213'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M1Boolean (copy)_602637946608648213
+		lineageTag: 23646eb1-7efa-445d-bf7c-77b06600f464
+
+	column 'P1M2Boolean (copy)_602637946608648214'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M2Boolean (copy)_602637946608648214
+		lineageTag: e4fde62b-5848-4157-af25-9578683f4f5d
+
+	column 'P1M3Boolean (copy)_602637946608648216'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M3Boolean (copy)_602637946608648216
+		lineageTag: f30cafe9-a7d1-491f-aa01-c3a0dec33bb5
+
+	column 'P1Chart Check (copy) (copy 2)_602637946607075337'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1Chart Check (copy) (copy 2)_602637946607075337
+		lineageTag: 0d6798c5-1457-4b5e-b0bd-e706ee624976
+
+	column 'P1M1Boolean (copy)_602637946608107535'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M1Boolean (copy)_602637946608107535
+		lineageTag: 7dbf742a-4cd5-4942-be23-93880667ba51
+
+	column 'P1M2Boolean (copy)_602637946608107536'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M2Boolean (copy)_602637946608107536
+		lineageTag: 8b0b3fe2-550b-4eca-9816-b8291c0a170c
+
+	column 'P1M3Boolean (copy)_602637946608107538'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1M3Boolean (copy)_602637946608107538
+		lineageTag: 8287a40c-283b-4cb4-ad28-655c8a1f5873
+
+	column 'P1Chart Check (copy) (copy)_602637946607054855'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1Chart Check (copy) (copy)_602637946607054855
+		lineageTag: 22693311-3d79-46a6-aaeb-8ab0d03e2b30
+
+	column 'P2M1Boolean (copy)_602637946608107537'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P2M1Boolean (copy)_602637946608107537
+		lineageTag: 0ee1c018-135e-4b0b-93bc-9748caf19432
+
+	column 'P2M2Boolean (copy)_602637946608107539'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P2M2Boolean (copy)_602637946608107539
+		lineageTag: 253ced16-6042-4188-b215-cf7395f4db28
+
+	column 'P3M3Boolean (copy)_602637946608107540'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P3M3Boolean (copy)_602637946608107540
+		lineageTag: 6e273268-cdcb-4ec3-9fb5-e944f0a4343d
+
+	column 'P1Chart Check (copy) (copy) (copy)_602637946607075336'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P1Chart Check (copy) (copy) (copy)_602637946607075336
+		lineageTag: f0e67cb6-ade2-48c2-a1b9-9ed4a2a5149a
+
+	column 'P2M1Boolean (copy)_602637946608648215'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P2M1Boolean (copy)_602637946608648215
+		lineageTag: 920d7436-ccef-4b99-bfaa-e66c6f80b658
+
+	column 'P2M2Boolean (copy)_602637946608648217'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P2M2Boolean (copy)_602637946608648217
+		lineageTag: 1485661c-3be1-495a-ba19-1b18580723dc
+
+	column 'P2M3Boolean (copy)_602637946608648218'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: P2M3Boolean (copy)_602637946608648218
+		lineageTag: a39c59c3-6fb8-4aad-bcec-28496471ce2e
+
+	partition FullData = m
+		mode: import
+		source =
+			let
+				Source = Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\\Sample - Superstore.xls"), null, true),
+				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
+				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
+				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
+				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
+				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
+				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}})
+			in
+				CleanNumbers
+	annotation PBI_ResultType = Table
+
