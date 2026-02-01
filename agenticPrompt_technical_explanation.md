@@ -33,6 +33,14 @@ Outputs
   └─ Semantic model (TMDL)
 ```
 
+## Architecture Diagrams (JPEG)
+- `docs/diagrams/twbx_to_pbip_architecture.jpg`
+- `docs/diagrams/pbip_assembly_architecture.jpg`
+- `docs/diagrams/twb_vs_pbip_schema_logic.jpg`
+![TWBX to PBIP Architecture](docs/diagrams/twbx_to_pbip_architecture.jpg)
+![PBIP Assembly Architecture](docs/diagrams/pbip_assembly_architecture.jpg)
+![TWB vs PBIP Schema Logic](docs/diagrams/twb_vs_pbip_schema_logic.jpg)
+
 ## Detailed Data Flow
 ```
 TWBX
@@ -119,6 +127,64 @@ Strict schema rules prevent invalid PBIP output:
 - All IDs are unique and referenced correctly
 - All visuals have valid positions and queries
 - Paths are relative and OS‑agnostic
+
+## Conversion Deep Dive
+### A) TWB XML Extraction and Normalization
+- Unzip TWBX and extract the single `workbook.twb` XML.
+- Normalize namespaces, resolve embedded datasource references, and build a consistent map of:
+  - Datasources and connections
+  - Logical/physical table names
+  - Columns + data types + captions
+  - Calculations and dependencies
+  - Worksheet definitions (rows, columns, marks, filters)
+  - Dashboard zones (layout containers + coordinates)
+
+### B) Semantic Model Reconstruction (TMDL)
+- Create one `.tmdl` per logical table with:
+  - `column` definitions (type + summarizeBy)
+  - `measure` definitions (DAX)
+  - `partition` definitions (Power Query M; `File.Contents` or datasource as needed)
+- Build `model.tmdl`:
+  - Explicit relationships with cardinality and direction
+  - Metadata annotations for Power BI tooling
+
+### C) Calculation Translation (Tableau → DAX)
+- Translate Tableau expressions to DAX using a ruleset:
+  - Aggregations → DAX equivalents (SUM, AVG, COUNTX)
+  - Conditional logic → IF / SWITCH
+  - Date logic → DATE, EOMONTH, DATEADD
+  - LOD expressions → CALCULATE patterns
+- Validate translated DAX against column lineage to ensure semantic correctness.
+- Log any non‑portable expressions in “Assumptions.”
+
+### D) KPI Switching via Calculation Group
+- Generate a calculation group that switches between KPI measures.
+- Bind KPI card visuals to the calculation group so a single card can display multiple KPIs.
+- Use a parameter/slicer to control the active KPI selection.
+
+### E) Report Assembly (PBIR JSON)
+- Pages:
+  - One page per Tableau dashboard.
+  - Exact `width`, `height`, and `displayOption`.
+- Visuals:
+  - One visual per worksheet (or worksheet component).
+  - Full `visual.json` with `visualType`, `query`, and `position`.
+  - Query projections reference existing model fields only.
+- Filters and Interactions:
+  - Map Tableau filter zones to Power BI slicers.
+  - Recreate cross‑filtering behavior across visuals.
+
+### F) Pixel‑Matched Layout
+- Use snapshot images to validate spacing, alignment, and visual proportions.
+- Ensure exact `x`, `y`, `width`, `height` coordinates for each visual.
+- Apply theme and formatting to match typography, colors, and legends.
+
+### G) Integrity Checks
+- Schema validation for each JSON/TMDL file.
+- Cross‑reference validation:
+  - Every visual query references valid fields.
+  - Every page/visual referenced in `pages.json` exists.
+- Open PBIP in Power BI Desktop to confirm no corruption.
 
 ## Schema Differences: Tableau TWB vs Power BI PBIP
 ### Tableau TWB (XML) logic
