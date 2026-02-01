@@ -557,7 +557,7 @@ table 'ATData+ (Accelerator Data)'
 		mode: import
 		source =
 			let
-				Source = Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\\Sample - Superstore.xls"), null, true),
+				Source = Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\\Data\\EXEC KPI SCORECARD - NewDataSource2.twb Files\\ATData+ (Accelerator Data).hyper"), null, true),
 				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
 				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
 				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
