@@ -127,9 +127,107 @@ def parse_dashboard_filters(root):
                 "field": field,
                 "mode": z.get("mode"),
                 "values": z.get("values"),
-                "worksheet": z.get("name")
+                "worksheet": z.get("name"),
+                "x": int(z.get("x") or 0),
+                "y": int(z.get("y") or 0),
+                "w": int(z.get("w") or 0),
+                "h": int(z.get("h") or 0)
             })
     return dashboards
+
+
+def parse_dashboard_worksheet_zones(root, worksheet_names):
+    dashboards = defaultdict(dict)
+    for d in root.findall(".//dashboard"):
+        dname = d.get("name")
+        if not dname:
+            continue
+        for z in d.findall(".//zone"):
+            ws_name = z.get("worksheet") or z.get("name")
+            if not ws_name or ws_name not in worksheet_names:
+                continue
+            dashboards[dname][ws_name] = {
+                "x": int(z.get("x") or 0),
+                "y": int(z.get("y") or 0),
+                "w": int(z.get("w") or 0),
+                "h": int(z.get("h") or 0)
+            }
+    return dashboards
+
+
+def parse_dashboard_root_sizes(root):
+    sizes = {}
+    for d in root.findall(".//dashboard"):
+        dname = d.get("name")
+        if not dname:
+            continue
+        best = None
+        for z in d.findall(".//zone[@type-v2='layout-basic']"):
+            x = int(z.get("x") or 0)
+            y = int(z.get("y") or 0)
+            w = int(z.get("w") or 0)
+            h = int(z.get("h") or 0)
+            if x == 0 and y == 0:
+                if not best or (w * h) > (best["w"] * best["h"]):
+                    best = {"w": w, "h": h}
+        if best:
+            sizes[dname] = best
+    return sizes
+
+
+def normalize_snapshot_key(name):
+    return re.sub(r"[^a-z0-9]+", "", (name or "").lower())
+
+
+def get_png_dimensions(path):
+    with open(path, "rb") as f:
+        header = f.read(24)
+        if len(header) < 24 or header[:8] != b"\x89PNG\r\n\x1a\n":
+            return None
+        width = int.from_bytes(header[16:20], "big")
+        height = int.from_bytes(header[20:24], "big")
+        return width, height
+
+
+def find_snapshot_for_dashboard(dashboard_name, snapshots_dir):
+    if not snapshots_dir or not os.path.isdir(snapshots_dir):
+        return None
+    target = normalize_snapshot_key(dashboard_name)
+    for entry in os.listdir(snapshots_dir):
+        if not entry.lower().endswith(".png"):
+            continue
+        if normalize_snapshot_key(os.path.splitext(entry)[0]) == target:
+            return os.path.join(snapshots_dir, entry)
+    return None
+
+
+def get_page_size_for_dashboard(dashboard_name, snapshot_dims, default_width=1280, default_height=720):
+    snap_dim = snapshot_dims.get(dashboard_name)
+    if snap_dim:
+        snap_w, snap_h = snap_dim
+        page_width = default_width
+        page_height = int(round(page_width * (snap_h / max(snap_w, 1))))
+        page_height = max(600, min(page_height, 2000))
+        return page_width, page_height
+    return default_width, default_height
+
+
+def scale_rect(rect, root_size, page_size):
+    if not rect or not root_size:
+        return None
+    root_w = root_size.get("w") or 0
+    root_h = root_size.get("h") or 0
+    if root_w <= 0 or root_h <= 0:
+        return None
+    page_w, page_h = page_size
+    scale_x = page_w / root_w
+    scale_y = page_h / root_h
+    return {
+        "x": int(round(rect["x"] * scale_x)),
+        "y": int(round(rect["y"] * scale_y)),
+        "w": int(round(rect["w"] * scale_x)),
+        "h": int(round(rect["h"] * scale_y))
+    }
 
 
 def parse_calculations(root):
@@ -468,6 +566,8 @@ def main():
     worksheet_names = set(ws_meta.keys())
     dash_ws = parse_dashboard_worksheets(root, worksheet_names)
     dash_filters = parse_dashboard_filters(root)
+    dash_worksheet_zones = parse_dashboard_worksheet_zones(root, worksheet_names)
+    dash_root_sizes = parse_dashboard_root_sizes(root)
     calc_meta = parse_calculations(root)
     calc_captions = {}
     for ws_name, calcs in calc_meta.items():
@@ -535,19 +635,29 @@ def main():
         dashboard_names = ["Overview"]
     page_ids = []
     page_by_name = {}
+    snapshots_dir = os.path.join(os.path.dirname(args.twbx), "tableau snapshots")
+    snapshot_dims = {}
+    if os.path.isdir(snapshots_dir):
+        for name in dashboard_names:
+            snap_path = find_snapshot_for_dashboard(name, snapshots_dir)
+            if snap_path:
+                dims = get_png_dimensions(snap_path)
+                if dims:
+                    snapshot_dims[name] = dims
     for name in dashboard_names:
         page_id = hashlib.sha1(name.encode("utf-8")).hexdigest()[:16]
         page_ids.append(page_id)
         page_by_name[name] = page_id
         page_folder = os.path.join(pages_dir, page_id)
         os.makedirs(page_folder, exist_ok=True)
+        page_width, page_height = get_page_size_for_dashboard(name, snapshot_dims)
         page_json = {
             "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
             "name": page_id,
             "displayName": name,
             "displayOption": "FitToPage",
-            "height": 720,
-            "width": 1280
+            "height": page_height,
+            "width": page_width
         }
         with open(os.path.join(page_folder, "page.json"), "w") as f:
             json.dump(page_json, f, indent=2)
@@ -874,18 +984,33 @@ def main():
             }
         })
 
-        filter_fields = dedupe_preserve([f["field"] for f in dash_filters.get(dash_name, [])])
+        page_size = get_page_size_for_dashboard(dash_name, snapshot_dims)
+        root_size = dash_root_sizes.get(dash_name)
+        filters = dash_filters.get(dash_name, [])
+        filter_fields = dedupe_preserve([f["field"] for f in filters])
         filter_x = 20
         filter_y = 45
         filter_height = 60
-        for fidx, field in enumerate(filter_fields):
+        max_filter_bottom = 0
+        for fidx, flt in enumerate(filters):
+            field = flt["field"]
             table = choose_table_for_field(col_meta, field)
-            width = 280 if "Date" in field else 160
+            rect = scale_rect(flt, root_size, page_size) if flt.get("w") else None
+            if rect:
+                x = rect["x"]
+                y = rect["y"]
+                width = max(rect["w"], 100)
+                height = max(rect["h"], 40)
+            else:
+                x = filter_x
+                y = filter_y
+                width = 280 if "Date" in field else 160
+                height = filter_height
             filter_vid = hashlib.sha1(f"{dash_name}:{field}:filter".encode("utf-8")).hexdigest()[:16]
             write_generic(filter_vid, {
                 "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
                 "name": filter_vid,
-                "position": {"x": filter_x, "y": filter_y, "z": fidx + 1, "height": filter_height, "width": width, "tabOrder": fidx + 1},
+                "position": {"x": x, "y": y, "z": fidx + 1, "height": height, "width": width, "tabOrder": fidx + 1},
                 "visual": {
                     "visualType": "slicer",
                     "query": {"queryState": {
@@ -900,13 +1025,18 @@ def main():
                     "autoSelectVisualType": True
                 }
             })
-            filter_x += width + 10
+            if rect:
+                max_filter_bottom = max(max_filter_bottom, y + height)
+            else:
+                filter_x += width + 10
 
-        content_start_y = 120 if filter_fields else 60
+        content_start_y = max_filter_bottom + 20 if max_filter_bottom else (120 if filter_fields else 60)
 
         for idx, ws_name in enumerate(ws_list):
             meta = ws_meta.get(ws_name, {})
             vid = hashlib.sha1(f"{dash_name}:{ws_name}".encode("utf-8")).hexdigest()[:16]
+            ws_rect = dash_worksheet_zones.get(dash_name, {}).get(ws_name)
+            scaled_ws_rect = scale_rect(ws_rect, root_size, page_size) if ws_rect else None
             if is_table_worksheet(meta):
                 row_fields = [f for f in extract_fields(meta.get("rows", "")) if f not in ("Measure Names", "Multiple Values")]
                 measure_fields = ws_measure_names.get(ws_name, [])
@@ -935,10 +1065,20 @@ def main():
                             "queryRef": f"{table}.{field}",
                             "nativeQueryRef": field
                         })
+                if scaled_ws_rect:
+                    pos_x = max(scaled_ws_rect["x"], 0)
+                    pos_y = max(scaled_ws_rect["y"], content_start_y)
+                    pos_w = max(scaled_ws_rect["w"], 300)
+                    pos_h = max(scaled_ws_rect["h"], 200)
+                else:
+                    pos_x = 20
+                    pos_y = content_start_y
+                    pos_w = 1240
+                    pos_h = 560
                 payload = {
                     "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
                     "name": vid,
-                    "position": {"x": 20, "y": content_start_y, "z": idx + 1, "height": 560, "width": 1240, "tabOrder": idx + 1},
+                    "position": {"x": pos_x, "y": pos_y, "z": idx + 1, "height": pos_h, "width": pos_w, "tabOrder": idx + 1},
                     "visual": {
                         "visualType": "tableEx",
                         "query": {"queryState": {"Values": {"projections": projections}}},
@@ -958,8 +1098,16 @@ def main():
                 if category in ("City", "State/Province") and vtype in ("tableEx", "map"):
                     vtype = "map"
 
-                x = 20 + (idx % 2) * 620
-                y = content_start_y + (idx // 2) * 300
+                if scaled_ws_rect:
+                    x = max(scaled_ws_rect["x"], 0)
+                    y = max(scaled_ws_rect["y"], content_start_y)
+                    width = max(scaled_ws_rect["w"], 300)
+                    height = max(scaled_ws_rect["h"], 200)
+                else:
+                    x = 20 + (idx % 2) * 620
+                    y = content_start_y + (idx // 2) * 300
+                    width = 600
+                    height = 260
 
                 query_state = {
                     "Category": {"projections": [{
@@ -1000,7 +1148,7 @@ def main():
                 payload = {
                     "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
                     "name": vid,
-                    "position": {"x": x, "y": y, "z": idx + 1, "height": 260, "width": 600, "tabOrder": idx + 1},
+                    "position": {"x": x, "y": y, "z": idx + 1, "height": height, "width": width, "tabOrder": idx + 1},
                     "visual": {
                         "visualType": vtype,
                         "query": {"queryState": query_state},
