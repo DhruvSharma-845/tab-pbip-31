@@ -17,17 +17,22 @@
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Calculation_5421109230915137"
                     }
                   },
-                  "Property": "Profit per Order"
+                  "Function": 1
                 }
               },
-              "queryRef": "Orders.Profit per Order",
-              "nativeQueryRef": "Profit per Order"
+              "queryRef": "Agg(Orders.Calculation_5421109230915137)",
+              "nativeQueryRef": "Agg Calculation_5421109230915137"
             }
           ]
         }

@@ -17,17 +17,22 @@
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Sales per Customer (copy)"
                     }
                   },
-                  "Property": "Sales per Customer"
+                  "Function": 1
                 }
               },
-              "queryRef": "Orders.Sales per Customer",
-              "nativeQueryRef": "Sales per Customer"
+              "queryRef": "Agg(Orders.Sales per Customer (copy))",
+              "nativeQueryRef": "Agg Sales per Customer (copy)"
             }
           ]
         }

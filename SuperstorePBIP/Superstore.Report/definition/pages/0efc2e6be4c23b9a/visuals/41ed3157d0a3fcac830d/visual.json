@@ -17,17 +17,22 @@
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Sales"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 0
                 }
               },
-              "queryRef": "Orders.Total Sales",
-              "nativeQueryRef": "Total Sales"
+              "queryRef": "Agg(Orders.Sales)",
+              "nativeQueryRef": "Agg Sales"
             }
           ]
         }
