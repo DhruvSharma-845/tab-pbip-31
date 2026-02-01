@@ -204,7 +204,7 @@ table Orders
 		mode: import
 		source =
 			let
-				Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-v3-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\Sample - Superstore.xls"), null, true),
+				Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\Sample - Superstore.xls"), null, true),
 				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
 				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
 				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
