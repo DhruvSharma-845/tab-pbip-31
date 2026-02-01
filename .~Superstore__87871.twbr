@@ -3000,10 +3000,30 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
             <column-instance column='[Order Date]' derivation='Year' name='[yr:Order Date:ok]' pivot='key' type='ordinal' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Action (Category,YEAR(Order Date),MONTH(Order Date))]'>
-            <groupfilter function='crossjoin' user:ui-action-filter='[Action3]' user:ui-enumeration='all' user:ui-marker='enumerate'>
-              <groupfilter function='level-members' level='[Category]' />
-              <groupfilter function='level-members' level='[yr:Order Date:ok]' />
-              <groupfilter function='level-members' level='[mn:Order Date:ok]' />
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action3]' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate'>
+              <groupfilter function='member' level='[Category]' member='&quot;Furniture&quot;' />
+              <groupfilter function='crossjoin'>
+                <groupfilter function='union'>
+                  <groupfilter function='member' level='[yr:Order Date:ok]' member='2022' />
+                  <groupfilter function='member' level='[yr:Order Date:ok]' member='2023' />
+                  <groupfilter function='member' level='[yr:Order Date:ok]' member='2024' />
+                  <groupfilter function='member' level='[yr:Order Date:ok]' member='2025' />
+                </groupfilter>
+                <groupfilter function='union'>
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='1' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='2' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='3' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='4' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='5' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='6' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='7' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='8' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='9' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='10' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='11' />
+                  <groupfilter function='member' level='[mn:Order Date:ok]' member='12' />
+                </groupfilter>
+              </groupfilter>
             </groupfilter>
           </filter>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Action (YEAR(Order Date),MONTH(Order Date))]'>
@@ -4335,9 +4355,9 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
             <column-instance column='[Calculation_9921103144103743]' derivation='User' name='[usr:Calculation_9921103144103743:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Tooltip (Country/Region,State/Province)]'>
-            <groupfilter function='crossjoin' user:ui-action-filter='[Action - Tooltip: Profit Ratio by City]' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate'>
-              <groupfilter function='member' level='[Country/Region]' member='&quot;United States&quot;' />
-              <groupfilter function='member' level='[State/Province]' member='&quot;Arizona&quot;' />
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action - Tooltip: Profit Ratio by City]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Country/Region]' />
+              <groupfilter function='level-members' level='[State/Province]' />
             </groupfilter>
           </filter>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Tooltip (State/Province)]'>
@@ -6265,7 +6285,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
     </dashboard>
   </dashboards>
   <windows source-height='72'>
-    <window class='dashboard' maximized='true' name='Overview'>
+    <window class='dashboard' name='Overview'>
       <viewpoints>
         <viewpoint name='Sale Map'>
           <zoom type='entire-view' />
@@ -6280,13 +6300,13 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
           <zoom type='entire-view' />
         </viewpoint>
       </viewpoints>
-      <active id='1' />
+      <active id='32' />
       <device-preview>
         <device is-portrait='true' name='Generic Phone' type='Phone' />
       </device-preview>
       <simple-id uuid='{3D156B5C-8BC3-47BC-B79E-A1BE50D692DC}' />
     </window>
-    <window class='dashboard' name='Product'>
+    <window class='dashboard' maximized='true' name='Product'>
       <viewpoints>
         <viewpoint name='ProductDetails'>
           <zoom type='entire-view' />
@@ -6295,7 +6315,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
           <zoom type='entire-view' />
         </viewpoint>
       </viewpoints>
-      <active id='-1' />
+      <active id='1' />
       <device-preview>
         <device is-portrait='false' name='iPhone 6' type='Phone' />
       </device-preview>
