@@ -420,40 +420,54 @@ def build_table_files(tables_dir, col_meta, windows_data_root, order_calc_column
             out.append("")
 
         # Add derived columns for monthly/legend if Orders table exists
+        add_order_month = False
+        add_order_year = False
+        add_profitability = False
+        add_days_actual = False
+        add_days_scheduled = False
         if table == "Orders":
-            out.append("\tcolumn 'Order Month'")
-            out.append("\t\tdataType: dateTime")
-            out.append("\t\tsummarizeBy: none")
-            out.append("\t\tsourceColumn: Order Month")
-            out.append("\t\tlineageTag: " + str(uuid.uuid4()))
-            out.append("")
-            out.append("\tcolumn 'Order Year'")
-            out.append("\t\tdataType: int64")
-            out.append("\t\tsummarizeBy: none")
-            out.append("\t\tsourceColumn: Order Year")
-            out.append("\t\tlineageTag: " + str(uuid.uuid4()))
-            out.append("")
-            out.append("\tcolumn 'Profitability'")
-            out.append("\t\tdataType: string")
-            out.append("\t\tsummarizeBy: none")
-            out.append("\t\tsourceColumn: Profitability")
-            out.append("\t\tlineageTag: " + str(uuid.uuid4()))
-            out.append("")
-            if order_calc_columns:
-                if "Days to Ship Actual" in order_calc_columns:
-                    out.append("\tcolumn 'Days to Ship Actual'")
-                    out.append("\t\tdataType: int64")
-                    out.append("\t\tsummarizeBy: none")
-                    out.append("\t\tsourceColumn: Days to Ship Actual")
-                    out.append("\t\tlineageTag: " + str(uuid.uuid4()))
-                    out.append("")
-                if "Days to Ship Scheduled" in order_calc_columns:
-                    out.append("\tcolumn 'Days to Ship Scheduled'")
-                    out.append("\t\tdataType: int64")
-                    out.append("\t\tsummarizeBy: none")
-                    out.append("\t\tsourceColumn: Days to Ship Scheduled")
-                    out.append("\t\tlineageTag: " + str(uuid.uuid4()))
-                    out.append("")
+            existing_cols = set(cols.keys())
+            add_order_month = "Order Month" not in existing_cols
+            add_order_year = "Order Year" not in existing_cols
+            add_profitability = "Profitability" not in existing_cols
+            add_days_actual = order_calc_columns and "Days to Ship Actual" in order_calc_columns and "Days to Ship Actual" not in existing_cols
+            add_days_scheduled = order_calc_columns and "Days to Ship Scheduled" in order_calc_columns and "Days to Ship Scheduled" not in existing_cols
+
+            if add_order_month:
+                out.append("\tcolumn 'Order Month'")
+                out.append("\t\tdataType: dateTime")
+                out.append("\t\tsummarizeBy: none")
+                out.append("\t\tsourceColumn: Order Month")
+                out.append("\t\tlineageTag: " + str(uuid.uuid4()))
+                out.append("")
+            if add_order_year:
+                out.append("\tcolumn 'Order Year'")
+                out.append("\t\tdataType: int64")
+                out.append("\t\tsummarizeBy: none")
+                out.append("\t\tsourceColumn: Order Year")
+                out.append("\t\tlineageTag: " + str(uuid.uuid4()))
+                out.append("")
+            if add_profitability:
+                out.append("\tcolumn 'Profitability'")
+                out.append("\t\tdataType: string")
+                out.append("\t\tsummarizeBy: none")
+                out.append("\t\tsourceColumn: Profitability")
+                out.append("\t\tlineageTag: " + str(uuid.uuid4()))
+                out.append("")
+            if add_days_actual:
+                out.append("\tcolumn 'Days to Ship Actual'")
+                out.append("\t\tdataType: int64")
+                out.append("\t\tsummarizeBy: none")
+                out.append("\t\tsourceColumn: Days to Ship Actual")
+                out.append("\t\tlineageTag: " + str(uuid.uuid4()))
+                out.append("")
+            if add_days_scheduled:
+                out.append("\tcolumn 'Days to Ship Scheduled'")
+                out.append("\t\tdataType: int64")
+                out.append("\t\tsummarizeBy: none")
+                out.append("\t\tsourceColumn: Days to Ship Scheduled")
+                out.append("\t\tlineageTag: " + str(uuid.uuid4()))
+                out.append("")
             # Measures
             out.append("\tmeasure 'Total Sales' = SUM('Orders'[Sales])")
             out.append("\t\tformatString: \"$#,0\"")
@@ -492,25 +506,24 @@ def build_table_files(tables_dir, col_meta, windows_data_root, order_calc_column
                 ("Selected", "if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data]"),
                 ("Promoted", "Table.PromoteHeaders(Selected, [PromoteAllScalars=true])"),
                 ("ChangedType", "Table.TransformColumnTypes(Promoted, {{\"Order Date\", type date}, {\"Ship Date\", type date}, {\"Sales\", type number}, {\"Profit\", type number}, {\"Discount\", type number}, {\"Quantity\", Int64.Type}})"),
-                ("CleanNumbers", "Table.TransformColumns(ChangedType, {{\"Sales\", each try Number.From(_) otherwise null, type number}, {\"Profit\", each try Number.From(_) otherwise null, type number}, {\"Discount\", each try Number.From(_) otherwise null, type number}, {\"Quantity\", each try Number.From(_) otherwise null, Int64.Type}})"),
-                ("AddedMonth", "Table.AddColumn(CleanNumbers, \"Order Month\", each Date.StartOfMonth([Order Date]), type date)"),
-                ("AddedProfitability", "Table.AddColumn(AddedMonth, \"Profitability\", each if [Profit] >= 0 then \"Profitable\" else \"Unprofitable\", type text)"),
-                ("AddedYear", "Table.AddColumn(AddedProfitability, \"Order Year\", each Date.Year([Order Date]), Int64.Type)")
+                ("CleanNumbers", "Table.TransformColumns(ChangedType, {{\"Sales\", each try Number.From(_) otherwise null, type number}, {\"Profit\", each try Number.From(_) otherwise null, type number}, {\"Discount\", each try Number.From(_) otherwise null, type number}, {\"Quantity\", each try Number.From(_) otherwise null, Int64.Type}})")
             ]
-            if order_calc_columns:
-                if "Days to Ship Actual" in order_calc_columns:
-                    m_steps.append((
-                        "AddedDaysToShipActual",
-                        "Table.AddColumn(AddedYear, \"Days to Ship Actual\", each Duration.Days([Ship Date] - [Order Date]), Int64.Type)"
-                    ))
-                if "Days to Ship Scheduled" in order_calc_columns:
-                    source_step = "AddedDaysToShipActual" if "Days to Ship Actual" in order_calc_columns else "AddedYear"
-                    m_steps.append((
-                        "AddedDaysToShipScheduled",
-                        "Table.AddColumn("
-                        + source_step
-                        + ", \"Days to Ship Scheduled\", each if [Ship Mode] = \"Same Day\" then 0 else if [Ship Mode] = \"First Class\" then 1 else if [Ship Mode] = \"Second Class\" then 3 else if [Ship Mode] = \"Standard Class\" then 6 else null, Int64.Type)"
-                    ))
+            last_step = "CleanNumbers"
+            if add_order_month:
+                m_steps.append(("AddedMonth", "Table.AddColumn(CleanNumbers, \"Order Month\", each Date.StartOfMonth([Order Date]), type date)"))
+                last_step = "AddedMonth"
+            if add_profitability:
+                m_steps.append(("AddedProfitability", f"Table.AddColumn({last_step}, \"Profitability\", each if [Profit] >= 0 then \"Profitable\" else \"Unprofitable\", type text)"))
+                last_step = "AddedProfitability"
+            if add_order_year:
+                m_steps.append(("AddedYear", f"Table.AddColumn({last_step}, \"Order Year\", each Date.Year([Order Date]), Int64.Type)"))
+                last_step = "AddedYear"
+            if add_days_actual:
+                m_steps.append(("AddedDaysToShipActual", f"Table.AddColumn({last_step}, \"Days to Ship Actual\", each Duration.Days([Ship Date] - [Order Date]), Int64.Type)"))
+                last_step = "AddedDaysToShipActual"
+            if add_days_scheduled:
+                m_steps.append(("AddedDaysToShipScheduled", f"Table.AddColumn({last_step}, \"Days to Ship Scheduled\", each if [Ship Mode] = \"Same Day\" then 0 else if [Ship Mode] = \"First Class\" then 1 else if [Ship Mode] = \"Second Class\" then 3 else if [Ship Mode] = \"Standard Class\" then 6 else null, Int64.Type)"))
+                last_step = "AddedDaysToShipScheduled"
             for idx, (step, expr) in enumerate(m_steps):
                 suffix = "," if idx < len(m_steps) - 1 else ""
                 out.append(f"\t\t\t\t{step} = {expr}{suffix}")

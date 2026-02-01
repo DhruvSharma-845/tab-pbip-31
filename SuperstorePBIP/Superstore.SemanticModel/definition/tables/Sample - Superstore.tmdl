@@ -1,191 +1,191 @@
 table 'Sample - Superstore'
-	lineageTag: 676aec56-3b16-4716-a609-d8d614906334
+	lineageTag: 33d5e993-7d17-4e4f-bae6-e199ef47e384
 
 	column Category
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Category
-		lineageTag: cf9494b6-430a-4f36-b83b-60751ac3954a
+		lineageTag: 9089208f-1566-4e8a-b5c4-eb47f7daa02c
 
 	column 'Order Date'
 		dataType: dateTime
 		summarizeBy: none
 		sourceColumn: Order Date
-		lineageTag: b084aa57-6060-4531-9266-0ae83e4c5ff5
+		lineageTag: 48951b0e-586e-4519-ae30-6a216c3608b6
 
 	column Segment
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Segment
-		lineageTag: 868ae48c-e0cd-4306-a272-e4c96860b19b
+		lineageTag: e23c3552-a7ad-420f-92c0-0c26df4bfe26
 
 	column Region
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Region
-		lineageTag: 0db62bb2-547f-4cf9-bb0e-f54dede98a60
+		lineageTag: 0bee48fe-5cda-4160-82d5-f70b53f25a12
 
 	column 'State/Province'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: State/Province
-		lineageTag: 2bc21703-d3f2-4392-8250-f2cc137eaaab
+		lineageTag: 9e01f6dd-2120-4679-8d02-1deb4a76eb82
 
 	column Calculation_0831103151444568
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Calculation_0831103151444568
-		lineageTag: 893e35c4-3bb6-4d36-9721-56e5e1893eb7
+		lineageTag: 2c17d92a-4423-4645-b5d5-30ab1a7e8017
 
 	column Calculation_6861103170623145
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Calculation_6861103170623145
-		lineageTag: fa7743ef-bc76-40f2-a2f1-3aa2c6e2490f
+		lineageTag: 2131cff2-f212-4769-9e70-bbe780ee63e2
 
 	column Calculation_9321103144526191
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_9321103144526191
-		lineageTag: e479bdfe-55aa-4bb9-8c1a-e7dbd288d21f
+		lineageTag: ffb5d5e4-6e4f-4640-861c-3da06eb4138a
 
 	column Calculation_9921103144103743
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_9921103144103743
-		lineageTag: 73fe5165-09bf-46e4-b246-c48ae83592bb
+		lineageTag: 1d1c9c24-f5d7-4c2b-aa0e-d2b2f7811a0e
 
 	column 'Customer Name'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Customer Name
-		lineageTag: 5f1048fb-603e-4c9c-9a17-5dcc3d688f04
+		lineageTag: fdae8434-2760-4205-8bdf-dcee700d2fd6
 
 	column Profit
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Profit
-		lineageTag: de292be7-fe77-43cc-a310-b29d305bc9cb
+		lineageTag: 1b0a5406-40d5-474a-ac79-b97be55ee79f
 
 	column Quantity
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Quantity
-		lineageTag: bae1dca9-4ac8-4347-a67f-3a4cfca9b8e0
+		lineageTag: 20ab9320-e71d-45f4-893f-12f420f1623a
 
 	column Sales
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Sales
-		lineageTag: 0f097ec8-ce7c-4e5c-812a-a5cb80ab7887
+		lineageTag: 6c7e70e8-a4a6-4250-b595-34424266eb06
 
 	column 'Ship Date'
 		dataType: dateTime
 		summarizeBy: none
 		sourceColumn: Ship Date
-		lineageTag: 4d96645a-dac7-4c2a-94da-19eec7cba6f7
+		lineageTag: 2b6b7bc5-d1f4-4283-aaf5-d88f72cc6bc5
 
 	column 'Ship Mode'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Ship Mode
-		lineageTag: 8e575440-4e31-48fa-974c-be8c6a7499e0
+		lineageTag: 31590e5a-7fc8-44b6-8369-a8e9167c01ed
 
 	column Calculation_6401103171259723
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Calculation_6401103171259723
-		lineageTag: 7ef1e8a2-0bd8-476f-a5cb-b509342c663e
+		lineageTag: 0bafe9db-f974-419c-abc7-6323159be5d1
 
 	column 'Order ID'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Order ID
-		lineageTag: 4aa9ed45-2872-46e8-b048-0ca5cbbd58ca
+		lineageTag: e3e82a60-9f3a-4dee-8810-04d970cd7675
 
 	column 'Product Name'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Product Name
-		lineageTag: 18639bd3-352c-4401-8f13-209554e388b7
+		lineageTag: 5dd03c3f-6d60-4a0c-8f60-1f0f1974afe5
 
 	column Calculation_5144658905056067585
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_5144658905056067585
-		lineageTag: d796b5a5-3e1f-4146-8da7-2e9bda861878
+		lineageTag: 75065306-1f05-482e-8aad-b751eefb4a21
 
 	column Calculation_9951107165644870
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Calculation_9951107165644870
-		lineageTag: e21e6435-1fde-4b2c-ab96-0a4485d85149
+		lineageTag: 461ca369-5b56-4fe6-beac-3ea96348f6fb
 
 	column Calculation_9060122104947471
 		dataType: boolean
 		summarizeBy: none
 		sourceColumn: Calculation_9060122104947471
-		lineageTag: ecf0745f-76fd-45ff-9e14-1b4d0b15130e
+		lineageTag: 5f33a512-3229-4a90-ac99-0c0c8b131190
 
 	column City
 		dataType: string
 		summarizeBy: none
 		sourceColumn: City
-		lineageTag: 873c930c-26a6-4077-a882-9c365127d518
+		lineageTag: 6590d865-74ec-4666-98e5-05f407252061
 
 	column Discount
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Discount
-		lineageTag: e57338d7-dedc-4775-b7e2-b44b4db53023
+		lineageTag: 736dfdf9-a1c0-4c24-9d40-8b8c2c07226f
 
 	column 'Postal Code'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Postal Code
-		lineageTag: 5d702f9c-4d73-4980-a753-45d5a2a8dc9f
+		lineageTag: 3ca30717-c5e3-4220-98eb-1015d30dae89
 
 	column 'Sub-Category'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Sub-Category
-		lineageTag: 1beeee7e-9005-4768-b2b1-5ffb24fca82e
+		lineageTag: fa02d262-be7b-4ac8-8ed5-0105946cc5d7
 
 	column 'Country/Region'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Country/Region
-		lineageTag: ee8172c4-e3cd-4426-8e26-60908d78a381
+		lineageTag: c6a7ec85-80f6-435c-bc19-55d46820b0a3
 
 	column '__tableau_internal_object_id__].[Orders_6D2EF74F348B46BDA976A7AEEA6FB5C9'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: __tableau_internal_object_id__].[Orders_6D2EF74F348B46BDA976A7AEEA6FB5C9
-		lineageTag: 9356da60-e603-4612-a2f2-d49c33c0679c
+		lineageTag: 9c6765f6-c00d-4355-9025-dc8e3a14ccbe
 
 	column Calculation_5421109230915137
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_5421109230915137
-		lineageTag: ec201105-69a2-49b2-9840-d6cf01a00afa
+		lineageTag: fab405ab-1bf3-4977-a8c2-c32b51dfade1
 
 	column 'Sales est (copy)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Sales est (copy)
-		lineageTag: 8249cdc7-35e7-48e0-b75d-213c7dfc97e0
+		lineageTag: 1eef4434-1b84-498d-afa4-873a627a82ef
 
 	column 'Sales per Customer (copy)'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Sales per Customer (copy)
-		lineageTag: deb61229-fb44-4524-a941-a16384ed807c
+		lineageTag: 0318001b-2d26-405d-a07e-2c426b75e76d
 
 	column Calculation_9330126204734562
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Calculation_9330126204734562
-		lineageTag: 681438e3-a740-40cb-88a1-1804032a63bb
+		lineageTag: d657aee3-aae7-477b-9083-4121cf6c05c0
 
 	partition FullData = m
 		mode: import
@@ -197,13 +197,8 @@ table 'Sample - Superstore'
 				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
 				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
 				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
-				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}}),
-				AddedMonth = Table.AddColumn(CleanNumbers, "Order Month", each Date.StartOfMonth([Order Date]), type date),
-				AddedProfitability = Table.AddColumn(AddedMonth, "Profitability", each if [Profit] >= 0 then "Profitable" else "Unprofitable", type text),
-				AddedYear = Table.AddColumn(AddedProfitability, "Order Year", each Date.Year([Order Date]), Int64.Type),
-				AddedDaysToShipActual = Table.AddColumn(AddedYear, "Days to Ship Actual", each Duration.Days([Ship Date] - [Order Date]), Int64.Type),
-				AddedDaysToShipScheduled = Table.AddColumn(AddedDaysToShipActual, "Days to Ship Scheduled", each if [Ship Mode] = "Same Day" then 0 else if [Ship Mode] = "First Class" then 1 else if [Ship Mode] = "Second Class" then 3 else if [Ship Mode] = "Standard Class" then 6 else null, Int64.Type)
+				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}})
 			in
-				AddedDaysToShipScheduled
+				CleanNumbers
 	annotation PBI_ResultType = Table
 

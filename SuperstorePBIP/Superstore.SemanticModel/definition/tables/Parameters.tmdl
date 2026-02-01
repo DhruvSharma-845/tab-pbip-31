@@ -1,41 +1,41 @@
 table Parameters
-	lineageTag: d2f7b8ee-bd3b-4cb0-8e66-baaf821f1896
+	lineageTag: 5039f379-a66a-428a-9ff9-86221e22de83
 
 	column 'Parameter 1'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 1
-		lineageTag: b1efe570-89f3-4eda-aafd-1087d5cea97c
+		lineageTag: e91c6bbd-6590-41d1-bb41-17b5afb14905
 
 	column 'Parameter 2'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 2
-		lineageTag: b2c5dc45-15fe-4cb3-b5d0-83cdc401e392
+		lineageTag: 95672a57-a528-428c-9e08-92fc78ab5b06
 
 	column 'Base Salary'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Base Salary
-		lineageTag: 3ac1f633-da90-427d-b37e-fd6d8811e2c3
+		lineageTag: 77267a01-b6c4-4a38-bbf5-0821ec5a6e07
 
 	column 'Commission Rate'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Commission Rate
-		lineageTag: 4806e80e-8fd9-4c6e-9249-249621cbc1fc
+		lineageTag: 3ca8016d-8bd9-49b4-aaca-5b9d37480cba
 
 	column 'New Quota'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: New Quota
-		lineageTag: 1969b1ce-812f-4b63-a386-4e4a25f727fa
+		lineageTag: 54ff316d-c132-400d-9e7e-262c83dcb6d3
 
 	column 'Parameter 1 1'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Parameter 1 1
-		lineageTag: ffa1adad-a2d6-4ab8-8fd3-5e54a8fd6379
+		lineageTag: ab7c2c4e-98ee-452c-bf07-5d9974199a24
 
 	partition FullData = m
 		mode: import
@@ -47,13 +47,8 @@ table Parameters
 				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
 				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
 				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
-				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}}),
-				AddedMonth = Table.AddColumn(CleanNumbers, "Order Month", each Date.StartOfMonth([Order Date]), type date),
-				AddedProfitability = Table.AddColumn(AddedMonth, "Profitability", each if [Profit] >= 0 then "Profitable" else "Unprofitable", type text),
-				AddedYear = Table.AddColumn(AddedProfitability, "Order Year", each Date.Year([Order Date]), Int64.Type),
-				AddedDaysToShipActual = Table.AddColumn(AddedYear, "Days to Ship Actual", each Duration.Days([Ship Date] - [Order Date]), Int64.Type),
-				AddedDaysToShipScheduled = Table.AddColumn(AddedDaysToShipActual, "Days to Ship Scheduled", each if [Ship Mode] = "Same Day" then 0 else if [Ship Mode] = "First Class" then 1 else if [Ship Mode] = "Second Class" then 3 else if [Ship Mode] = "Standard Class" then 6 else null, Int64.Type)
+				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}})
 			in
-				AddedDaysToShipScheduled
+				CleanNumbers
 	annotation PBI_ResultType = Table
 
