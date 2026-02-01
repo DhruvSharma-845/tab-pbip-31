@@ -139,9 +139,16 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
             out.append("\t\t\t\tOrdersTable = try Source{[Item=\"Orders\",Kind=\"Table\"]}[Data] otherwise null,")
             out.append("\t\t\t\tOrdersSheet = try Source{[Item=\"Orders\",Kind=\"Sheet\"]}[Data] otherwise null,")
             out.append("\t\t\t\tSelected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],")
-            out.append("\t\t\t\tPromoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true])")
+            out.append("\t\t\t\tPromoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),")
+            out.append("\t\t\t\tChangedType = Table.TransformColumnTypes(Promoted, {{\"Order Date\", type date}, {\"Ship Date\", type date}, {\"Sales\", type number}, {\"Profit\", type number}, {\"Discount\", type number}, {\"Quantity\", Int64.Type}}),")
+            out.append("\t\t\t\tCleanNumbers = Table.TransformColumns(ChangedType, {{\"Sales\", each try Number.From(_) otherwise null, type number}, {\"Profit\", each try Number.From(_) otherwise null, type number}, {\"Discount\", each try Number.From(_) otherwise null, type number}, {\"Quantity\", each try Number.From(_) otherwise null, Int64.Type}}),")
+            out.append("\t\t\t\tAddedMonth = Table.AddColumn(CleanNumbers, \"Order Month\", each Date.StartOfMonth([Order Date]), type date),")
+            out.append("\t\t\t\tAddedProfitability = Table.AddColumn(AddedMonth, \"Profitability\", each if [Profit] >= 0 then \"Profitable\" else \"Unprofitable\", type text)")
         out.append("\t\t\tin")
-        out.append("\t\t\t\tPromoted")
+        if "Sales Target" in table or "Sales Commission" in table:
+            out.append("\t\t\t\tPromoted")
+        else:
+            out.append("\t\t\t\tAddedProfitability")
         out.append("\tannotation PBI_ResultType = Table")
         out.append("")
 
@@ -247,68 +254,167 @@ def main():
             "activePageName": page_id
         }, f, indent=2)
 
-    # Visual
-    table, category, value = pick_visual_fields(col_meta)
-    visual_id = hashlib.sha1(f"{table}:{category}:{value}".encode("utf-8")).hexdigest()[:16]
-    visual_dir = os.path.join(page_folder, "visuals", visual_id)
-    os.makedirs(visual_dir, exist_ok=True)
-    visual_json = {
+    # Overview visuals (Superstore-specific layout)
+    visuals_dir = os.path.join(page_folder, "visuals")
+    os.makedirs(visuals_dir, exist_ok=True)
+    def write_visual(vid, payload):
+        vdir = os.path.join(visuals_dir, vid)
+        os.makedirs(vdir, exist_ok=True)
+        with open(os.path.join(vdir, "visual.json"), "w") as f:
+            json.dump(payload, f, indent=2)
+
+    # KPI cards
+    card_specs = [
+        ("card_sales", "Total Sales", 20),
+        ("card_profit", "Total Profit", 230),
+        ("card_ratio", "Profit Ratio", 440),
+        ("card_profit_order", "Profit per Order", 650),
+        ("card_sales_customer", "Sales per Customer", 860),
+        ("card_discount", "Avg Discount", 1070),
+    ]
+    for vid, measure, x in card_specs:
+        write_visual(vid, {
+            "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+            "name": vid,
+            "position": {"x": x, "y": 20, "z": 0, "height": 100, "width": 200, "tabOrder": 0},
+            "visual": {
+                "visualType": "card",
+                "query": {
+                    "queryState": {
+                        "Values": {
+                            "projections": [{
+                                "field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": measure}},
+                                "queryRef": f"Orders.{measure}",
+                                "nativeQueryRef": measure
+                            }]
+                        }
+                    }
+                },
+                "drillFilterOtherVisuals": True,
+                "autoSelectVisualType": True
+            }
+        })
+
+    # Monthly sales by segment (area)
+    write_visual("monthly_segment", {
         "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-        "name": visual_id,
-        "position": {
-            "x": 60,
-            "y": 60,
-            "z": 0,
-            "height": 300,
-            "width": 520,
-            "tabOrder": 0
-        },
+        "name": "monthly_segment",
+        "position": {"x": 20, "y": 140, "z": 1, "height": 260, "width": 600, "tabOrder": 1},
         "visual": {
-            "visualType": "columnChart",
+            "visualType": "areaChart",
             "query": {
                 "queryState": {
                     "Category": {
-                        "projections": [
-                            {
-                                "field": {
-                                    "Column": {
-                                        "Expression": {"SourceRef": {"Entity": table}},
-                                        "Property": category
-                                    }
-                                },
-                                "queryRef": f"{table}.{category}",
-                                "nativeQueryRef": category,
-                                "active": True
-                            }
-                        ]
+                        "projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Order Month"}},
+                            "queryRef": "Orders.Order Month",
+                            "nativeQueryRef": "Order Month",
+                            "active": True
+                        }]
+                    },
+                    "Series": {
+                        "projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Segment"}},
+                            "queryRef": "Orders.Segment",
+                            "nativeQueryRef": "Segment"
+                        }]
+                    },
+                    "Legend": {
+                        "projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Profitability"}},
+                            "queryRef": "Orders.Profitability",
+                            "nativeQueryRef": "Profitability"
+                        }]
                     },
                     "Y": {
-                        "projections": [
-                            {
-                                "field": {
-                                    "Aggregation": {
-                                        "Expression": {
-                                            "Column": {
-                                                "Expression": {"SourceRef": {"Entity": table}},
-                                                "Property": value
-                                            }
-                                        },
-                                        "Function": 0
-                                    }
-                                },
-                                "queryRef": f"Sum({table}.{value})",
-                                "nativeQueryRef": f"Sum of {value}"
-                            }
-                        ]
+                        "projections": [{
+                            "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Sales"}}, "Function": 0}},
+                            "queryRef": "Sum(Orders.Sales)",
+                            "nativeQueryRef": "Sum of Sales"
+                        }]
                     }
                 }
             },
             "drillFilterOtherVisuals": True,
             "autoSelectVisualType": True
         }
-    }
-    with open(os.path.join(visual_dir, "visual.json"), "w") as f:
-        json.dump(visual_json, f, indent=2)
+    })
+
+    # Monthly sales by product category (area)
+    write_visual("monthly_category", {
+        "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+        "name": "monthly_category",
+        "position": {"x": 640, "y": 140, "z": 2, "height": 260, "width": 600, "tabOrder": 2},
+        "visual": {
+            "visualType": "areaChart",
+            "query": {
+                "queryState": {
+                    "Category": {
+                        "projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Order Month"}},
+                            "queryRef": "Orders.Order Month",
+                            "nativeQueryRef": "Order Month",
+                            "active": True
+                        }]
+                    },
+                    "Series": {
+                        "projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Category"}},
+                            "queryRef": "Orders.Category",
+                            "nativeQueryRef": "Category"
+                        }]
+                    },
+                    "Legend": {
+                        "projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Profitability"}},
+                            "queryRef": "Orders.Profitability",
+                            "nativeQueryRef": "Profitability"
+                        }]
+                    },
+                    "Y": {
+                        "projections": [{
+                            "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Sales"}}, "Function": 0}},
+                            "queryRef": "Sum(Orders.Sales)",
+                            "nativeQueryRef": "Sum of Sales"
+                        }]
+                    }
+                }
+            },
+            "drillFilterOtherVisuals": True,
+            "autoSelectVisualType": True
+        }
+    })
+
+    # Profit ratio by city (map)
+    write_visual("profit_ratio_city", {
+        "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+        "name": "profit_ratio_city",
+        "position": {"x": 20, "y": 410, "z": 3, "height": 260, "width": 1220, "tabOrder": 3},
+        "visual": {
+            "visualType": "map",
+            "query": {
+                "queryState": {
+                    "Location": {
+                        "projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "City"}},
+                            "queryRef": "Orders.City",
+                            "nativeQueryRef": "City",
+                            "active": True
+                        }]
+                    },
+                    "Size": {
+                        "projections": [{
+                            "field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": "Profit Ratio"}},
+                            "queryRef": "Orders.Profit Ratio",
+                            "nativeQueryRef": "Profit Ratio"
+                        }]
+                    }
+                }
+            },
+            "drillFilterOtherVisuals": True,
+            "autoSelectVisualType": True
+        }
+    })
 
     # Semantic model structure
     model_dir = os.path.join(out_root, model_name, "definition")
