@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Orders"
+                      "Entity": "Sample - Superstore"
                     }
                   },
                   "Property": "Product Name"
                 }
               },
-              "queryRef": "Orders.Product Name",
+              "queryRef": "Sample - Superstore.Product Name",
               "nativeQueryRef": "Product Name",
               "active": true
             }
@@ -41,7 +41,7 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Orders"
+                          "Entity": "Sample - Superstore"
                         }
                       },
                       "Property": "Sales"
@@ -50,7 +50,7 @@
                   "Function": 0
                 }
               },
-              "queryRef": "Sum(Orders.Sales)",
+              "queryRef": "Sum(Sample - Superstore.Sales)",
               "nativeQueryRef": "Sum of Sales"
             }
           ]

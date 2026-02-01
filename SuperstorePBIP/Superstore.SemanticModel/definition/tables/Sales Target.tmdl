@@ -1,29 +1,29 @@
 table 'Sales Target'
-	lineageTag: 4e0a49db-1fb8-41c7-9b30-11954301da9f
+	lineageTag: 7637ef10-dad3-4a07-9a3f-1711174d48e2
 
 	column 'Sales Target'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Sales Target
-		lineageTag: e545c779-4725-4eb0-85c5-8045aff94bc0
+		lineageTag: 7a3bff2b-0e5f-463e-95eb-045f24e15c26
 
 	column Category
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Category
-		lineageTag: d722b08d-0033-413e-9bfa-0c4828a06ab9
+		lineageTag: a2000c98-2ccf-4f24-94e9-c822b1ac5dd3
 
 	column 'Order Date'
 		dataType: dateTime
 		summarizeBy: none
 		sourceColumn: Order Date
-		lineageTag: 26dc1afb-48e6-4af9-b6da-2f9b1b80ab7d
+		lineageTag: b28ab9ea-0048-4395-978d-064881b90429
 
 	column Segment
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Segment
-		lineageTag: 53a2a916-a481-4ef8-a4af-4766d9ce4139
+		lineageTag: fd3d4e83-6039-4f46-872d-b597a53594da
 
 	partition FullData = m
 		mode: import

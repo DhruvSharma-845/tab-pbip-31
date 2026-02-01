@@ -111,14 +111,14 @@ def parse_worksheet_meta(root):
     return meta
 
 
-def parse_dashboard_worksheets(root):
+def parse_dashboard_worksheets(root, worksheet_names):
     dashboards = {}
     for d in root.findall(".//dashboard"):
         dname = d.get("name")
         worksheets = []
         for z in d.findall(".//zone"):
             wname = z.get("name") or z.get("worksheet")
-            if wname:
+            if wname and wname in worksheet_names:
                 worksheets.append(wname)
         dashboards[dname] = list(dict.fromkeys(worksheets))
     return dashboards
@@ -178,6 +178,16 @@ def choose_category_value(meta, default_category="Category", default_value="Sale
             value = f
             break
     return category, value
+
+
+def choose_table_for_fields(col_meta, category, value):
+    for table, cols in col_meta.items():
+        if category in cols and value in cols:
+            return table
+    for table, cols in col_meta.items():
+        if value in cols:
+            return table
+    return "Orders"
 
 def build_table_files(tables_dir, col_meta, windows_data_root):
     tables_dir = os.path.abspath(tables_dir)
@@ -309,7 +319,8 @@ def main():
     ds_caption = parse_datasources(root)
     col_meta = parse_columns(root, ds_caption)
     ws_meta = parse_worksheet_meta(root)
-    dash_ws = parse_dashboard_worksheets(root)
+    worksheet_names = set(ws_meta.keys())
+    dash_ws = parse_dashboard_worksheets(root, worksheet_names)
 
     # Report structure
     pages_dir = os.path.join(out_root, report_name, "definition", "pages")
@@ -684,6 +695,7 @@ def main():
             mark = meta.get("mark")
             vtype = map_mark_to_visual(mark)
             category, value = choose_category_value(meta)
+            table = choose_table_for_fields(col_meta, category, value)
 
             # map charts on geo fields
             if category in ("City", "State/Province") and vtype in ("tableEx", "map"):
@@ -695,14 +707,14 @@ def main():
 
             query_state = {
                 "Category": {"projections": [{
-                    "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": category}},
-                    "queryRef": f"Orders.{category}",
+                    "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": category}},
+                    "queryRef": f"{table}.{category}",
                     "nativeQueryRef": category,
                     "active": True
                 }]},
                 "Y": {"projections": [{
-                    "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": value}}, "Function": 0}},
-                    "queryRef": f"Sum(Orders.{value})",
+                    "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": value}}, "Function": 0}},
+                    "queryRef": f"Sum({table}.{value})",
                     "nativeQueryRef": f"Sum of {value}"
                 }]}
             }
@@ -711,14 +723,14 @@ def main():
             if vtype == "map":
                 query_state = {
                     "Location": {"projections": [{
-                        "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": category}},
-                        "queryRef": f"Orders.{category}",
+                        "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": category}},
+                        "queryRef": f"{table}.{category}",
                         "nativeQueryRef": category,
                         "active": True
                     }]},
                     "Size": {"projections": [{
-                        "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Orders"}}, "Property": value}}, "Function": 0}},
-                        "queryRef": f"Sum(Orders.{value})",
+                        "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": value}}, "Function": 0}},
+                        "queryRef": f"Sum({table}.{value})",
                         "nativeQueryRef": f"Sum of {value}"
                     }]}
                 }
