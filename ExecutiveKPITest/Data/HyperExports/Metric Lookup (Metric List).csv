@@ -1,0 +1,48 @@
+Pillar,Data,Metric_ID,Metric
+5,HR,1,Gender Split
+5,HR,2,Race Split
+5,HR,3,Average Tenure
+5,HR,4,Average Age
+5,HR,5,Headcount
+5,HR,6,New Hires
+1,Call Centre,1,Calls Received
+1,Call Centre,2,Average Call Duration
+1,Call Centre,3,Calls Above SLA
+1,Call Centre,4,Average CSAT Score
+1,Call Centre,5,Positive Sentiment %
+1,Call Centre,6,Positive Sentiment Calls
+4,Help Desk,1,Tickets Received
+4,Help Desk,2,Satisfaction Score
+4,Help Desk,3,Ticket Severity
+4,Help Desk,4,Average Resolution Time
+4,Help Desk,5,% of Satisfied Customers
+4,Help Desk,6,Open Tickets
+7,Marketing,1,Engagement Rate
+7,Marketing,2,Reply Rate
+7,Marketing,3,Coverage Rate
+7,Marketing,4,Tweet volume
+7,Marketing,5,Media Accuracy
+7,Marketing,6,Top Tweet
+6,Retail,1,Average Order / Item
+6,Retail,2,Average Discount Given
+6,Retail,3,Number of Items Sold
+3,Finance,1,Sales
+3,Finance,2,Operating Costs (COGS)
+3,Finance,3,Operating Expenses
+3,Finance,4,Gross Profit
+3,Finance,5,Gross Profit %
+3,Finance,6,Net Profit
+3,Finance,7,Net Profit %
+2,Employee Pulse,1,Mind Score
+2,Employee Pulse,2,Energy Score
+2,Employee Pulse,3,Nature Score
+2,Employee Pulse,4,Tactics Score
+2,Employee Pulse,5,Identity Score
+2,Employee Pulse,6,Personality Mix
+0,HR Attrition,1,Attrition Rate
+0,HR Attrition,2,Total Attrition
+0,HR Attrition,3,Environment Satisfaction
+0,HR Attrition,4,Job Satisfaction
+0,HR Attrition,5,Job Involvement
+0,HR Attrition,6,Relationship Satisfaction
+0,HR Attrition,7,Worklife Balance

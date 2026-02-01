@@ -167,16 +167,10 @@ table Parameters
 		mode: import
 		source =
 			let
-				Source = try Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\tab-pbip-31\ExecutiveKPITest\Data\Data\EXEC KPI SCORECARD - NewDataSource2.twb Files\Metric Lookup (Metric List).hyper"), null, true)
-					otherwise try Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\Data\EXEC KPI SCORECARD - NewDataSource2.twb Files\Metric Lookup (Metric List).hyper"), null, true)
-					otherwise Excel.Workbook(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\EXEC KPI SCORECARD - NewDataSource2.twb Files\Metric Lookup (Metric List).hyper"), null, true),
-				OrdersTable = try Source{[Item="Orders",Kind="Table"]}[Data] otherwise null,
-				OrdersSheet = try Source{[Item="Orders",Kind="Sheet"]}[Data] otherwise null,
-				Selected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],
-				Promoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),
-				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
-				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}})
+				Source = try Csv.Document(File.Contents("C:\Users\dhrsharm\Downloads\tab-pbip-31\ExecutiveKPITest\Data\HyperExports\Metric Lookup (Metric List).csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None])
+					otherwise Csv.Document(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\HyperExports\Metric Lookup (Metric List).csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
 			in
-				CleanNumbers
+				Promoted
 	annotation PBI_ResultType = Table
 
