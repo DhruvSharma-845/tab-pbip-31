@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "41ed3157d0a3fcac830d",
+  "name": "f4e5d6c7b8a9c0d1",
   "position": {
-    "x": 20,
+    "x": 860,
     "y": 20,
     "z": 0,
     "height": 100,
@@ -23,11 +23,11 @@
                       "Entity": "Orders"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Property": "Sales per Customer"
                 }
               },
-              "queryRef": "Orders.Total Sales",
-              "nativeQueryRef": "Total Sales"
+              "queryRef": "Orders.Sales per Customer",
+              "nativeQueryRef": "Sales per Customer"
             }
           ]
         }

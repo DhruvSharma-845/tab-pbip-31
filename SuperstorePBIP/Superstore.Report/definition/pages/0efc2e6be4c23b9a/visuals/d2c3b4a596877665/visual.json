@@ -1,38 +1,19 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "cd34ef56ab7890cd",
+  "name": "d2c3b4a596877665",
   "position": {
-    "x": 20,
-    "y": 410,
-    "z": 3,
-    "height": 260,
-    "width": 1220,
-    "tabOrder": 3
+    "x": 440,
+    "y": 20,
+    "z": 0,
+    "height": 100,
+    "width": 200,
+    "tabOrder": 0
   },
   "visual": {
-    "visualType": "filledMap",
+    "visualType": "card",
     "query": {
       "queryState": {
-        "Location": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "State/Province"
-                }
-              },
-              "queryRef": "Orders.State/Province",
-              "nativeQueryRef": "State/Province",
-              "active": true
-            }
-          ]
-        },
-        "Color": {
+        "Values": {
           "projections": [
             {
               "field": {

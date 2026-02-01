@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "41ed3157d0a3fcac830d",
+  "name": "e3d4c5b6a7988776",
   "position": {
-    "x": 20,
+    "x": 650,
     "y": 20,
     "z": 0,
     "height": 100,
@@ -23,11 +23,11 @@
                       "Entity": "Orders"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Property": "Profit per Order"
                 }
               },
-              "queryRef": "Orders.Total Sales",
-              "nativeQueryRef": "Total Sales"
+              "queryRef": "Orders.Profit per Order",
+              "nativeQueryRef": "Profit per Order"
             }
           ]
         }

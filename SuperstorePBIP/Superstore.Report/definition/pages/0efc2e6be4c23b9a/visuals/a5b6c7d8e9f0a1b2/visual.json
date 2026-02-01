@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "41ed3157d0a3fcac830d",
+  "name": "a5b6c7d8e9f0a1b2",
   "position": {
-    "x": 20,
+    "x": 1070,
     "y": 20,
     "z": 0,
     "height": 100,
@@ -23,11 +23,11 @@
                       "Entity": "Orders"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Property": "Avg Discount"
                 }
               },
-              "queryRef": "Orders.Total Sales",
-              "nativeQueryRef": "Total Sales"
+              "queryRef": "Orders.Avg Discount",
+              "nativeQueryRef": "Avg Discount"
             }
           ]
         }

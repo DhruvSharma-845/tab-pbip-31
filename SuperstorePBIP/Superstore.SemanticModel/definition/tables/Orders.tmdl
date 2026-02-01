@@ -188,6 +188,12 @@ table Orders
 		lineageTag: 2253da9f-8eb3-4b5d-a099-238cebe990cf
 
 	measure 'Orders Sum of Sales' = SUM('Orders'[Sales])
+	measure 'Total Sales' = SUM('Orders'[Sales])
+	measure 'Total Profit' = SUM('Orders'[Profit])
+	measure 'Profit Ratio' = DIVIDE([Total Profit],[Total Sales])
+	measure 'Profit per Order' = DIVIDE([Total Profit], DISTINCTCOUNT('Orders'[Order ID]))
+	measure 'Sales per Customer' = DIVIDE([Total Sales], DISTINCTCOUNT('Orders'[Customer Name]))
+	measure 'Avg Discount' = AVERAGE('Orders'[Discount])
 	partition FullData = m
 		mode: import
 		source =

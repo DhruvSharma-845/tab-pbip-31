@@ -2,18 +2,37 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "ab12cd34ef56ab78",
   "position": {
-    "x": 620,
-    "y": 200,
+    "x": 640,
+    "y": 140,
     "z": 2,
-    "height": 300,
-    "width": 560,
+    "height": 260,
+    "width": 600,
     "tabOrder": 2
   },
   "visual": {
-    "visualType": "columnChart",
+    "visualType": "lineChart",
     "query": {
       "queryState": {
         "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Order Date"
+                }
+              },
+              "queryRef": "Orders.Order Date",
+              "nativeQueryRef": "Order Date",
+              "active": true
+            }
+          ]
+        },
+        "Series": {
           "projections": [
             {
               "field": {
@@ -27,8 +46,7 @@
                 }
               },
               "queryRef": "Orders.Category",
-              "nativeQueryRef": "Category",
-              "active": true
+              "nativeQueryRef": "Category"
             }
           ]
         },
@@ -60,21 +78,16 @@
         "sort": [
           {
             "field": {
-              "Aggregation": {
+              "Column": {
                 "Expression": {
-                  "Column": {
-                    "Expression": {
-                      "SourceRef": {
-                        "Entity": "Orders"
-                      }
-                    },
-                    "Property": "Sales"
+                  "SourceRef": {
+                    "Entity": "Orders"
                   }
                 },
-                "Function": 0
+                "Property": "Order Date"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
           }
         ],
         "isDefaultSort": true
