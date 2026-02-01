@@ -162,6 +162,24 @@ def parse_datasource_tables(root, ds_caption):
     return ds_tables
 
 
+def parse_column_maps(root):
+    mappings = {}
+    for ds in root.findall(".//datasource"):
+        for m in ds.findall(".//cols/map"):
+            key = m.get("key") or ""
+            value = m.get("value") or ""
+            key_field = key.strip("[]")
+            if not key_field or not value:
+                continue
+            # value looks like [Table].[Column]
+            parts = re.findall(r"\[([^\]]+)\]", value)
+            if len(parts) >= 2:
+                table = parts[0]
+                column = parts[1]
+                mappings[key_field] = (table, column)
+    return mappings
+
+
 def parse_object_graph_relationships(root):
     relationships = []
     for ds in root.findall(".//datasource"):
@@ -471,6 +489,48 @@ def resolve_table_for_field(col_meta, field, preferred_table=None, relationships
     return choose_table_for_field(col_meta, field)
 
 
+def format_table_ref(name: str) -> str:
+    return quote(name)
+
+
+def format_column_ref(name: str) -> str:
+    return quote(name)
+
+
+def build_relationships_tmdl(model_dir, relationships, col_meta, column_maps):
+    rel_lines = []
+    seen = set()
+    for rel in relationships:
+        from_table = rel["from_table"]
+        from_field = rel["from_field"]
+        to_table = rel["to_table"]
+        to_field = rel["to_field"]
+
+        if from_field in column_maps:
+            from_table, from_field = column_maps[from_field]
+        if to_field in column_maps:
+            to_table, to_field = column_maps[to_field]
+
+        if from_table not in col_meta or to_table not in col_meta:
+            continue
+        if from_field not in col_meta.get(from_table, {}) or to_field not in col_meta.get(to_table, {}):
+            continue
+
+        key = (from_table, from_field, to_table, to_field)
+        if key in seen:
+            continue
+        seen.add(key)
+
+        rel_id = str(uuid.uuid4())
+        rel_lines.append(f"relationship {rel_id}")
+        rel_lines.append(f"\tfromColumn: {format_table_ref(from_table)}.{format_column_ref(from_field)}")
+        rel_lines.append(f"\ttoColumn: {format_table_ref(to_table)}.{format_column_ref(to_field)}")
+        rel_lines.append("")
+    if rel_lines:
+        out_path = os.path.join(model_dir, "relationships.tmdl")
+        Path(out_path).write_text("\n".join(rel_lines).rstrip() + "\n")
+
+
 def choose_series(fields):
     for f in fields:
         if f in ("Segment", "Category", "Region"):
@@ -688,6 +748,7 @@ def main():
     ws_datasources = parse_worksheet_datasources(root)
     ds_tables = parse_datasource_tables(root, ds_caption)
     relationships = parse_object_graph_relationships(root)
+    column_maps = parse_column_maps(root)
     ws_preferred_tables = {}
     for ws_name, ds_name in ws_datasources.items():
         ds_caption_name = ds_caption.get(ds_name, ds_name)
@@ -1165,21 +1226,23 @@ def main():
                 measure_fields = ws_measure_names.get(ws_name, [])
                 table_fields = dedupe_preserve(row_fields + measure_fields)
                 preferred_table = ws_preferred_tables.get(ws_name)
-                primary_table = preferred_table or choose_table_for_any(col_meta, table_fields)
                 extra_columns = set(order_calc_columns or [])
                 measure_overrides = {"Profit Ratio"}
                 projections = []
                 for field in table_fields:
-                    if field in col_meta.get(primary_table, {}) or field in extra_columns:
+                    field_table = resolve_table_for_field(col_meta, field, preferred_table, relationships)
+                    if field_table is None:
+                        continue
+                    if field in col_meta.get(field_table, {}) or field in extra_columns:
                         projections.append({
-                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": primary_table}}, "Property": field}},
-                            "queryRef": f"{primary_table}.{field}",
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": field_table}}, "Property": field}},
+                            "queryRef": f"{field_table}.{field}",
                             "nativeQueryRef": field
                         })
-                    elif field in measure_overrides and field in col_meta.get(primary_table, {}):
+                    elif field in measure_overrides and field in col_meta.get(field_table, {}):
                         projections.append({
-                            "field": {"Measure": {"Expression": {"SourceRef": {"Entity": primary_table}}, "Property": field}},
-                            "queryRef": f"{primary_table}.{field}",
+                            "field": {"Measure": {"Expression": {"SourceRef": {"Entity": field_table}}, "Property": field}},
+                            "queryRef": f"{field_table}.{field}",
                             "nativeQueryRef": field
                         })
                 if scaled_ws_rect:
@@ -1405,6 +1468,7 @@ def main():
     tables_dir = os.path.join(model_dir, "tables")
     build_table_files(tables_dir, col_meta, args.windows_data_root, order_calc_columns=order_calc_columns)
     normalize_lineage_indentation(tables_dir)
+    build_relationships_tmdl(model_dir, relationships, col_meta, column_maps)
 
     # PBIP file
     with open(os.path.join(out_root, f"{args.project_name}.pbip"), "w") as f:
