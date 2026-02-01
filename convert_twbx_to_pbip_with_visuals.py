@@ -233,29 +233,39 @@ def main():
     with open(os.path.join(out_root, report_name, "definition.pbir"), "w") as f:
         json.dump({"version": "4.0", "datasetReference": {"byPath": {"path": f"../{model_name}"}}}, f, indent=2)
 
-    # pages.json and first page
-    page_id = hashlib.sha1("Page 1".encode("utf-8")).hexdigest()[:16]
-    page_folder = os.path.join(pages_dir, page_id)
-    os.makedirs(page_folder, exist_ok=True)
-    page_json = {
-        "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
-        "name": page_id,
-        "displayName": "Executive Overview - Profitability (All)",
-        "displayOption": "FitToPage",
-        "height": 720,
-        "width": 1280
-    }
-    with open(os.path.join(page_folder, "page.json"), "w") as f:
-        json.dump(page_json, f, indent=2)
+    # pages.json from Tableau dashboards
+    dashboard_names = [d.get("name") for d in root.findall(".//dashboard") if d.get("name")]
+    if not dashboard_names:
+        dashboard_names = ["Overview"]
+    page_ids = []
+    page_by_name = {}
+    for name in dashboard_names:
+        page_id = hashlib.sha1(name.encode("utf-8")).hexdigest()[:16]
+        page_ids.append(page_id)
+        page_by_name[name] = page_id
+        page_folder = os.path.join(pages_dir, page_id)
+        os.makedirs(page_folder, exist_ok=True)
+        page_json = {
+            "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+            "name": page_id,
+            "displayName": name,
+            "displayOption": "FitToPage",
+            "height": 720,
+            "width": 1280
+        }
+        with open(os.path.join(page_folder, "page.json"), "w") as f:
+            json.dump(page_json, f, indent=2)
     with open(os.path.join(pages_dir, "pages.json"), "w") as f:
         json.dump({
             "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json",
-            "pageOrder": [page_id],
-            "activePageName": page_id
+            "pageOrder": page_ids,
+            "activePageName": page_by_name.get("Overview", page_ids[0])
         }, f, indent=2)
 
     # Overview visuals (Superstore-specific layout + titles)
-    visuals_dir = os.path.join(page_folder, "visuals")
+    overview_id = page_by_name.get("Overview", page_ids[0])
+    overview_folder = os.path.join(pages_dir, overview_id)
+    visuals_dir = os.path.join(overview_folder, "visuals")
     os.makedirs(visuals_dir, exist_ok=True)
     def write_visual(vid, payload):
         vdir = os.path.join(visuals_dir, vid)
