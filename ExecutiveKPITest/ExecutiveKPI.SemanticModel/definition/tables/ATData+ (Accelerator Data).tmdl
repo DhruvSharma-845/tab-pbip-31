@@ -557,8 +557,18 @@ table 'ATData+ (Accelerator Data)'
 		mode: import
 		source =
 			let
-				Source = try Csv.Document(File.Contents("C:\Users\dhrsharm\Downloads\tab-pbip-31\ExecutiveKPITest\Data\HyperExports\ATData+ (Accelerator Data).csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None])
-					otherwise Csv.Document(File.Contents("C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\HyperExports\ATData+ (Accelerator Data).csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				Direct1 = "C:\Users\dhrsharm\Downloads\tab-pbip-31\ExecutiveKPITest\Data\HyperExports\ATData+ (Accelerator Data).csv",
+				Direct2 = "C:\Users\dhrsharm\Downloads\ExecutiveKPITest\Data\HyperExports\ATData+ (Accelerator Data).csv",
+				Direct3 = "C:\Users\dhrsharm\Downloads\tab-pbip-31-code-new-visuals\ExecutiveKPITest\Data\HyperExports\ATData+ (Accelerator Data).csv",
+				Source = try Csv.Document(File.Contents(Direct1), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None])
+					otherwise try Csv.Document(File.Contents(Direct2), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None])
+					otherwise try Csv.Document(File.Contents(Direct3), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None])
+					otherwise
+						let
+							Found = try Table.First(Table.SelectRows(Folder.Files("C:\Users\dhrsharm\Downloads"), each [Name] = "ATData+ (Accelerator Data).csv")) otherwise null,
+							Path = if Found = null then error "ATData CSV not found under Downloads" else Found[Folder Path] & Found[Name]
+						in
+							Csv.Document(File.Contents(Path), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None]),
 				Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
 			in
 				Promoted
