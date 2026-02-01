@@ -3,17 +3,17 @@
   "name": "b5e5f9009cd0de83",
   "position": {
     "x": 20,
-    "y": 360,
+    "y": 60,
     "z": 3,
-    "height": 260,
-    "width": 600,
+    "height": 560,
+    "width": 1240,
     "tabOrder": 3
   },
   "visual": {
     "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
@@ -23,35 +23,11 @@
                       "Entity": "Sample - Superstore"
                     }
                   },
-                  "Property": "Category"
+                  "Property": "Sales"
                 }
               },
-              "queryRef": "Sample - Superstore.Category",
-              "nativeQueryRef": "Category",
-              "active": true
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Aggregation": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Sample - Superstore"
-                        }
-                      },
-                      "Property": "Sales"
-                    }
-                  },
-                  "Function": 0
-                }
-              },
-              "queryRef": "Sum(Sample - Superstore.Sales)",
-              "nativeQueryRef": "Sum of Sales"
+              "queryRef": "Sample - Superstore.Sales",
+              "nativeQueryRef": "Sales"
             }
           ]
         }

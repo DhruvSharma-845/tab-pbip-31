@@ -1,41 +1,41 @@
 table Parameters
-	lineageTag: e28adcd0-74d0-4f20-b652-1052be65a137
+	lineageTag: 75cb0cd4-925e-452b-84f7-83856686750d
 
 	column 'Parameter 1'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 1
-		lineageTag: 6d058fef-1cab-4a64-b2ca-5304525eeef2
+		lineageTag: 93e6a788-8b92-49d0-bc05-86be5bb300c6
 
 	column 'Parameter 2'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Parameter 2
-		lineageTag: acbaef19-fdc5-436f-a4f4-6b02a8649771
+		lineageTag: 693b9e8c-84ba-4f16-9fdd-bfc30cf95518
 
 	column 'Base Salary'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: Base Salary
-		lineageTag: 468587f2-2580-4fab-b9c6-891cd2611498
+		lineageTag: de1eaa7e-643e-405a-bf09-c7eb4a71ba24
 
 	column 'Commission Rate'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: Commission Rate
-		lineageTag: d0d467fd-942c-46af-8f51-7bb226cfb620
+		lineageTag: 44df6f8b-76c1-4783-9067-7347513f9e5d
 
 	column 'New Quota'
 		dataType: int64
 		summarizeBy: sum
 		sourceColumn: New Quota
-		lineageTag: b5b8d847-0a00-4c25-9b6b-497d4187f76f
+		lineageTag: 1a42f32f-ef7e-4467-95af-5522bc3f2f8b
 
 	column 'Parameter 1 1'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Parameter 1 1
-		lineageTag: 964a7cf7-d70a-48eb-bcc6-91ab9249a1f6
+		lineageTag: ed8487bf-50c6-4c0c-9269-c5e944c28955
 
 	partition FullData = m
 		mode: import
@@ -50,8 +50,10 @@ table Parameters
 				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}}),
 				AddedMonth = Table.AddColumn(CleanNumbers, "Order Month", each Date.StartOfMonth([Order Date]), type date),
 				AddedProfitability = Table.AddColumn(AddedMonth, "Profitability", each if [Profit] >= 0 then "Profitable" else "Unprofitable", type text),
-				AddedYear = Table.AddColumn(AddedProfitability, "Order Year", each Date.Year([Order Date]), Int64.Type)
+				AddedYear = Table.AddColumn(AddedProfitability, "Order Year", each Date.Year([Order Date]), Int64.Type),
+				AddedDaysToShipActual = Table.AddColumn(AddedYear, "Days to Ship Actual", each Duration.Days([Ship Date] - [Order Date]), Int64.Type),
+				AddedDaysToShipScheduled = Table.AddColumn(AddedDaysToShipActual, "Days to Ship Scheduled", each if [Ship Mode] = "Same Day" then 0 else if [Ship Mode] = "First Class" then 1 else if [Ship Mode] = "Second Class" then 3 else if [Ship Mode] = "Standard Class" then 6 else null, Int64.Type)
 			in
-				AddedYear
+				AddedDaysToShipScheduled
 	annotation PBI_ResultType = Table
 

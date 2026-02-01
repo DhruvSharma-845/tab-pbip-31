@@ -3,55 +3,171 @@
   "name": "b3b51b161d8222d9",
   "position": {
     "x": 20,
-    "y": 60,
+    "y": 120,
     "z": 1,
-    "height": 260,
-    "width": 600,
+    "height": 560,
+    "width": 1240,
     "tabOrder": 1
   },
   "visual": {
-    "visualType": "lineChart",
+    "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sample - Superstore"
+                      "Entity": "Sales Target"
                     }
                   },
-                  "Property": "Order Month"
+                  "Property": "Order ID"
                 }
               },
-              "queryRef": "Sample - Superstore.Order Month",
-              "nativeQueryRef": "Order Month",
-              "active": true
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
+              "queryRef": "Sales Target.Order ID",
+              "nativeQueryRef": "Order ID"
+            },
             {
               "field": {
-                "Aggregation": {
+                "Column": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Sample - Superstore"
-                        }
-                      },
-                      "Property": "Sales"
+                    "SourceRef": {
+                      "Entity": "Sales Target"
                     }
                   },
-                  "Function": 0
+                  "Property": "Customer Name"
                 }
               },
-              "queryRef": "Sum(Sample - Superstore.Sales)",
-              "nativeQueryRef": "Sum of Sales"
+              "queryRef": "Sales Target.Customer Name",
+              "nativeQueryRef": "Customer Name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Order Date"
+                }
+              },
+              "queryRef": "Sales Target.Order Date",
+              "nativeQueryRef": "Order Date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Ship Date"
+                }
+              },
+              "queryRef": "Sales Target.Ship Date",
+              "nativeQueryRef": "Ship Date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Ship Mode"
+                }
+              },
+              "queryRef": "Sales Target.Ship Mode",
+              "nativeQueryRef": "Ship Mode"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Sales"
+                }
+              },
+              "queryRef": "Sales Target.Sales",
+              "nativeQueryRef": "Sales"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Quantity"
+                }
+              },
+              "queryRef": "Sales Target.Quantity",
+              "nativeQueryRef": "Quantity"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Discount"
+                }
+              },
+              "queryRef": "Sales Target.Discount",
+              "nativeQueryRef": "Discount"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Profit"
+                }
+              },
+              "queryRef": "Sales Target.Profit",
+              "nativeQueryRef": "Profit"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Days to Ship Scheduled"
+                }
+              },
+              "queryRef": "Sales Target.Days to Ship Scheduled",
+              "nativeQueryRef": "Days to Ship Scheduled"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sales Target"
+                    }
+                  },
+                  "Property": "Days to Ship Actual"
+                }
+              },
+              "queryRef": "Sales Target.Days to Ship Actual",
+              "nativeQueryRef": "Days to Ship Actual"
             }
           ]
         }

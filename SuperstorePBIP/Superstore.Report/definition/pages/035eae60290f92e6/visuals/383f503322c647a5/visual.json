@@ -3,17 +3,17 @@
   "name": "383f503322c647a5",
   "position": {
     "x": 20,
-    "y": 360,
+    "y": 120,
     "z": 3,
-    "height": 260,
-    "width": 600,
+    "height": 560,
+    "width": 1240,
     "tabOrder": 3
   },
   "visual": {
     "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
@@ -27,31 +27,49 @@
                 }
               },
               "queryRef": "Sample - Superstore.Region",
-              "nativeQueryRef": "Region",
-              "active": true
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
+              "nativeQueryRef": "Region"
+            },
             {
               "field": {
-                "Aggregation": {
+                "Column": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Sample - Superstore"
-                        }
-                      },
-                      "Property": "Sales"
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
                     }
                   },
-                  "Function": 0
+                  "Property": "Sales"
                 }
               },
-              "queryRef": "Sum(Sample - Superstore.Sales)",
-              "nativeQueryRef": "Sum of Sales"
+              "queryRef": "Sample - Superstore.Sales",
+              "nativeQueryRef": "Sales"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Quantity"
+                }
+              },
+              "queryRef": "Sample - Superstore.Quantity",
+              "nativeQueryRef": "Quantity"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Profit"
+                }
+              },
+              "queryRef": "Sample - Superstore.Profit",
+              "nativeQueryRef": "Profit"
             }
           ]
         }

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "b6e6cf8f6b9fd366",
+  "position": {
+    "x": 480,
+    "y": 45,
+    "z": 3,
+    "height": 60,
+    "width": 160,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "State/Province"
+                }
+              },
+              "queryRef": "Sample - Superstore.State/Province",
+              "nativeQueryRef": "State/Province",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": true
+  }
+}

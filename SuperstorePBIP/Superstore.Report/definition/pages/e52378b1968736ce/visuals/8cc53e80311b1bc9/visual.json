@@ -2,56 +2,32 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "8cc53e80311b1bc9",
   "position": {
-    "x": 640,
-    "y": 360,
+    "x": 20,
+    "y": 60,
     "z": 4,
-    "height": 260,
-    "width": 600,
+    "height": 560,
+    "width": 1240,
     "tabOrder": 4
   },
   "visual": {
     "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sample - Superstore"
+                      "Entity": "Sales Commission"
                     }
                   },
-                  "Property": "Category"
+                  "Property": "OTE (Variable)"
                 }
               },
-              "queryRef": "Sample - Superstore.Category",
-              "nativeQueryRef": "Category",
-              "active": true
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Aggregation": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Sample - Superstore"
-                        }
-                      },
-                      "Property": "Sales"
-                    }
-                  },
-                  "Function": 0
-                }
-              },
-              "queryRef": "Sum(Sample - Superstore.Sales)",
-              "nativeQueryRef": "Sum of Sales"
+              "queryRef": "Sales Commission.OTE (Variable)",
+              "nativeQueryRef": "OTE (Variable)"
             }
           ]
         }

@@ -111,6 +111,82 @@ def parse_worksheet_meta(root):
     return meta
 
 
+def parse_dashboard_filters(root):
+    dashboards = defaultdict(list)
+    for d in root.findall(".//dashboard"):
+        dname = d.get("name")
+        if not dname:
+            continue
+        for z in d.findall(".//zone[@type-v2='filter']"):
+            param = z.get("param") or ""
+            fields = extract_fields(param)
+            if not fields:
+                continue
+            field = fields[-1]
+            dashboards[dname].append({
+                "field": field,
+                "mode": z.get("mode"),
+                "values": z.get("values"),
+                "worksheet": z.get("name")
+            })
+    return dashboards
+
+
+def parse_calculations(root):
+    calc_meta = defaultdict(dict)
+    for ws in root.findall(".//worksheet"):
+        ws_name = ws.get("name")
+        if not ws_name:
+            continue
+        for col in ws.findall(".//column[calculation]"):
+            name = (col.get("name") or "").strip("[]")
+            caption = col.get("caption") or name
+            calc = col.find("calculation")
+            formula = calc.get("formula") if calc is not None else None
+            if name and formula:
+                calc_meta[ws_name][name] = {"caption": caption, "formula": formula}
+    return calc_meta
+
+
+def parse_measure_names_filters(root, calc_captions):
+    ws_measures = {}
+    for ws in root.findall(".//worksheet"):
+        ws_name = ws.get("name")
+        if not ws_name:
+            continue
+        measures = []
+        for flt in ws.findall(".//filter"):
+            col = flt.get("column") or ""
+            if "Measure Names" not in col:
+                continue
+            for member in flt.findall(".//groupfilter[@function='member']"):
+                member_val = member.get("member") or ""
+                fields = extract_fields(member_val)
+                for field in fields:
+                    field_name = calc_captions.get(field, field)
+                    if field_name not in measures:
+                        measures.append(field_name)
+        ws_measures[ws_name] = measures
+    return ws_measures
+
+
+def is_table_worksheet(meta):
+    rows = meta.get("rows", "")
+    cols = meta.get("cols", "")
+    return "Measure Names" in rows or "Measure Names" in cols or "Multiple Values" in rows or "Multiple Values" in cols
+
+
+def dedupe_preserve(items):
+    seen = set()
+    out = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        out.append(item)
+    return out
+
+
 def parse_dashboard_worksheets(root, worksheet_names):
     dashboards = {}
     for d in root.findall(".//dashboard"):
@@ -190,6 +266,21 @@ def choose_table_for_fields(col_meta, category, value):
     return "Orders"
 
 
+def choose_table_for_field(col_meta, field):
+    for table, cols in col_meta.items():
+        if field in cols:
+            return table
+    return "Orders"
+
+
+def choose_table_for_any(col_meta, fields):
+    for table, cols in col_meta.items():
+        for f in fields:
+            if f in cols:
+                return table
+    return "Orders"
+
+
 def choose_series(fields):
     for f in fields:
         if f in ("Segment", "Category", "Region"):
@@ -210,7 +301,7 @@ def determine_visual_type(meta, ws_name):
         return "map"
     return map_mark_to_visual(mark)
 
-def build_table_files(tables_dir, col_meta, windows_data_root):
+def build_table_files(tables_dir, col_meta, windows_data_root, order_calc_columns=None):
     tables_dir = os.path.abspath(tables_dir)
     os.makedirs(tables_dir, exist_ok=True)
 
@@ -250,6 +341,21 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
             out.append("\t\tsourceColumn: Profitability")
             out.append("\t\tlineageTag: " + str(uuid.uuid4()))
             out.append("")
+            if order_calc_columns:
+                if "Days to Ship Actual" in order_calc_columns:
+                    out.append("\tcolumn 'Days to Ship Actual'")
+                    out.append("\t\tdataType: int64")
+                    out.append("\t\tsummarizeBy: none")
+                    out.append("\t\tsourceColumn: Days to Ship Actual")
+                    out.append("\t\tlineageTag: " + str(uuid.uuid4()))
+                    out.append("")
+                if "Days to Ship Scheduled" in order_calc_columns:
+                    out.append("\tcolumn 'Days to Ship Scheduled'")
+                    out.append("\t\tdataType: int64")
+                    out.append("\t\tsummarizeBy: none")
+                    out.append("\t\tsourceColumn: Days to Ship Scheduled")
+                    out.append("\t\tlineageTag: " + str(uuid.uuid4()))
+                    out.append("")
             # Measures
             out.append("\tmeasure 'Total Sales' = SUM('Orders'[Sales])")
             out.append("\t\tformatString: \"$#,0\"")
@@ -281,18 +387,37 @@ def build_table_files(tables_dir, col_meta, windows_data_root):
             out.append("\t\t\tin")
             out.append("\t\t\t\tPromoted")
         else:
-            out.append(f"\t\t\t\tSource = Excel.Workbook(File.Contents(\"{windows_data_root}\\\\Sample - Superstore.xls\"), null, true),")
-            out.append("\t\t\t\tOrdersTable = try Source{[Item=\"Orders\",Kind=\"Table\"]}[Data] otherwise null,")
-            out.append("\t\t\t\tOrdersSheet = try Source{[Item=\"Orders\",Kind=\"Sheet\"]}[Data] otherwise null,")
-            out.append("\t\t\t\tSelected = if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data],")
-            out.append("\t\t\t\tPromoted = Table.PromoteHeaders(Selected, [PromoteAllScalars=true]),")
-            out.append("\t\t\t\tChangedType = Table.TransformColumnTypes(Promoted, {{\"Order Date\", type date}, {\"Ship Date\", type date}, {\"Sales\", type number}, {\"Profit\", type number}, {\"Discount\", type number}, {\"Quantity\", Int64.Type}}),")
-            out.append("\t\t\t\tCleanNumbers = Table.TransformColumns(ChangedType, {{\"Sales\", each try Number.From(_) otherwise null, type number}, {\"Profit\", each try Number.From(_) otherwise null, type number}, {\"Discount\", each try Number.From(_) otherwise null, type number}, {\"Quantity\", each try Number.From(_) otherwise null, Int64.Type}}),")
-            out.append("\t\t\t\tAddedMonth = Table.AddColumn(CleanNumbers, \"Order Month\", each Date.StartOfMonth([Order Date]), type date),")
-            out.append("\t\t\t\tAddedProfitability = Table.AddColumn(AddedMonth, \"Profitability\", each if [Profit] >= 0 then \"Profitable\" else \"Unprofitable\", type text),")
-            out.append("\t\t\t\tAddedYear = Table.AddColumn(AddedProfitability, \"Order Year\", each Date.Year([Order Date]), Int64.Type)")
+            m_steps = [
+                ("Source", f"Excel.Workbook(File.Contents(\"{windows_data_root}\\\\Sample - Superstore.xls\"), null, true)"),
+                ("OrdersTable", "try Source{[Item=\"Orders\",Kind=\"Table\"]}[Data] otherwise null"),
+                ("OrdersSheet", "try Source{[Item=\"Orders\",Kind=\"Sheet\"]}[Data] otherwise null"),
+                ("Selected", "if OrdersTable <> null then OrdersTable else if OrdersSheet <> null then OrdersSheet else Source{0}[Data]"),
+                ("Promoted", "Table.PromoteHeaders(Selected, [PromoteAllScalars=true])"),
+                ("ChangedType", "Table.TransformColumnTypes(Promoted, {{\"Order Date\", type date}, {\"Ship Date\", type date}, {\"Sales\", type number}, {\"Profit\", type number}, {\"Discount\", type number}, {\"Quantity\", Int64.Type}})"),
+                ("CleanNumbers", "Table.TransformColumns(ChangedType, {{\"Sales\", each try Number.From(_) otherwise null, type number}, {\"Profit\", each try Number.From(_) otherwise null, type number}, {\"Discount\", each try Number.From(_) otherwise null, type number}, {\"Quantity\", each try Number.From(_) otherwise null, Int64.Type}})"),
+                ("AddedMonth", "Table.AddColumn(CleanNumbers, \"Order Month\", each Date.StartOfMonth([Order Date]), type date)"),
+                ("AddedProfitability", "Table.AddColumn(AddedMonth, \"Profitability\", each if [Profit] >= 0 then \"Profitable\" else \"Unprofitable\", type text)"),
+                ("AddedYear", "Table.AddColumn(AddedProfitability, \"Order Year\", each Date.Year([Order Date]), Int64.Type)")
+            ]
+            if order_calc_columns:
+                if "Days to Ship Actual" in order_calc_columns:
+                    m_steps.append((
+                        "AddedDaysToShipActual",
+                        "Table.AddColumn(AddedYear, \"Days to Ship Actual\", each Duration.Days([Ship Date] - [Order Date]), Int64.Type)"
+                    ))
+                if "Days to Ship Scheduled" in order_calc_columns:
+                    source_step = "AddedDaysToShipActual" if "Days to Ship Actual" in order_calc_columns else "AddedYear"
+                    m_steps.append((
+                        "AddedDaysToShipScheduled",
+                        "Table.AddColumn("
+                        + source_step
+                        + ", \"Days to Ship Scheduled\", each if [Ship Mode] = \"Same Day\" then 0 else if [Ship Mode] = \"First Class\" then 1 else if [Ship Mode] = \"Second Class\" then 3 else if [Ship Mode] = \"Standard Class\" then 6 else null, Int64.Type)"
+                    ))
+            for idx, (step, expr) in enumerate(m_steps):
+                suffix = "," if idx < len(m_steps) - 1 else ""
+                out.append(f"\t\t\t\t{step} = {expr}{suffix}")
             out.append("\t\t\tin")
-            out.append("\t\t\t\tAddedYear")
+            out.append(f"\t\t\t\t{m_steps[-1][0]}")
         out.append("\tannotation PBI_ResultType = Table")
         out.append("")
 
@@ -342,6 +467,19 @@ def main():
     ws_meta = parse_worksheet_meta(root)
     worksheet_names = set(ws_meta.keys())
     dash_ws = parse_dashboard_worksheets(root, worksheet_names)
+    dash_filters = parse_dashboard_filters(root)
+    calc_meta = parse_calculations(root)
+    calc_captions = {}
+    for ws_name, calcs in calc_meta.items():
+        for calc_name, calc_info in calcs.items():
+            calc_captions[calc_name] = calc_info.get("caption", calc_name)
+    ws_measure_names = parse_measure_names_filters(root, calc_captions)
+    order_calc_columns = set()
+    for calcs in calc_meta.values():
+        for calc in calcs.values():
+            caption = calc.get("caption")
+            if caption in ("Days to Ship Actual", "Days to Ship Scheduled"):
+                order_calc_columns.add(caption)
 
     # Report structure
     pages_dir = os.path.join(out_root, report_name, "definition", "pages")
@@ -736,70 +874,141 @@ def main():
             }
         })
 
+        filter_fields = dedupe_preserve([f["field"] for f in dash_filters.get(dash_name, [])])
+        filter_x = 20
+        filter_y = 45
+        filter_height = 60
+        for fidx, field in enumerate(filter_fields):
+            table = choose_table_for_field(col_meta, field)
+            width = 280 if "Date" in field else 160
+            filter_vid = hashlib.sha1(f"{dash_name}:{field}:filter".encode("utf-8")).hexdigest()[:16]
+            write_generic(filter_vid, {
+                "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+                "name": filter_vid,
+                "position": {"x": filter_x, "y": filter_y, "z": fidx + 1, "height": filter_height, "width": width, "tabOrder": fidx + 1},
+                "visual": {
+                    "visualType": "slicer",
+                    "query": {"queryState": {
+                        "Values": {"projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": field}},
+                            "queryRef": f"{table}.{field}",
+                            "nativeQueryRef": field,
+                            "active": True
+                        }]}
+                    }},
+                    "drillFilterOtherVisuals": True,
+                    "autoSelectVisualType": True
+                }
+            })
+            filter_x += width + 10
+
+        content_start_y = 120 if filter_fields else 60
+
         for idx, ws_name in enumerate(ws_list):
             meta = ws_meta.get(ws_name, {})
-            vtype = determine_visual_type(meta, ws_name)
-            category, value = choose_category_value(meta)
-            table = choose_table_for_fields(col_meta, category, value)
-            fields = extract_fields(meta.get("rows", "")) + extract_fields(meta.get("cols", ""))
-            series = choose_series(fields)
-
-            # map charts on geo fields
-            if category in ("City", "State/Province") and vtype in ("tableEx", "map"):
-                vtype = "map"
-
             vid = hashlib.sha1(f"{dash_name}:{ws_name}".encode("utf-8")).hexdigest()[:16]
-            x = 20 + (idx % 2) * 620
-            y = 60 + (idx // 2) * 300
+            if is_table_worksheet(meta):
+                row_fields = [f for f in extract_fields(meta.get("rows", "")) if f not in ("Measure Names", "Multiple Values")]
+                measure_fields = ws_measure_names.get(ws_name, [])
+                table_fields = dedupe_preserve(row_fields + measure_fields)
+                table = choose_table_for_any(col_meta, table_fields)
+                column_names = set(col_meta.get(table, {}).keys())
+                extra_columns = set(order_calc_columns or [])
+                measure_overrides = {"Profit Ratio"}
+                projections = []
+                for field in table_fields:
+                    if field in column_names or field in extra_columns:
+                        projections.append({
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": field}},
+                            "queryRef": f"{table}.{field}",
+                            "nativeQueryRef": field
+                        })
+                    elif field in measure_overrides:
+                        projections.append({
+                            "field": {"Measure": {"Expression": {"SourceRef": {"Entity": table}}, "Property": field}},
+                            "queryRef": f"{table}.{field}",
+                            "nativeQueryRef": field
+                        })
+                    else:
+                        projections.append({
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": field}},
+                            "queryRef": f"{table}.{field}",
+                            "nativeQueryRef": field
+                        })
+                payload = {
+                    "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+                    "name": vid,
+                    "position": {"x": 20, "y": content_start_y, "z": idx + 1, "height": 560, "width": 1240, "tabOrder": idx + 1},
+                    "visual": {
+                        "visualType": "tableEx",
+                        "query": {"queryState": {"Values": {"projections": projections}}},
+                        "drillFilterOtherVisuals": True,
+                        "autoSelectVisualType": True,
+                        "objects": {"title": [{"properties": {"text": {"expr": {"Literal": {"Value": f"'{ws_name}'"}}}, "show": {"expr": {"Literal": {"Value": "true"}}}}}]}
+                    }
+                }
+            else:
+                vtype = determine_visual_type(meta, ws_name)
+                category, value = choose_category_value(meta)
+                table = choose_table_for_fields(col_meta, category, value)
+                fields = extract_fields(meta.get("rows", "")) + extract_fields(meta.get("cols", ""))
+                series = choose_series(fields)
 
-            query_state = {
-                "Category": {"projections": [{
-                    "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": category}},
-                    "queryRef": f"{table}.{category}",
-                    "nativeQueryRef": category,
-                    "active": True
-                }]},
-                "Y": {"projections": [{
-                    "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": value}}, "Function": 0}},
-                    "queryRef": f"Sum({table}.{value})",
-                    "nativeQueryRef": f"Sum of {value}"
-                }]}
-            }
-            if series and vtype in ("lineChart", "areaChart"):
-                query_state["Series"] = {"projections": [{
-                    "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": series}},
-                    "queryRef": f"{table}.{series}",
-                    "nativeQueryRef": series
-                }]}
+                # map charts on geo fields
+                if category in ("City", "State/Province") and vtype in ("tableEx", "map"):
+                    vtype = "map"
 
-            # map uses Location/Size
-            if vtype == "map":
+                x = 20 + (idx % 2) * 620
+                y = content_start_y + (idx // 2) * 300
+
                 query_state = {
-                    "Location": {"projections": [{
+                    "Category": {"projections": [{
                         "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": category}},
                         "queryRef": f"{table}.{category}",
                         "nativeQueryRef": category,
                         "active": True
                     }]},
-                    "Size": {"projections": [{
+                    "Y": {"projections": [{
                         "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": value}}, "Function": 0}},
                         "queryRef": f"Sum({table}.{value})",
                         "nativeQueryRef": f"Sum of {value}"
                     }]}
                 }
+                if series and vtype in ("lineChart", "areaChart"):
+                    query_state["Series"] = {"projections": [{
+                        "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": series}},
+                        "queryRef": f"{table}.{series}",
+                        "nativeQueryRef": series
+                    }]}
 
-            payload = {
-                "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-                "name": vid,
-                "position": {"x": x, "y": y, "z": idx + 1, "height": 260, "width": 600, "tabOrder": idx + 1},
-                "visual": {
-                    "visualType": vtype,
-                    "query": {"queryState": query_state},
-                    "drillFilterOtherVisuals": True,
-                    "autoSelectVisualType": True,
-                    "objects": {"title": [{"properties": {"text": {"expr": {"Literal": {"Value": f"'{ws_name}'"}}}, "show": {"expr": {"Literal": {"Value": "true"}}}}}]}
+                # map uses Location/Size
+                if vtype == "map":
+                    query_state = {
+                        "Location": {"projections": [{
+                            "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": category}},
+                            "queryRef": f"{table}.{category}",
+                            "nativeQueryRef": category,
+                            "active": True
+                        }]},
+                        "Size": {"projections": [{
+                            "field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": value}}, "Function": 0}},
+                            "queryRef": f"Sum({table}.{value})",
+                            "nativeQueryRef": f"Sum of {value}"
+                        }]}
+                    }
+
+                payload = {
+                    "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+                    "name": vid,
+                    "position": {"x": x, "y": y, "z": idx + 1, "height": 260, "width": 600, "tabOrder": idx + 1},
+                    "visual": {
+                        "visualType": vtype,
+                        "query": {"queryState": query_state},
+                        "drillFilterOtherVisuals": True,
+                        "autoSelectVisualType": True,
+                        "objects": {"title": [{"properties": {"text": {"expr": {"Literal": {"Value": f"'{ws_name}'"}}}, "show": {"expr": {"Literal": {"Value": "true"}}}}}]}
+                    }
                 }
-            }
             write_generic(vid, payload)
 
     # Generic visuals for standalone worksheet pages
@@ -928,7 +1137,7 @@ def main():
         f.write("\n".join(model_lines) + "\n")
 
     tables_dir = os.path.join(model_dir, "tables")
-    build_table_files(tables_dir, col_meta, args.windows_data_root)
+    build_table_files(tables_dir, col_meta, args.windows_data_root, order_calc_columns=order_calc_columns)
     normalize_lineage_indentation(tables_dir)
 
     # PBIP file

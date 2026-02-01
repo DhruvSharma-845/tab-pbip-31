@@ -2,56 +2,46 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "e27d65cb3551b52a",
   "position": {
-    "x": 640,
+    "x": 20,
     "y": 60,
     "z": 2,
-    "height": 260,
-    "width": 600,
+    "height": 560,
+    "width": 1240,
     "tabOrder": 2
   },
   "visual": {
     "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sample - Superstore"
+                      "Entity": "Sales Commission"
                     }
                   },
-                  "Property": "Category"
+                  "Property": "Sales Person"
                 }
               },
-              "queryRef": "Sample - Superstore.Category",
-              "nativeQueryRef": "Category",
-              "active": true
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
+              "queryRef": "Sales Commission.Sales Person",
+              "nativeQueryRef": "Sales Person"
+            },
             {
               "field": {
-                "Aggregation": {
+                "Column": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Sample - Superstore"
-                        }
-                      },
-                      "Property": "Sales"
+                    "SourceRef": {
+                      "Entity": "Sales Commission"
                     }
                   },
-                  "Function": 0
+                  "Property": "Commission (Variable)"
                 }
               },
-              "queryRef": "Sum(Sample - Superstore.Sales)",
-              "nativeQueryRef": "Sum of Sales"
+              "queryRef": "Sales Commission.Commission (Variable)",
+              "nativeQueryRef": "Commission (Variable)"
             }
           ]
         }
