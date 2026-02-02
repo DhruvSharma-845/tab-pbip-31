@@ -422,11 +422,22 @@ def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float
 
     if profile == "product":
         for visual in visuals:
-            if "heatmap" in visual.get("title", "").lower():
+            title = visual.get("title", "").lower()
+            fields = " ".join(visual.get("fields", [])).lower()
+            if "sales by product category" in title or (
+                visual["recommended_type"] == "matrix"
+                and "order month" in fields
+                and "order year" in fields
+                and "category" in fields
+            ):
+                visual["position"]["x"] = 20
                 visual["position"]["y"] = 50
+                visual["position"]["width"] = 1240
                 visual["position"]["height"] = 280
-            if "sales and profit" in visual.get("title", "").lower():
+            if "sales and profit" in title or visual["recommended_type"] == "scatterChart":
+                visual["position"]["x"] = 20
                 visual["position"]["y"] = 350
+                visual["position"]["width"] = 1240
                 visual["position"]["height"] = max(page_height - 370, 300)
             if visual["visual_type"] == "textbox":
                 visual["position"]["y"] = 0

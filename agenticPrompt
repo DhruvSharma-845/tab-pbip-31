@@ -107,6 +107,40 @@ Output a complete PBIP folder (Report + SemanticModel) that recreates the Tablea
    - Visuals render and align with snapshots.
    - Deliver a pixel‑matched final PBIP.
 
+## Visual Type Mapping Rules (Tableau → Power BI)
+Use TWB `mark class`, worksheet shelves (Rows/Columns), and snapshots to select the correct Power BI visual. Do not guess; if multiple options are plausible, choose the one that matches the snapshot layout and encoding (color/size/label).
+
+### Base mapping (default)
+- `bar` → `clusteredBarChart` (horizontal) or `clusteredColumnChart` (vertical) based on axis orientation.
+- `line` → `lineChart`
+- `area` → `areaChart`
+- `text` → `table` (or `matrix` if there are multiple dimensions on rows/columns)
+- `square` or `heatmap` → `matrix` with conditional formatting or `heatmap`‑style `table` visuals.
+- `circle` → `scatterChart` (use size and color encodings)
+- `pie` → `pieChart`
+- `map` / `filled map` → `map` or `filledMap` depending on filled regions vs points.
+- `gantt` → `barChart` with start/end (use stacked bar pattern if needed).
+- `shape` → `shapeMap` (if geographic) or `scatterChart` with custom markers.
+
+### Snapshot‑driven overrides (required)
+- KPI tiles/cards → `card` visual (one measure per card).
+- KPI with trend sparkline → `card` + `lineChart` or `card` with secondary visual, depending on snapshot.
+- Highlight tables → `matrix` with conditional formatting.
+- Dual‑axis charts → use `comboChart` (line + column) or overlayed visuals if Power BI cannot express it in one container.
+- Small multiples → use built‑in small multiples if available; otherwise replicate with separate visuals.
+
+### Encoding rules
+- Rows/Columns shelves with measures → axis fields.
+- Color shelf → legend or conditional formatting (choose based on snapshot).
+- Size shelf → size encoding in scatter/bubble or bar thickness where supported.
+- Label shelf → data labels or table text.
+- Tooltip shelf → tooltips in visual configuration.
+
+### Quality checks for visuals
+- Every visual JSON must reference existing model fields.
+- Correct aggregation level per Tableau view (no implicit summation differences).
+- Match orientation, ordering, and sorting from Tableau.
+
 ## Superstore Sample Pattern (must use as reference)
 - Input: `Superstore.twbx`
 - Output: `SuperstorePBIP/`
