@@ -287,6 +287,13 @@ def to_customer_rank_query(visual: dict, entity: str):
     visual["query"] = query
 
 
+def lock_visual_type(visual: dict):
+    if "autoSelectVisualType" in visual:
+        visual["autoSelectVisualType"] = False
+    else:
+        visual["autoSelectVisualType"] = False
+
+
 def recommend_visual_type(page_name: str, visual: dict) -> Tuple[str, str]:
     visual_type = visual["visual_type"]
     fields = visual["fields"]
@@ -409,15 +416,21 @@ def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float
         for visual in title:
             visual["position"]["y"] = 0
             visual["position"]["height"] = 40
+            visual["position"]["x"] = 0
+            visual["position"]["width"] = 1280
         for visual in cards:
             visual["position"]["y"] = 40
             visual["position"]["height"] = 90
         for visual in maps:
             visual["position"]["y"] = 140
-            visual["position"]["height"] = 230
+            visual["position"]["height"] = 240
+            visual["position"]["x"] = 20
+            visual["position"]["width"] = 1240
+            visual["visual"]["autoSelectVisualType"] = False
         for visual in areas:
             visual["position"]["y"] = 390
-            visual["position"]["height"] = max(page_height - 410, 250)
+            visual["position"]["height"] = max(page_height - 410, 300)
+            visual["visual"]["autoSelectVisualType"] = False
         return
 
     if profile == "product":
@@ -434,11 +447,13 @@ def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float
                 visual["position"]["y"] = 50
                 visual["position"]["width"] = 1240
                 visual["position"]["height"] = 280
+                visual["visual"]["autoSelectVisualType"] = False
             if "sales and profit" in title or visual["recommended_type"] == "scatterChart":
                 visual["position"]["x"] = 20
                 visual["position"]["y"] = 350
                 visual["position"]["width"] = 1240
                 visual["position"]["height"] = max(page_height - 370, 300)
+                visual["visual"]["autoSelectVisualType"] = False
             if visual["visual_type"] == "textbox":
                 visual["position"]["y"] = 0
                 visual["position"]["height"] = 40
@@ -460,6 +475,29 @@ def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float
                 visual["position"]["y"] = 200
                 visual["position"]["width"] = 620
                 visual["position"]["height"] = max(page_height - 220, 400)
+        return
+
+    if profile == "order_details":
+        slicers = [v for v in visuals if v["visual_type"] == "slicer"]
+        tables = [v for v in visuals if v["visual_type"] in {"tableEx", "matrix"}]
+        for visual in visuals:
+            if visual["visual_type"] == "textbox":
+                visual["position"]["y"] = 0
+                visual["position"]["height"] = 40
+        if slicers:
+            slicers.sort(key=lambda v: v["position"]["x"])
+            x_positions = [20, 240, 460, 680, 900, 1120]
+            for idx, visual in enumerate(slicers):
+                visual["position"]["y"] = 40
+                visual["position"]["height"] = 40
+                visual["position"]["width"] = 180
+                visual["position"]["x"] = x_positions[idx % len(x_positions)]
+        for visual in tables:
+            visual["position"]["x"] = 20
+            visual["position"]["y"] = 90
+            visual["position"]["width"] = 1240
+            visual["position"]["height"] = max(page_height - 110, 520)
+            visual["visual"]["autoSelectVisualType"] = False
         return
 
 
@@ -522,6 +560,7 @@ def process_report(
             new_type, reason = recommend_visual_type(page_name, visual)
             if new_type != old_type:
                 visual["visual"]["visualType"] = new_type
+                visual["visual"]["autoSelectVisualType"] = False
             visual["recommended_type"] = new_type
             visual["change_reason"] = reason
 
@@ -544,7 +583,12 @@ def process_report(
                 if "sales and profit" in visual.get("title", "").lower():
                     to_scatter_query(visual["visual"], "Orders", "Product Name")
                     visual["visual"]["visualType"] = "scatterChart"
+                    visual["visual"]["autoSelectVisualType"] = False
                     visual["recommended_type"] = "scatterChart"
+                if "sales by product category" in visual.get("title", "").lower():
+                    visual["visual"]["visualType"] = "matrix"
+                    visual["visual"]["autoSelectVisualType"] = False
+                    visual["recommended_type"] = "matrix"
 
         if page_name.lower() == "customers":
             for visual in visuals:
@@ -552,10 +596,12 @@ def process_report(
                 if "scatter" in title:
                     to_scatter_query(visual["visual"], "Sample - Superstore", "Customer Name")
                     visual["visual"]["visualType"] = "scatterChart"
+                    visual["visual"]["autoSelectVisualType"] = False
                     visual["recommended_type"] = "scatterChart"
                 if "rank" in title:
                     to_customer_rank_query(visual["visual"], "Sample - Superstore")
                     visual["visual"]["visualType"] = "barChart"
+                    visual["visual"]["autoSelectVisualType"] = False
                     visual["recommended_type"] = "barChart"
 
         top, middle, bottom = [], [], []
@@ -572,6 +618,11 @@ def process_report(
         profile = layout_profile(page_name, snapshot_match)
         if profile:
             apply_layout_overrides(profile, visuals, page_height)
+            if profile in {"overview", "product", "order_details"}:
+                for visual in visuals:
+                    if visual["visual_type"] in {"textbox", "slicer", "card"}:
+                        continue
+                    lock_visual_type(visual["visual"])
         else:
             top_end = page_height * 0.2
             mid_end = page_height * 0.65
