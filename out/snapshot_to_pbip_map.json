@@ -1,0 +1,74 @@
+[
+  {
+    "snapshot": "Forecast",
+    "dashboard_match": null,
+    "dashboard_score": 0.0,
+    "pbip_page_match": "Forecast",
+    "pbip_page_id": "528bc4bc381542e0",
+    "pbip_score": 1.0
+  },
+  {
+    "snapshot": "commission model",
+    "dashboard_match": "Commission Model",
+    "dashboard_score": 1.0,
+    "pbip_page_match": "Commission Model",
+    "pbip_page_id": "e52378b1968736ce",
+    "pbip_score": 1.0
+  },
+  {
+    "snapshot": "customers",
+    "dashboard_match": "Customers",
+    "dashboard_score": 1.0,
+    "pbip_page_match": "Customers",
+    "pbip_page_id": "035eae60290f92e6",
+    "pbip_score": 1.0
+  },
+  {
+    "snapshot": "order details",
+    "dashboard_match": "Order Details",
+    "dashboard_score": 1.0,
+    "pbip_page_match": "Order Details",
+    "pbip_page_id": "abb713a37cc9ba75",
+    "pbip_score": 1.0
+  },
+  {
+    "snapshot": "overview",
+    "dashboard_match": "Overview",
+    "dashboard_score": 1.0,
+    "pbip_page_match": "Overview",
+    "pbip_page_id": "0efc2e6be4c23b9a",
+    "pbip_score": 1.0
+  },
+  {
+    "snapshot": "performance",
+    "dashboard_match": null,
+    "dashboard_score": 0.0,
+    "pbip_page_match": "Performance",
+    "pbip_page_id": "63c904559993935c",
+    "pbip_score": 1.0
+  },
+  {
+    "snapshot": "product",
+    "dashboard_match": "Product",
+    "dashboard_score": 1.0,
+    "pbip_page_match": "Product",
+    "pbip_page_id": "dd3b86d1ef21b9fb",
+    "pbip_score": 1.0
+  },
+  {
+    "snapshot": "shipping",
+    "dashboard_match": "Shipping",
+    "dashboard_score": 1.0,
+    "pbip_page_match": "Shipping",
+    "pbip_page_id": "694e6062a66864cd",
+    "pbip_score": 1.0
+  },
+  {
+    "snapshot": "what if forecast",
+    "dashboard_match": null,
+    "dashboard_score": 0.0,
+    "pbip_page_match": "What If Forecast",
+    "pbip_page_id": "3a70ba8af805a5e6",
+    "pbip_score": 1.0
+  }
+]
