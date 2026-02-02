@@ -3,54 +3,17 @@
   "name": "product_sales_profit",
   "position": {
     "x": 20,
-    "y": 150.2,
+    "y": 350,
     "z": 2,
-    "height": 324.95,
+    "height": 361.0,
     "width": 1240,
     "tabOrder": 2
   },
   "visual": {
-    "visualType": "barChart",
+    "visualType": "scatterChart",
     "query": {
       "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Product Name"
-                }
-              },
-              "queryRef": "Orders.Product Name",
-              "nativeQueryRef": "Product Name",
-              "active": true
-            }
-          ]
-        },
-        "Legend": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Segment"
-                }
-              },
-              "queryRef": "Orders.Segment",
-              "nativeQueryRef": "Segment"
-            }
-          ]
-        },
-        "Y": {
+        "X": {
           "projections": [
             {
               "field": {
@@ -70,7 +33,11 @@
               },
               "queryRef": "Sum(Orders.Sales)",
               "nativeQueryRef": "Sum of Sales"
-            },
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
             {
               "field": {
                 "Aggregation": {
@@ -89,6 +56,42 @@
               },
               "queryRef": "Sum(Orders.Profit)",
               "nativeQueryRef": "Sum of Profit"
+            }
+          ]
+        },
+        "Details": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Product Name"
+                }
+              },
+              "queryRef": "Orders.Product Name",
+              "nativeQueryRef": "Product Name"
+            }
+          ]
+        },
+        "Legend": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Segment"
+                }
+              },
+              "queryRef": "Orders.Segment",
+              "nativeQueryRef": "Segment"
             }
           ]
         }

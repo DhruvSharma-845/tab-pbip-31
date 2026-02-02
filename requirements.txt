@@ -1,2 +1,27 @@
 # This project uses only the Python standard library.
 # No external pip dependencies are required.
+#
+# Standard library modules used across the scripts:
+# argparse
+# collections
+# csv
+# hashlib
+# json
+# math
+# os
+# pathlib
+# re
+# shutil
+# typing
+# uuid
+# xml.etree.ElementTree
+# zipfile
+#
+# Visual comparison requirement:
+# - GPT-5.2 Codex (model) is required for the visual comparison step.
+#
+# Python version:
+# - Python 3.8+ (recommended 3.10+)
+#
+# Agent version:
+# - Cursor agent: gpt-5.2-codex

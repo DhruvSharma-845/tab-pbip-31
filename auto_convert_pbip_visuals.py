@@ -1,6 +1,5 @@
 import argparse
 import json
-import math
 import re
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -82,6 +81,17 @@ def extract_text_runs(visual: dict) -> List[str]:
     return texts
 
 
+def extract_title_text(visual: dict) -> str:
+    objects = visual.get("objects", {})
+    title = objects.get("title", [])
+    for item in title:
+        props = item.get("properties", {})
+        text = props.get("text", {}).get("expr", {}).get("Literal", {}).get("Value")
+        if text:
+            return text.strip("'")
+    return ""
+
+
 def collect_projections(query_state: dict) -> List[dict]:
     projections = []
 
@@ -149,16 +159,151 @@ def has_any(fields: List[str], needles: List[str]) -> bool:
     return any(needle.lower() in field_text for needle in needles)
 
 
+def replace_entity(obj, old_entity: str, new_entity: str):
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if key == "SourceRef" and isinstance(value, dict):
+                if value.get("Entity") == old_entity:
+                    value["Entity"] = new_entity
+            if key == "queryRef" and isinstance(value, str):
+                if value.startswith(f"{old_entity}."):
+                    obj[key] = value.replace(old_entity, new_entity, 1)
+            else:
+                replace_entity(value, old_entity, new_entity)
+    elif isinstance(obj, list):
+        for item in obj:
+            replace_entity(item, old_entity, new_entity)
+
+
+def to_scatter_query(visual: dict, entity: str, detail_property: str):
+    query = visual.get("query", {})
+    query_state = query.get("queryState", {})
+    sales_field = {
+        "field": {
+            "Aggregation": {
+                "Expression": {
+                    "Column": {
+                        "Expression": {"SourceRef": {"Entity": entity}},
+                        "Property": "Sales",
+                    }
+                },
+                "Function": 0,
+            }
+        },
+        "queryRef": f"Sum({entity}.Sales)",
+        "nativeQueryRef": "Sum of Sales",
+    }
+    profit_field = {
+        "field": {
+            "Aggregation": {
+                "Expression": {
+                    "Column": {
+                        "Expression": {"SourceRef": {"Entity": entity}},
+                        "Property": "Profit",
+                    }
+                },
+                "Function": 0,
+            }
+        },
+        "queryRef": f"Sum({entity}.Profit)",
+        "nativeQueryRef": "Sum of Profit",
+    }
+    detail_field = {
+        "field": {
+            "Column": {
+                "Expression": {"SourceRef": {"Entity": entity}},
+                "Property": detail_property,
+            }
+        },
+        "queryRef": f"{entity}.{detail_property}",
+        "nativeQueryRef": detail_property,
+    }
+    legend_field = {
+        "field": {
+            "Column": {
+                "Expression": {"SourceRef": {"Entity": entity}},
+                "Property": "Segment",
+            }
+        },
+        "queryRef": f"{entity}.Segment",
+        "nativeQueryRef": "Segment",
+    }
+    query_state.clear()
+    query_state.update(
+        {
+            "X": {"projections": [sales_field]},
+            "Y": {"projections": [profit_field]},
+            "Details": {"projections": [detail_field]},
+            "Legend": {"projections": [legend_field]},
+        }
+    )
+    query["queryState"] = query_state
+    visual["query"] = query
+
+
+def to_customer_rank_query(visual: dict, entity: str):
+    query = visual.get("query", {})
+    query_state = query.get("queryState", {})
+    query_state.clear()
+    query_state.update(
+        {
+            "Category": {
+                "projections": [
+                    {
+                        "field": {
+                            "Column": {
+                                "Expression": {"SourceRef": {"Entity": entity}},
+                                "Property": "Customer Name",
+                            }
+                        },
+                        "queryRef": f"{entity}.Customer Name",
+                        "nativeQueryRef": "Customer Name",
+                        "active": True,
+                    }
+                ]
+            },
+            "Y": {
+                "projections": [
+                    {
+                        "field": {
+                            "Aggregation": {
+                                "Expression": {
+                                    "Column": {
+                                        "Expression": {"SourceRef": {"Entity": entity}},
+                                        "Property": "Sales",
+                                    }
+                                },
+                                "Function": 0,
+                            }
+                        },
+                        "queryRef": f"Sum({entity}.Sales)",
+                        "nativeQueryRef": "Sum of Sales",
+                    }
+                ]
+            },
+        }
+    )
+    query["queryState"] = query_state
+    visual["query"] = query
+
+
 def recommend_visual_type(page_name: str, visual: dict) -> Tuple[str, str]:
     visual_type = visual["visual_type"]
     fields = visual["fields"]
     text = " ".join(visual["text"]).lower()
     page = page_name.lower()
+    title = visual.get("title", "").lower()
 
     if visual_type in {"textbox", "slicer"}:
         return visual_type, "Keep layout control visual"
 
     if visual_type == "tableEx":
+        if "customer" in title and "scatter" in title:
+            return "scatterChart", "Customer scatter -> scatter plot"
+        if "customer" in title and "rank" in title:
+            return "barChart", "Customer rank -> bar chart"
+        if "customer" in title and "overview" in title:
+            return "matrix", "Customer overview -> matrix"
         if has_any(fields, ["Order Year", "Order Month", "Order Date"]) and has_any(
             fields, ["Sales"]
         ):
@@ -180,8 +325,10 @@ def recommend_visual_type(page_name: str, visual: dict) -> Tuple[str, str]:
     if visual_type == "map":
         return "filledMap", "Map with filled regions"
 
-    if visual_type == "areaChart" and "shipping" in page:
-        return "stackedAreaChart", "Shipping trend -> stacked area"
+    if visual_type == "areaChart" and (
+        "shipping" in page or has_any(fields, ["Segment", "Category"])
+    ):
+        return "stackedAreaChart", "Stacked area with segment/category"
 
     if "sales and profit" in text and visual_type != "scatterChart":
         return "scatterChart", "Sales vs profit -> scatter"
@@ -222,6 +369,89 @@ def distribute_section(
         y_cursor += new_height + gap
 
 
+def layout_profile(page_name: str, snapshot_name: Optional[str]) -> Optional[str]:
+    name = (snapshot_name or page_name).lower()
+    if "overview" in name:
+        return "overview"
+    if "product" in name:
+        return "product"
+    if "customers" in name:
+        return "customers"
+    if "order details" in name:
+        return "order_details"
+    if "shipping" in name:
+        return "shipping"
+    if "commission" in name:
+        return "commission"
+    if "performance" in name:
+        return "performance"
+    if "forecast" in name and "what if" in name:
+        return "what_if_forecast"
+    if "forecast" in name:
+        return "forecast"
+    return None
+
+
+def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float):
+    if profile == "overview":
+        title = [v for v in visuals if v["visual_type"] == "textbox"]
+        cards = [v for v in visuals if v["recommended_type"] == "card"]
+        maps = [
+            v
+            for v in visuals
+            if v["recommended_type"] in {"map", "filledMap", "shapeMap"}
+        ]
+        areas = [
+            v
+            for v in visuals
+            if v["recommended_type"] in {"areaChart", "stackedAreaChart"}
+        ]
+        for visual in title:
+            visual["position"]["y"] = 0
+            visual["position"]["height"] = 40
+        for visual in cards:
+            visual["position"]["y"] = 40
+            visual["position"]["height"] = 90
+        for visual in maps:
+            visual["position"]["y"] = 140
+            visual["position"]["height"] = 230
+        for visual in areas:
+            visual["position"]["y"] = 390
+            visual["position"]["height"] = max(page_height - 410, 250)
+        return
+
+    if profile == "product":
+        for visual in visuals:
+            if "heatmap" in visual.get("title", "").lower():
+                visual["position"]["y"] = 50
+                visual["position"]["height"] = 280
+            if "sales and profit" in visual.get("title", "").lower():
+                visual["position"]["y"] = 350
+                visual["position"]["height"] = max(page_height - 370, 300)
+            if visual["visual_type"] == "textbox":
+                visual["position"]["y"] = 0
+                visual["position"]["height"] = 40
+        return
+
+    if profile == "customers":
+        for visual in visuals:
+            title = visual.get("title", "").lower()
+            if "overview" in title:
+                visual["position"]["y"] = 40
+                visual["position"]["height"] = 120
+            if "scatter" in title:
+                visual["position"]["x"] = 20
+                visual["position"]["y"] = 200
+                visual["position"]["width"] = 600
+                visual["position"]["height"] = max(page_height - 220, 400)
+            if "rank" in title:
+                visual["position"]["x"] = 640
+                visual["position"]["y"] = 200
+                visual["position"]["width"] = 620
+                visual["position"]["height"] = max(page_height - 220, 400)
+        return
+
+
 def process_report(
     report_dir: Path,
     snapshots_dir: Path,
@@ -255,6 +485,7 @@ def process_report(
             text = []
             if visual_def.get("visualType") == "textbox":
                 text = extract_text_runs(visual_def)
+            title = extract_title_text(visual_def)
             visuals.append(
                 {
                     "path": visual_path,
@@ -264,6 +495,7 @@ def process_report(
                     "visual_type": visual_def.get("visualType"),
                     "fields": fields,
                     "text": text,
+                    "title": title,
                 }
             )
 
@@ -292,6 +524,29 @@ def process_report(
                     }
                 )
 
+        if page_name.lower() == "order details":
+            for visual in visuals:
+                replace_entity(visual["json"], "Sales Target", "Sample - Superstore")
+
+        if page_name.lower() == "product":
+            for visual in visuals:
+                if "sales and profit" in visual.get("title", "").lower():
+                    to_scatter_query(visual["visual"], "Orders", "Product Name")
+                    visual["visual"]["visualType"] = "scatterChart"
+                    visual["recommended_type"] = "scatterChart"
+
+        if page_name.lower() == "customers":
+            for visual in visuals:
+                title = visual.get("title", "").lower()
+                if "scatter" in title:
+                    to_scatter_query(visual["visual"], "Sample - Superstore", "Customer Name")
+                    visual["visual"]["visualType"] = "scatterChart"
+                    visual["recommended_type"] = "scatterChart"
+                if "rank" in title:
+                    to_customer_rank_query(visual["visual"], "Sample - Superstore")
+                    visual["visual"]["visualType"] = "barChart"
+                    visual["recommended_type"] = "barChart"
+
         top, middle, bottom = [], [], []
         for visual in visuals:
             section = recommend_section(visual["recommended_type"])
@@ -302,11 +557,16 @@ def process_report(
             else:
                 middle.append(visual)
 
-        top_end = page_height * 0.2
-        mid_end = page_height * 0.65
-        distribute_section(top, 0, top_end)
-        distribute_section(middle, top_end + 4, mid_end)
-        distribute_section(bottom, mid_end + 4, page_height)
+        snapshot_match = page_changes["snapshot_match"]
+        profile = layout_profile(page_name, snapshot_match)
+        if profile:
+            apply_layout_overrides(profile, visuals, page_height)
+        else:
+            top_end = page_height * 0.2
+            mid_end = page_height * 0.65
+            distribute_section(top, 0, top_end)
+            distribute_section(middle, top_end + 4, mid_end)
+            distribute_section(bottom, mid_end + 4, page_height)
 
         for visual in visuals:
             position = visual["position"]

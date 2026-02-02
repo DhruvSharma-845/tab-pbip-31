@@ -3,14 +3,14 @@
   "name": "9c3a1b2d4e5f6078",
   "position": {
     "x": 20,
-    "y": 150.2,
+    "y": 390,
     "z": 1,
-    "height": 102.98,
+    "height": 321.0,
     "width": 600,
     "tabOrder": 1
   },
   "visual": {
-    "visualType": "areaChart",
+    "visualType": "stackedAreaChart",
     "autoSelectVisualType": true,
     "query": {
       "queryState": {

@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "f03da5c335de8c92",
   "position": {
-    "x": 24,
-    "y": 479.15,
+    "x": 640,
+    "y": 200,
     "z": 2,
-    "height": 81.45,
-    "width": 1232,
+    "height": 511.0,
+    "width": 620,
     "tabOrder": 2
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "barChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Orders"
+                      "Entity": "Sample - Superstore"
                     }
                   },
-                  "Property": "Category"
+                  "Property": "Customer Name"
                 }
               },
-              "queryRef": "Orders.Category",
-              "nativeQueryRef": "Category",
+              "queryRef": "Sample - Superstore.Customer Name",
+              "nativeQueryRef": "Customer Name",
               "active": true
             }
           ]
@@ -41,7 +41,7 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Orders"
+                          "Entity": "Sample - Superstore"
                         }
                       },
                       "Property": "Sales"
@@ -50,7 +50,7 @@
                   "Function": 0
                 }
               },
-              "queryRef": "Sum(Orders.Sales)",
+              "queryRef": "Sum(Sample - Superstore.Sales)",
               "nativeQueryRef": "Sum of Sales"
             }
           ]
