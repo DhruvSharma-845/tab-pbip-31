@@ -1,0 +1,11 @@
+page_id,page_name,visual_id,visual_type,x,y,width,height,fields,filters
+0efc2e6be4c23b9a,Overview,41ed3157d0a3fcac830d,card,20,20,200,100,['Orders.Total Sales'],['Orders.Total Sales']
+0efc2e6be4c23b9a,Overview,5c90e8b318980f413a25,textbox,0,0,512.2730137185515,43.68219496824858,[],[]
+0efc2e6be4c23b9a,Overview,9c3a1b2d4e5f6078,areaChart,20,140,600,260,"['Orders.Order Month', 'Orders.Profitability', 'Orders.Segment', 'Aggregation(Orders.Sales)']","['Aggregation(Orders.Sales)', 'Orders.Segment', 'Orders.Order Date', 'Orders.Order Month', 'Orders.Profitability']"
+0efc2e6be4c23b9a,Overview,a5b6c7d8e9f0a1b2,card,1070,20,200,100,['Orders.Avg Discount'],[]
+0efc2e6be4c23b9a,Overview,ab12cd34ef56ab78,areaChart,640,140,600,260,"['Orders.Order Month', 'Orders.Profitability', 'Orders.Category', 'Aggregation(Orders.Sales)']","['Aggregation(Orders.Sales)', 'Orders.Category', 'Orders.Order Date', 'Orders.Order Month', 'Orders.Profitability']"
+0efc2e6be4c23b9a,Overview,c1a2b3d4e5f60789,card,230,20,200,100,['Orders.Total Profit'],[]
+0efc2e6be4c23b9a,Overview,cd34ef56ab7890cd,map,20,410,1220,260,"['Orders.City', 'Orders.Profit Ratio']","['Orders.State/Province', 'Aggregation(Orders.Profit)']"
+0efc2e6be4c23b9a,Overview,d2c3b4a596877665,card,440,20,200,100,['Orders.Profit Ratio'],[]
+0efc2e6be4c23b9a,Overview,e3d4c5b6a7988776,card,650,20,200,100,['Orders.Profit per Order'],[]
+0efc2e6be4c23b9a,Overview,f4e5d6c7b8a9c0d1,card,860,20,200,100,['Orders.Sales per Customer'],[]

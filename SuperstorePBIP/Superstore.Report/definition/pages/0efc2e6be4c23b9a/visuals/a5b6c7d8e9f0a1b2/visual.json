@@ -3,11 +3,11 @@
   "name": "a5b6c7d8e9f0a1b2",
   "position": {
     "x": 1070,
-    "y": 45,
+    "y": 20,
     "z": 0,
+    "height": 100,
     "width": 200,
-    "height": 80,
-    "tabOrder": 6
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "card",
@@ -34,28 +34,6 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
-    "objects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Avg. Discount'"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "autoSelectVisualType": true
   }
 }

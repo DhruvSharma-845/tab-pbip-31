@@ -3,11 +3,11 @@
   "name": "f4e5d6c7b8a9c0d1",
   "position": {
     "x": 860,
-    "y": 45,
+    "y": 20,
     "z": 0,
+    "height": 100,
     "width": 200,
-    "height": 80,
-    "tabOrder": 5
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "card",
@@ -34,28 +34,6 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
-    "objects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Sales per Customer'"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "autoSelectVisualType": true
   }
 }

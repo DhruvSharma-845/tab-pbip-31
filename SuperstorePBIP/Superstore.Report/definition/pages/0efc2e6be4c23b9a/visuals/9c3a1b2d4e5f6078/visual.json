@@ -3,14 +3,15 @@
   "name": "9c3a1b2d4e5f6078",
   "position": {
     "x": 20,
-    "y": 400,
-    "z": 2,
-    "width": 610,
-    "height": 300,
-    "tabOrder": 20
+    "y": 140,
+    "z": 1,
+    "height": 260,
+    "width": 600,
+    "tabOrder": 1
   },
   "visual": {
     "visualType": "areaChart",
+    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Category": {
@@ -29,6 +30,24 @@
               "queryRef": "Orders.Order Month",
               "nativeQueryRef": "Order Month",
               "active": true
+            }
+          ]
+        },
+        "Legend": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Profitability"
+                }
+              },
+              "queryRef": "Orders.Profitability",
+              "nativeQueryRef": "Profitability"
             }
           ]
         },
@@ -72,24 +91,6 @@
               "nativeQueryRef": "Sum of Sales"
             }
           ]
-        },
-        "Legend": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Profitability"
-                }
-              },
-              "queryRef": "Orders.Profitability",
-              "nativeQueryRef": "Profitability"
-            }
-          ]
         }
       },
       "sortDefinition": {
@@ -111,30 +112,7 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
-    "objects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Monthly Sales by Segment - States/Provinces: All'"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
@@ -181,6 +159,35 @@
               }
             },
             "Property": "Order Date"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "43b5bb100a5c0434e5eb",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Order Month"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "20312f125bdfb7ed3967",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Profitability"
           }
         },
         "type": "Categorical"

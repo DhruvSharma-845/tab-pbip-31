@@ -3,11 +3,11 @@
   "name": "c1a2b3d4e5f60789",
   "position": {
     "x": 230,
-    "y": 45,
+    "y": 20,
     "z": 0,
+    "height": 100,
     "width": 200,
-    "height": 80,
-    "tabOrder": 2
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "card",
@@ -34,28 +34,6 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
-    "objects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Profit'"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "autoSelectVisualType": true
   }
 }

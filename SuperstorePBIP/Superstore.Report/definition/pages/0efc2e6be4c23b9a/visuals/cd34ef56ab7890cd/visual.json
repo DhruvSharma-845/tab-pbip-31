@@ -3,11 +3,11 @@
   "name": "cd34ef56ab7890cd",
   "position": {
     "x": 20,
-    "y": 130,
-    "z": 1,
-    "width": 1240,
+    "y": 410,
+    "z": 3,
     "height": 260,
-    "tabOrder": 10
+    "width": 1220,
+    "tabOrder": 3
   },
   "visual": {
     "visualType": "map",
@@ -53,29 +53,7 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
-    "objects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "''"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "autoSelectVisualType": true
   },
   "filterConfig": {
     "filters": [

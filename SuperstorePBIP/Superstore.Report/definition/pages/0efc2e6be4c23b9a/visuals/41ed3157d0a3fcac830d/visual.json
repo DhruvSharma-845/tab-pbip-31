@@ -3,14 +3,15 @@
   "name": "41ed3157d0a3fcac830d",
   "position": {
     "x": 20,
-    "y": 45,
+    "y": 20,
     "z": 0,
+    "height": 100,
     "width": 200,
-    "height": 80,
-    "tabOrder": 1
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "card",
+    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
@@ -33,29 +34,24 @@
         }
       }
     },
-    "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
-    "objects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Sales'"
-                }
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "71cc3dcdda5191116b8e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
               }
             },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
+            "Property": "Total Sales"
           }
-        }
-      ]
-    }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }
