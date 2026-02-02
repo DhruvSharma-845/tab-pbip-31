@@ -43,3 +43,12 @@ python3 /Users/dhrsharm/tab-pbip-31/convert_twbx_to_pbip_auto.py \
   --sample-theme /Users/dhrsharm/tab-pbip-31/samplepbipfolder/Sample.Report/StaticResources/SharedResources/BaseThemes/CY25SU12.json \
   --windows-data-root "C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore"
 ```
+
+### Usage (Auto Convert PBIP Visuals)
+
+```
+python3 /Users/dhrsharm/tab-pbip-31/auto_convert_pbip_visuals.py \
+  --pbip-report /Users/dhrsharm/tab-pbip-31/SuperstorePBIP/Superstore.Report \
+  --snapshots-dir "/Users/dhrsharm/tab-pbip-31/tableau snapshots" \
+  --out-report /Users/dhrsharm/tab-pbip-31/out/pbip_visual_conversion_report.json
+```

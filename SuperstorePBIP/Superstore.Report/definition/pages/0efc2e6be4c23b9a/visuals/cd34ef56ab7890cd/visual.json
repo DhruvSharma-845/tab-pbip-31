@@ -3,14 +3,14 @@
   "name": "cd34ef56ab7890cd",
   "position": {
     "x": 20,
-    "y": 410,
+    "y": 372.16,
     "z": 3,
-    "height": 260,
+    "height": 102.98,
     "width": 1220,
     "tabOrder": 3
   },
   "visual": {
-    "visualType": "map",
+    "visualType": "filledMap",
     "query": {
       "queryState": {
         "Location": {

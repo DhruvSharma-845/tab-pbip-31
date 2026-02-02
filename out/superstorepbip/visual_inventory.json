@@ -1,0 +1,3011 @@
+{
+  "pbip_report": "SuperstorePBIP/Superstore.Report",
+  "tableau_workbook": "Superstore.twbx",
+  "pbip": {
+    "pages": [
+      {
+        "page_id": "e52378b1968736ce",
+        "display_name": "Commission Model",
+        "width": 1280,
+        "height": 731,
+        "display_option": "FitToPage"
+      },
+      {
+        "page_id": "035eae60290f92e6",
+        "display_name": "Customers",
+        "width": 1280,
+        "height": 731,
+        "display_option": "FitToPage"
+      },
+      {
+        "page_id": "abb713a37cc9ba75",
+        "display_name": "Order Details",
+        "width": 1280,
+        "height": 731,
+        "display_option": "FitToPage"
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "display_name": "Overview",
+        "width": 1280,
+        "height": 731,
+        "display_option": "FitToPage"
+      },
+      {
+        "page_id": "dd3b86d1ef21b9fb",
+        "display_name": "Product",
+        "width": 1280,
+        "height": 731,
+        "display_option": "FitToPage"
+      },
+      {
+        "page_id": "694e6062a66864cd",
+        "display_name": "Shipping",
+        "width": 1280,
+        "height": 731,
+        "display_option": "FitToPage"
+      },
+      {
+        "page_id": "528bc4bc381542e0",
+        "display_name": "Forecast",
+        "width": 1280,
+        "height": 720,
+        "display_option": "FitToPage"
+      },
+      {
+        "page_id": "63c904559993935c",
+        "display_name": "Performance",
+        "width": 1280,
+        "height": 720,
+        "display_option": "FitToPage"
+      },
+      {
+        "page_id": "7f1de47eb0c5388b",
+        "display_name": "Tooltip: Profit Ratio by City",
+        "width": 1280,
+        "height": 720,
+        "display_option": "FitToPage"
+      },
+      {
+        "page_id": "3a70ba8af805a5e6",
+        "display_name": "What If Forecast",
+        "width": 1280,
+        "height": 720,
+        "display_option": "FitToPage"
+      }
+    ],
+    "visuals": [
+      {
+        "page_id": "e52378b1968736ce",
+        "page_name": "Commission Model",
+        "visual_id": "3871d85c97df0d4f",
+        "visual_type": "textbox",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 40,
+        "fields": [],
+        "filters": []
+      },
+      {
+        "page_id": "e52378b1968736ce",
+        "page_name": "Commission Model",
+        "visual_id": "8cc53e80311b1bc9",
+        "visual_type": "tableEx",
+        "x": 0,
+        "y": 601,
+        "width": 1280,
+        "height": 200,
+        "fields": [
+          "Sales Commission.OTE (Variable)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "e52378b1968736ce",
+        "page_name": "Commission Model",
+        "visual_id": "98053059a9dbf994",
+        "visual_type": "tableEx",
+        "x": 0,
+        "y": 346,
+        "width": 1280,
+        "height": 200,
+        "fields": [
+          "Sales Commission.Category",
+          "Aggregation(Sales Commission.Sales)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "e52378b1968736ce",
+        "page_name": "Commission Model",
+        "visual_id": "b5e5f9009cd0de83",
+        "visual_type": "tableEx",
+        "x": 0,
+        "y": 553,
+        "width": 1280,
+        "height": 200,
+        "fields": [
+          "Sample - Superstore.Sales"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "e52378b1968736ce",
+        "page_name": "Commission Model",
+        "visual_id": "e27d65cb3551b52a",
+        "visual_type": "tableEx",
+        "x": 0,
+        "y": 535,
+        "width": 1280,
+        "height": 200,
+        "fields": [
+          "Sales Commission.Sales Person",
+          "Sales Commission.Commission (Variable)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "035eae60290f92e6",
+        "page_name": "Customers",
+        "visual_id": "1f3a1e3706091c3a",
+        "visual_type": "textbox",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 40,
+        "fields": [],
+        "filters": []
+      },
+      {
+        "page_id": "035eae60290f92e6",
+        "page_name": "Customers",
+        "visual_id": "337eac681ab5e90b",
+        "visual_type": "tableEx",
+        "x": 24,
+        "y": 528,
+        "width": 1232,
+        "height": 200,
+        "fields": [
+          "Orders.Category",
+          "Aggregation(Orders.Profit)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "035eae60290f92e6",
+        "page_name": "Customers",
+        "visual_id": "383f503322c647a5",
+        "visual_type": "tableEx",
+        "x": 9,
+        "y": 528,
+        "width": 1262,
+        "height": 200,
+        "fields": [
+          "Sample - Superstore.Region",
+          "Sample - Superstore.Sales",
+          "Sample - Superstore.Quantity",
+          "Sample - Superstore.Profit"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "035eae60290f92e6",
+        "page_name": "Customers",
+        "visual_id": "90c937a38b28c3af",
+        "visual_type": "slicer",
+        "x": 24,
+        "y": 74,
+        "width": 1232,
+        "height": 40,
+        "fields": [
+          "Sales Target.Category"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "035eae60290f92e6",
+        "page_name": "Customers",
+        "visual_id": "eefcaa60db9c6ff5",
+        "visual_type": "slicer",
+        "x": 24,
+        "y": 112,
+        "width": 1232,
+        "height": 40,
+        "fields": [
+          "Sales Target.Segment"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "035eae60290f92e6",
+        "page_name": "Customers",
+        "visual_id": "f03da5c335de8c92",
+        "visual_type": "tableEx",
+        "x": 24,
+        "y": 528,
+        "width": 1232,
+        "height": 211,
+        "fields": [
+          "Orders.Category",
+          "Aggregation(Orders.Sales)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "abb713a37cc9ba75",
+        "page_name": "Order Details",
+        "visual_id": "6e6f2c68a72884f5",
+        "visual_type": "textbox",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 40,
+        "fields": [],
+        "filters": []
+      },
+      {
+        "page_id": "abb713a37cc9ba75",
+        "page_name": "Order Details",
+        "visual_id": "73cda6d4445e9081",
+        "visual_type": "slicer",
+        "x": 6,
+        "y": 36,
+        "width": 593,
+        "height": 51,
+        "fields": [
+          "Sales Target.Order Date"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "abb713a37cc9ba75",
+        "page_name": "Order Details",
+        "visual_id": "8f8ee53e0d10f3ce",
+        "visual_type": "slicer",
+        "x": 1139,
+        "y": 36,
+        "width": 135,
+        "height": 51,
+        "fields": [
+          "Sales Target.Segment"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "abb713a37cc9ba75",
+        "page_name": "Order Details",
+        "visual_id": "985d74a8fddf7862",
+        "visual_type": "slicer",
+        "x": 869,
+        "y": 36,
+        "width": 135,
+        "height": 51,
+        "fields": [
+          "Sample - Superstore.City"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "abb713a37cc9ba75",
+        "page_name": "Order Details",
+        "visual_id": "9cd7e65069c62a17",
+        "visual_type": "slicer",
+        "x": 599,
+        "y": 36,
+        "width": 135,
+        "height": 51,
+        "fields": [
+          "Sample - Superstore.Region"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "abb713a37cc9ba75",
+        "page_name": "Order Details",
+        "visual_id": "9e8b1dd7b5d003d4",
+        "visual_type": "slicer",
+        "x": 1004,
+        "y": 36,
+        "width": 135,
+        "height": 51,
+        "fields": [
+          "Sales Target.Category"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "abb713a37cc9ba75",
+        "page_name": "Order Details",
+        "visual_id": "b3b51b161d8222d9",
+        "visual_type": "tableEx",
+        "x": 6,
+        "y": 107,
+        "width": 1268,
+        "height": 638,
+        "fields": [
+          "Sample - Superstore.Order ID",
+          "Sample - Superstore.Customer Name",
+          "Sales Target.Order Date",
+          "Sample - Superstore.Ship Date",
+          "Sample - Superstore.Ship Mode",
+          "Sample - Superstore.Sales",
+          "Sample - Superstore.Quantity",
+          "Sample - Superstore.Discount",
+          "Sample - Superstore.Profit",
+          "Orders.Days to Ship Scheduled",
+          "Orders.Days to Ship Actual"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "abb713a37cc9ba75",
+        "page_name": "Order Details",
+        "visual_id": "b6e6cf8f6b9fd366",
+        "visual_type": "slicer",
+        "x": 734,
+        "y": 36,
+        "width": 135,
+        "height": 51,
+        "fields": [
+          "Sample - Superstore.State/Province"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "41ed3157d0a3fcac830d",
+        "visual_type": "card",
+        "x": 20,
+        "y": 20,
+        "width": 200,
+        "height": 100,
+        "fields": [
+          "Orders.Total Sales"
+        ],
+        "filters": [
+          "Orders.Total Sales"
+        ]
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "5c90e8b318980f413a25",
+        "visual_type": "textbox",
+        "x": 0,
+        "y": 0,
+        "width": 512.2730137185515,
+        "height": 43.68219496824858,
+        "fields": [],
+        "filters": []
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "9c3a1b2d4e5f6078",
+        "visual_type": "areaChart",
+        "x": 20,
+        "y": 140,
+        "width": 600,
+        "height": 260,
+        "fields": [
+          "Orders.Order Month",
+          "Orders.Profitability",
+          "Orders.Segment",
+          "Aggregation(Orders.Sales)"
+        ],
+        "filters": [
+          "Aggregation(Orders.Sales)",
+          "Orders.Segment",
+          "Orders.Order Date",
+          "Orders.Order Month",
+          "Orders.Profitability"
+        ]
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "a5b6c7d8e9f0a1b2",
+        "visual_type": "card",
+        "x": 1070,
+        "y": 20,
+        "width": 200,
+        "height": 100,
+        "fields": [
+          "Orders.Avg Discount"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "ab12cd34ef56ab78",
+        "visual_type": "areaChart",
+        "x": 640,
+        "y": 140,
+        "width": 600,
+        "height": 260,
+        "fields": [
+          "Orders.Order Month",
+          "Orders.Profitability",
+          "Orders.Category",
+          "Aggregation(Orders.Sales)"
+        ],
+        "filters": [
+          "Aggregation(Orders.Sales)",
+          "Orders.Category",
+          "Orders.Order Date",
+          "Orders.Order Month",
+          "Orders.Profitability"
+        ]
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "c1a2b3d4e5f60789",
+        "visual_type": "card",
+        "x": 230,
+        "y": 20,
+        "width": 200,
+        "height": 100,
+        "fields": [
+          "Orders.Total Profit"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "cd34ef56ab7890cd",
+        "visual_type": "map",
+        "x": 20,
+        "y": 410,
+        "width": 1220,
+        "height": 260,
+        "fields": [
+          "Orders.City",
+          "Orders.Profit Ratio"
+        ],
+        "filters": [
+          "Orders.State/Province",
+          "Aggregation(Orders.Profit)"
+        ]
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "d2c3b4a596877665",
+        "visual_type": "card",
+        "x": 440,
+        "y": 20,
+        "width": 200,
+        "height": 100,
+        "fields": [
+          "Orders.Profit Ratio"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "e3d4c5b6a7988776",
+        "visual_type": "card",
+        "x": 650,
+        "y": 20,
+        "width": 200,
+        "height": 100,
+        "fields": [
+          "Orders.Profit per Order"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "0efc2e6be4c23b9a",
+        "page_name": "Overview",
+        "visual_id": "f4e5d6c7b8a9c0d1",
+        "visual_type": "card",
+        "x": 860,
+        "y": 20,
+        "width": 200,
+        "height": 100,
+        "fields": [
+          "Orders.Sales per Customer"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "dd3b86d1ef21b9fb",
+        "page_name": "Product",
+        "visual_id": "product_heatmap",
+        "visual_type": "matrix",
+        "x": 20,
+        "y": 50,
+        "width": 1240,
+        "height": 280,
+        "fields": [
+          "Orders.Category",
+          "Orders.Order Year",
+          "Orders.Order Month",
+          "Aggregation(Orders.Sales)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "dd3b86d1ef21b9fb",
+        "page_name": "Product",
+        "visual_id": "product_sales_profit",
+        "visual_type": "barChart",
+        "x": 20,
+        "y": 350,
+        "width": 1240,
+        "height": 330,
+        "fields": [
+          "Orders.Product Name",
+          "Orders.Segment",
+          "Aggregation(Orders.Sales)",
+          "Aggregation(Orders.Profit)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "dd3b86d1ef21b9fb",
+        "page_name": "Product",
+        "visual_id": "product_title",
+        "visual_type": "textbox",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 40,
+        "fields": [],
+        "filters": []
+      },
+      {
+        "page_id": "694e6062a66864cd",
+        "page_name": "Shipping",
+        "visual_id": "0c6eed59266b8746",
+        "visual_type": "slicer",
+        "x": 12,
+        "y": 222,
+        "width": 1257,
+        "height": 44,
+        "fields": [
+          "Sample - Superstore.Ship Mode"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "694e6062a66864cd",
+        "page_name": "Shipping",
+        "visual_id": "398c84457fe70058",
+        "visual_type": "areaChart",
+        "x": 4,
+        "y": 351,
+        "width": 1272,
+        "height": 457,
+        "fields": [
+          "Orders.Category",
+          "Aggregation(Orders.Sales)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "694e6062a66864cd",
+        "page_name": "Shipping",
+        "visual_id": "8b28de19c330c6ee",
+        "visual_type": "tableEx",
+        "x": 4,
+        "y": 351,
+        "width": 1272,
+        "height": 200,
+        "fields": [
+          "Orders.Category",
+          "Aggregation(Orders.Sales)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "694e6062a66864cd",
+        "page_name": "Shipping",
+        "visual_id": "a1af7b5830e4993a",
+        "visual_type": "lineChart",
+        "x": 6,
+        "y": 355,
+        "width": 1112,
+        "height": 371,
+        "fields": [
+          "Orders.Product Name",
+          "Aggregation(Orders.Sales)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "694e6062a66864cd",
+        "page_name": "Shipping",
+        "visual_id": "b44a77307cfe456c",
+        "visual_type": "textbox",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 40,
+        "fields": [],
+        "filters": []
+      },
+      {
+        "page_id": "694e6062a66864cd",
+        "page_name": "Shipping",
+        "visual_id": "b761f216a50c9ff2",
+        "visual_type": "slicer",
+        "x": 12,
+        "y": 179,
+        "width": 1257,
+        "height": 44,
+        "fields": [
+          "Sample - Superstore.Region"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "528bc4bc381542e0",
+        "page_name": "Forecast",
+        "visual_id": "528bc4bc381542e0",
+        "visual_type": "lineChart",
+        "x": 20,
+        "y": 60,
+        "width": 1240,
+        "height": 600,
+        "fields": [
+          "Orders.Order Month",
+          "Orders.Segment",
+          "Aggregation(Orders.Sales)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "63c904559993935c",
+        "page_name": "Performance",
+        "visual_id": "63c904559993935c",
+        "visual_type": "columnChart",
+        "x": 20,
+        "y": 60,
+        "width": 1240,
+        "height": 600,
+        "fields": [
+          "Sample - Superstore.Segment",
+          "Aggregation(Sample - Superstore.Sales)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "7f1de47eb0c5388b",
+        "page_name": "Tooltip: Profit Ratio by City",
+        "visual_id": "7f1de47eb0c5388b",
+        "visual_type": "tableEx",
+        "x": 20,
+        "y": 60,
+        "width": 1240,
+        "height": 600,
+        "fields": [
+          "Sample - Superstore.City",
+          "Aggregation(Sample - Superstore.Sales)"
+        ],
+        "filters": []
+      },
+      {
+        "page_id": "3a70ba8af805a5e6",
+        "page_name": "What If Forecast",
+        "visual_id": "3a70ba8af805a5e6",
+        "visual_type": "tableEx",
+        "x": 20,
+        "y": 60,
+        "width": 1240,
+        "height": 600,
+        "fields": [
+          "Sample - Superstore.Region",
+          "Aggregation(Sample - Superstore.Sales)"
+        ],
+        "filters": []
+      }
+    ]
+  },
+  "tableau": {
+    "dashboards": [
+      {
+        "name": "Commission Model",
+        "zones": [
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "7",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "63",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "3616",
+              "id": "62",
+              "type-v2": "title",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "727",
+              "h": "75367",
+              "id": "54",
+              "is-fixed": "true",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "4407"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "1004",
+              "h": "75367",
+              "id": "2",
+              "is-fixed": "true",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "4407"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "2825",
+              "id": "4",
+              "type-v2": "text",
+              "w": "99078",
+              "x": "461",
+              "y": "4407"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "57",
+              "h": "7345",
+              "id": "72",
+              "is-fixed": "true",
+              "type-v2": "layout-basic",
+              "w": "99078",
+              "x": "461",
+              "y": "7232"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "6441",
+              "id": "5",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "40786",
+              "x": "461",
+              "y": "7684"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "custom-title": "true",
+              "h": "6441",
+              "id": "9",
+              "mode": "type_in",
+              "param": "[Parameters].[New Quota]",
+              "type-v2": "paramctrl",
+              "w": "20393",
+              "x": "461",
+              "y": "7684"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "custom-title": "true",
+              "h": "6441",
+              "id": "10",
+              "mode": "type_in",
+              "param": "[Parameters].[Base Salary]",
+              "type-v2": "paramctrl",
+              "w": "20393",
+              "x": "20854",
+              "y": "7684"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "custom-title": "true",
+              "fixed-size": "175",
+              "h": "6441",
+              "id": "57",
+              "is-fixed": "true",
+              "mode": "compact",
+              "param": "[Parameters].[Parameter 1 1]",
+              "type-v2": "paramctrl",
+              "w": "14566",
+              "x": "41247",
+              "y": "7684"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "6441",
+              "id": "76",
+              "type-v2": "empty",
+              "w": "29166",
+              "x": "70373",
+              "y": "7684"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "custom-title": "true",
+              "h": "6441",
+              "id": "11",
+              "mode": "slider",
+              "param": "[Parameters].[Commission Rate]",
+              "type-v2": "paramctrl",
+              "w": "14560",
+              "x": "55813",
+              "y": "7684"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "65197",
+              "id": "64",
+              "layout-strategy-id": "distribute-evenly",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "14577"
+            }
+          },
+          {
+            "type": "QuotaAttainment",
+            "attrs": {
+              "h": "65198",
+              "id": "82",
+              "name": "QuotaAttainment",
+              "w": "49572",
+              "x": "461",
+              "y": "14576"
+            }
+          },
+          {
+            "type": "CommissionProjection",
+            "attrs": {
+              "h": "65198",
+              "id": "83",
+              "name": "CommissionProjection",
+              "w": "49506",
+              "x": "50033",
+              "y": "14576"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "37",
+              "h": "4633",
+              "id": "85",
+              "is-fixed": "true",
+              "layout-strategy-id": "distribute-evenly",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "79774"
+            }
+          },
+          {
+            "type": "QuotaAttainment",
+            "attrs": {
+              "friendly-name": "Color Legend",
+              "h": "3277",
+              "id": "84",
+              "name": "QuotaAttainment",
+              "pane-specification-id": "0",
+              "param": "[federated.0a01cod1oxl83l1f5yves1cfciqo].[usr:Achievement (variable) (copy):nk]",
+              "show-title": "false",
+              "type-v2": "color",
+              "w": "49572",
+              "x": "461",
+              "y": "80904"
+            }
+          },
+          {
+            "type": "CommissionProjection",
+            "attrs": {
+              "friendly-name": "Color Legend",
+              "h": "3277",
+              "id": "86",
+              "leg-item-layout": "horz",
+              "name": "CommissionProjection",
+              "pane-specification-id": "0",
+              "param": "[federated.0a01cod1oxl83l1f5yves1cfciqo].[:Measure Names]",
+              "show-title": "false",
+              "type-v2": "color",
+              "w": "49506",
+              "x": "50033",
+              "y": "80904"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "123",
+              "h": "14802",
+              "id": "77",
+              "is-fixed": "true",
+              "layout-strategy-id": "distribute-evenly",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "84407"
+            }
+          },
+          {
+            "type": "Sales",
+            "attrs": {
+              "h": "13672",
+              "id": "80",
+              "name": "Sales",
+              "w": "49242",
+              "x": "791",
+              "y": "84972"
+            }
+          },
+          {
+            "type": "OTE",
+            "attrs": {
+              "h": "13672",
+              "id": "81",
+              "name": "OTE",
+              "w": "49176",
+              "x": "50033",
+              "y": "84972"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "92",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "91",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "3230",
+              "id": "62",
+              "type-v2": "title",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "3846",
+              "id": "4",
+              "type-v2": "text",
+              "w": "100000",
+              "x": "0",
+              "y": "3230"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "custom-title": "true",
+              "h": "4077",
+              "id": "9",
+              "mode": "type_in",
+              "param": "[Parameters].[New Quota]",
+              "type-v2": "paramctrl",
+              "w": "100000",
+              "x": "0",
+              "y": "7076"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "custom-title": "true",
+              "h": "4077",
+              "id": "10",
+              "mode": "type_in",
+              "param": "[Parameters].[Base Salary]",
+              "type-v2": "paramctrl",
+              "w": "100000",
+              "x": "0",
+              "y": "11153"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "custom-title": "true",
+              "fixed-size": "175",
+              "h": "4077",
+              "id": "57",
+              "mode": "compact",
+              "param": "[Parameters].[Parameter 1 1]",
+              "type-v2": "paramctrl",
+              "w": "100000",
+              "x": "0",
+              "y": "15230"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "custom-title": "true",
+              "h": "5846",
+              "id": "11",
+              "mode": "slider",
+              "param": "[Parameters].[Commission Rate]",
+              "type-v2": "paramctrl",
+              "w": "100000",
+              "x": "0",
+              "y": "19307"
+            }
+          },
+          {
+            "type": "QuotaAttainment",
+            "attrs": {
+              "fixed-size": "280",
+              "h": "22153",
+              "id": "82",
+              "is-fixed": "true",
+              "name": "QuotaAttainment",
+              "w": "100000",
+              "x": "0",
+              "y": "25153"
+            }
+          },
+          {
+            "type": "QuotaAttainment",
+            "attrs": {
+              "fixed-size": "40",
+              "friendly-name": "Color Legend",
+              "h": "3692",
+              "id": "84",
+              "is-fixed": "true",
+              "leg-item-layout": "grid",
+              "name": "QuotaAttainment",
+              "pane-specification-id": "0",
+              "param": "[federated.0a01cod1oxl83l1f5yves1cfciqo].[usr:Achievement (variable) (copy):nk]",
+              "show-title": "false",
+              "type-v2": "color",
+              "w": "100000",
+              "x": "0",
+              "y": "47306"
+            }
+          },
+          {
+            "type": "CommissionProjection",
+            "attrs": {
+              "fixed-size": "280",
+              "h": "22153",
+              "id": "83",
+              "is-fixed": "true",
+              "name": "CommissionProjection",
+              "w": "100000",
+              "x": "0",
+              "y": "50998"
+            }
+          },
+          {
+            "type": "CommissionProjection",
+            "attrs": {
+              "fixed-size": "25",
+              "friendly-name": "Color Legend",
+              "h": "2538",
+              "id": "86",
+              "is-fixed": "true",
+              "leg-item-layout": "grid",
+              "name": "CommissionProjection",
+              "pane-specification-id": "0",
+              "param": "[federated.0a01cod1oxl83l1f5yves1cfciqo].[:Measure Names]",
+              "show-title": "false",
+              "type-v2": "color",
+              "w": "100000",
+              "x": "0",
+              "y": "73151"
+            }
+          },
+          {
+            "type": "Sales",
+            "attrs": {
+              "fixed-size": "76",
+              "h": "6461",
+              "id": "80",
+              "is-fixed": "true",
+              "name": "Sales",
+              "w": "100000",
+              "x": "0",
+              "y": "75689"
+            }
+          },
+          {
+            "type": "OTE",
+            "attrs": {
+              "fixed-size": "76",
+              "h": "6461",
+              "id": "81",
+              "is-fixed": "true",
+              "name": "OTE",
+              "w": "100000",
+              "x": "0",
+              "y": "82150"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Customers",
+        "zones": [
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "2",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "98418",
+              "id": "34",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "98418",
+              "id": "32",
+              "type-v2": "layout-basic",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "6591",
+              "id": "9",
+              "type-v2": "title",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "76920",
+              "id": "29",
+              "layout-strategy-id": "distribute-evenly",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "88303",
+              "x": "461",
+              "y": "22289"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "76949",
+              "id": "3",
+              "name": "CustomerScatter",
+              "w": "44167",
+              "x": "461",
+              "y": "22260"
+            }
+          },
+          {
+            "type": "CustomerRank",
+            "attrs": {
+              "h": "76949",
+              "id": "8",
+              "name": "CustomerRank",
+              "w": "44166",
+              "x": "44628",
+              "y": "22260"
+            }
+          },
+          {
+            "type": "CustomerOverview",
+            "attrs": {
+              "h": "14907",
+              "id": "1",
+              "name": "CustomerOverview",
+              "show-title": "false",
+              "w": "99078",
+              "x": "461",
+              "y": "7382"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "76920",
+              "id": "39",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "10775",
+              "x": "88764",
+              "y": "22289"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "5876",
+              "id": "35",
+              "mode": "checkdropdown",
+              "name": "CustomerScatter",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]",
+              "type-v2": "filter",
+              "w": "9719",
+              "x": "89292",
+              "y": "23193"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "12203",
+              "id": "36",
+              "name": "CustomerScatter",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Category:nk]",
+              "type-v2": "filter",
+              "w": "9719",
+              "x": "89292",
+              "y": "29069"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "12203",
+              "id": "37",
+              "name": "CustomerScatter",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Segment:nk]",
+              "type-v2": "filter",
+              "w": "9719",
+              "x": "89292",
+              "y": "41272"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "7345",
+              "id": "38",
+              "name": "CustomerScatter",
+              "pane-specification-id": "0",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]",
+              "type-v2": "color",
+              "w": "9719",
+              "x": "89292",
+              "y": "53475"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "2",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "97826",
+              "id": "34",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "98632",
+              "x": "684",
+              "y": "1087"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "97826",
+              "id": "32",
+              "type-v2": "layout-basic",
+              "w": "98632",
+              "x": "684",
+              "y": "1087"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "6573",
+              "id": "9",
+              "type-v2": "title",
+              "w": "98632",
+              "x": "684",
+              "y": "1087"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "71739",
+              "id": "29",
+              "layout-strategy-id": "distribute-evenly",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "84179",
+              "x": "684",
+              "y": "27174"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "71739",
+              "id": "3",
+              "name": "CustomerScatter",
+              "w": "42089",
+              "x": "684",
+              "y": "27174"
+            }
+          },
+          {
+            "type": "CustomerRank",
+            "attrs": {
+              "h": "71739",
+              "id": "8",
+              "name": "CustomerRank",
+              "w": "42090",
+              "x": "42773",
+              "y": "27174"
+            }
+          },
+          {
+            "type": "CustomerOverview",
+            "attrs": {
+              "h": "19514",
+              "id": "1",
+              "name": "CustomerOverview",
+              "show-title": "false",
+              "w": "98632",
+              "x": "684",
+              "y": "7660"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "71739",
+              "id": "39",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "14453",
+              "x": "84863",
+              "y": "27174"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "8074",
+              "id": "35",
+              "mode": "checkdropdown",
+              "name": "CustomerScatter",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]",
+              "type-v2": "filter",
+              "w": "13673",
+              "x": "85253",
+              "y": "27796"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "16770",
+              "id": "36",
+              "name": "CustomerScatter",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Category:nk]",
+              "type-v2": "filter",
+              "w": "13673",
+              "x": "85253",
+              "y": "35870"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "16770",
+              "id": "37",
+              "name": "CustomerScatter",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Segment:nk]",
+              "type-v2": "filter",
+              "w": "13673",
+              "x": "85253",
+              "y": "52640"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "10093",
+              "id": "38",
+              "name": "CustomerScatter",
+              "pane-specification-id": "0",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]",
+              "type-v2": "color",
+              "w": "13673",
+              "x": "85253",
+              "y": "69410"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "41",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "98600",
+              "id": "40",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "96266",
+              "x": "1867",
+              "y": "700"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "4200",
+              "id": "9",
+              "type-v2": "title",
+              "w": "96266",
+              "x": "1867",
+              "y": "700"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "5200",
+              "id": "35",
+              "mode": "checkdropdown",
+              "name": "CustomerScatter",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]",
+              "type-v2": "filter",
+              "w": "96266",
+              "x": "1867",
+              "y": "4900"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "5200",
+              "id": "36",
+              "mode": "checkdropdown",
+              "name": "CustomerScatter",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Category:nk]",
+              "type-v2": "filter",
+              "w": "96266",
+              "x": "1867",
+              "y": "10100"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "5200",
+              "id": "37",
+              "mode": "checkdropdown",
+              "name": "CustomerScatter",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Segment:nk]",
+              "type-v2": "filter",
+              "w": "96266",
+              "x": "1867",
+              "y": "15300"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "fixed-size": "280",
+              "h": "28800",
+              "id": "3",
+              "is-fixed": "true",
+              "name": "CustomerScatter",
+              "w": "96266",
+              "x": "1867",
+              "y": "20500"
+            }
+          },
+          {
+            "type": "CustomerScatter",
+            "attrs": {
+              "h": "6500",
+              "id": "38",
+              "name": "CustomerScatter",
+              "pane-specification-id": "0",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]",
+              "type-v2": "color",
+              "w": "96266",
+              "x": "1867",
+              "y": "49300"
+            }
+          },
+          {
+            "type": "CustomerRank",
+            "attrs": {
+              "fixed-size": "280",
+              "h": "28800",
+              "id": "8",
+              "is-fixed": "true",
+              "name": "CustomerRank",
+              "w": "96266",
+              "x": "1867",
+              "y": "55800"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Order Details",
+        "zones": [
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "2",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "18",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "4068",
+              "id": "17",
+              "type-v2": "title",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "94350",
+              "id": "7",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "4859"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "94350",
+              "id": "5",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "4859"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "62",
+              "h": "7006",
+              "id": "10",
+              "is-fixed": "true",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "19",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Order Date:qk]",
+              "type-v2": "filter",
+              "values": "context",
+              "w": "46343",
+              "x": "461",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "14",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]",
+              "type-v2": "filter",
+              "w": "10547",
+              "x": "46804",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "15",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:State/Province:nk]",
+              "type-v2": "filter",
+              "values": "relevant",
+              "w": "10547",
+              "x": "57351",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "16",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:City:nk]",
+              "type-v2": "filter",
+              "values": "relevant",
+              "w": "10547",
+              "x": "67898",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "8",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Category:nk]",
+              "type-v2": "filter",
+              "values": "relevant",
+              "w": "10547",
+              "x": "78445",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "9",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Segment:nk]",
+              "type-v2": "filter",
+              "values": "relevant",
+              "w": "10547",
+              "x": "88992",
+              "y": "4859"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "87344",
+              "id": "3",
+              "type-v2": "layout-basic",
+              "w": "99078",
+              "x": "461",
+              "y": "11865"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "87344",
+              "id": "1",
+              "name": "Product Detail Sheet",
+              "w": "99078",
+              "x": "461",
+              "y": "11865"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "57",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "98192",
+              "id": "56",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "98946",
+              "x": "527",
+              "y": "904"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "4068",
+              "id": "17",
+              "type-v2": "title",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "19",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Order Date:qk]",
+              "type-v2": "filter",
+              "values": "context",
+              "w": "46343",
+              "x": "461",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "14",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]",
+              "type-v2": "filter",
+              "w": "10547",
+              "x": "46804",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "15",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:State/Province:nk]",
+              "type-v2": "filter",
+              "values": "relevant",
+              "w": "10547",
+              "x": "57351",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "16",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:City:nk]",
+              "type-v2": "filter",
+              "values": "relevant",
+              "w": "10547",
+              "x": "67898",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "8",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Category:nk]",
+              "type-v2": "filter",
+              "values": "relevant",
+              "w": "10547",
+              "x": "78445",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "h": "7006",
+              "id": "9",
+              "mode": "checkdropdown",
+              "name": "Product Detail Sheet",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Segment:nk]",
+              "type-v2": "filter",
+              "values": "relevant",
+              "w": "10547",
+              "x": "88992",
+              "y": "4859"
+            }
+          },
+          {
+            "type": "Product Detail Sheet",
+            "attrs": {
+              "fixed-size": "280",
+              "h": "87344",
+              "id": "1",
+              "is-fixed": "true",
+              "name": "Product Detail Sheet",
+              "w": "99078",
+              "x": "461",
+              "y": "11865"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Overview",
+        "zones": [
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "2",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "39",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "12",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": "Total Sales",
+            "attrs": {
+              "fixed-size": "117",
+              "h": "13220",
+              "id": "32",
+              "is-fixed": "true",
+              "name": "Total Sales",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "337",
+              "h": "38079",
+              "id": "26",
+              "is-fixed": "true",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "14011"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "38079",
+              "id": "44",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "14011"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "h": "38079",
+              "id": "1",
+              "name": "Sale Map",
+              "show-title": "false",
+              "w": "87411",
+              "x": "461",
+              "y": "14011"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "169",
+              "h": "38079",
+              "id": "37",
+              "is-fixed": "true",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "11667",
+              "x": "87872",
+              "y": "14011"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "h": "5876",
+              "id": "41",
+              "mode": "dropdown",
+              "name": "Sale Map",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]",
+              "type-v2": "filter",
+              "w": "10611",
+              "x": "88400",
+              "y": "14915"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "h": "7797",
+              "id": "40",
+              "name": "Sale Map",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Order Date:qk]",
+              "type-v2": "filter",
+              "w": "10611",
+              "x": "88400",
+              "y": "20791"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "h": "7797",
+              "id": "42",
+              "name": "Sale Map",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]",
+              "type-v2": "filter",
+              "w": "10611",
+              "x": "88400",
+              "y": "28588"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "h": "7345",
+              "id": "43",
+              "name": "Sale Map",
+              "pane-specification-id": "2",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]",
+              "type-v2": "color",
+              "w": "10611",
+              "x": "88400",
+              "y": "36385"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "47119",
+              "id": "22",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "52090"
+            }
+          },
+          {
+            "type": "Sales by Segment",
+            "attrs": {
+              "h": "46215",
+              "id": "8",
+              "name": "Sales by Segment",
+              "w": "49143",
+              "x": "725",
+              "y": "52542"
+            }
+          },
+          {
+            "type": "Sales by Product",
+            "attrs": {
+              "h": "46215",
+              "id": "10",
+              "name": "Sales by Product",
+              "w": "49406",
+              "x": "49868",
+              "y": "52542"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "52",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "51",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": "Total Sales",
+            "attrs": {
+              "fixed-size": "82",
+              "h": "7500",
+              "id": "32",
+              "is-fixed": "true",
+              "name": "Total Sales",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "h": "4334",
+              "id": "41",
+              "mode": "dropdown",
+              "name": "Sale Map",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]",
+              "type-v2": "filter",
+              "w": "100000",
+              "x": "0",
+              "y": "7500"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "h": "4250",
+              "id": "40",
+              "name": "Sale Map",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Order Date:qk]",
+              "type-v2": "filter",
+              "w": "100000",
+              "x": "0",
+              "y": "11834"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "h": "4250",
+              "id": "42",
+              "name": "Sale Map",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]",
+              "type-v2": "filter",
+              "w": "100000",
+              "x": "0",
+              "y": "16084"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "fixed-size": "233",
+              "h": "20084",
+              "id": "1",
+              "is-fixed": "true",
+              "name": "Sale Map",
+              "show-title": "false",
+              "w": "100000",
+              "x": "0",
+              "y": "20334"
+            }
+          },
+          {
+            "type": "Sale Map",
+            "attrs": {
+              "h": "5417",
+              "id": "43",
+              "name": "Sale Map",
+              "pane-specification-id": "2",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]",
+              "type-v2": "color",
+              "w": "100000",
+              "x": "0",
+              "y": "40418"
+            }
+          },
+          {
+            "type": "Sales by Segment",
+            "attrs": {
+              "fixed-size": "279",
+              "h": "23917",
+              "id": "8",
+              "is-fixed": "true",
+              "name": "Sales by Segment",
+              "w": "100000",
+              "x": "0",
+              "y": "45835"
+            }
+          },
+          {
+            "type": "Sales by Product",
+            "attrs": {
+              "fixed-size": "279",
+              "h": "23917",
+              "id": "10",
+              "is-fixed": "true",
+              "name": "Sales by Product",
+              "w": "100000",
+              "x": "0",
+              "y": "69752"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Product",
+        "zones": [
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "2",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "98418",
+              "id": "31",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "98418",
+              "id": "29",
+              "type-v2": "layout-basic",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "49187",
+              "id": "16",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "49187",
+              "id": "10",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "4294",
+              "id": "9",
+              "type-v2": "title",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "44893",
+              "id": "5",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "5085"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "44893",
+              "id": "3",
+              "type-v2": "layout-basic",
+              "w": "99078",
+              "x": "461",
+              "y": "5085"
+            }
+          },
+          {
+            "type": "ProductView",
+            "attrs": {
+              "h": "44893",
+              "id": "1",
+              "name": "ProductView",
+              "w": "87896",
+              "x": "461",
+              "y": "5085"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "44893",
+              "id": "28",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "11182",
+              "x": "88357",
+              "y": "5085"
+            }
+          },
+          {
+            "type": "ProductView",
+            "attrs": {
+              "h": "14350",
+              "id": "32",
+              "mode": "radiolist",
+              "name": "ProductView",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]",
+              "type-v2": "filter",
+              "w": "10126",
+              "x": "88885",
+              "y": "5989"
+            }
+          },
+          {
+            "type": "ProductView",
+            "attrs": {
+              "h": "7345",
+              "id": "33",
+              "name": "ProductView",
+              "pane-specification-id": "0",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[sum:Sales:qk]",
+              "type-v2": "color",
+              "w": "10126",
+              "x": "88885",
+              "y": "20339"
+            }
+          },
+          {
+            "type": "ProductDetails",
+            "attrs": {
+              "h": "7345",
+              "id": "34",
+              "name": "ProductDetails",
+              "pane-specification-id": "0",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]",
+              "type-v2": "color",
+              "w": "10126",
+              "x": "88885",
+              "y": "27684"
+            }
+          },
+          {
+            "type": "ProductDetails",
+            "attrs": {
+              "h": "49231",
+              "id": "8",
+              "name": "ProductDetails",
+              "w": "99078",
+              "x": "461",
+              "y": "49978"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "2",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "12288",
+              "id": "31",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99400",
+              "x": "300",
+              "y": "385"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "12288",
+              "id": "29",
+              "type-v2": "layout-basic",
+              "w": "99400",
+              "x": "300",
+              "y": "385"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "12288",
+              "id": "16",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99400",
+              "x": "300",
+              "y": "385"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "12288",
+              "id": "9",
+              "type-v2": "title",
+              "w": "99400",
+              "x": "300",
+              "y": "385"
+            }
+          },
+          {
+            "type": "ProductDetails",
+            "attrs": {
+              "h": "70804",
+              "id": "8",
+              "name": "ProductDetails",
+              "w": "99400",
+              "x": "300",
+              "y": "22658"
+            }
+          },
+          {
+            "type": "ProductDetails",
+            "attrs": {
+              "fixed-size": "124",
+              "h": "9985",
+              "id": "32",
+              "is-fixed": "true",
+              "mode": "dropdown",
+              "name": "ProductDetails",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]",
+              "type-v2": "filter",
+              "w": "99400",
+              "x": "300",
+              "y": "12673"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "6153",
+              "id": "36",
+              "type-v2": "layout-flow",
+              "w": "99400",
+              "x": "300",
+              "y": "93462"
+            }
+          },
+          {
+            "type": "ProductDetails",
+            "attrs": {
+              "h": "6153",
+              "id": "34",
+              "name": "ProductDetails",
+              "pane-specification-id": "0",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]",
+              "type-v2": "color",
+              "w": "99400",
+              "x": "300",
+              "y": "93462"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Shipping",
+        "zones": [
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "2",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "98418",
+              "id": "39",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "98418",
+              "id": "37",
+              "type-v2": "layout-basic",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "91028",
+              "id": "35",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "86845",
+              "x": "461",
+              "y": "8181"
+            }
+          },
+          {
+            "type": "ShipSummary",
+            "attrs": {
+              "fixed-size": "53",
+              "h": "6893",
+              "id": "19",
+              "is-fixed": "true",
+              "name": "ShipSummary",
+              "show-title": "false",
+              "w": "86845",
+              "x": "461",
+              "y": "8181"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "fixed-size": "296",
+              "h": "33446",
+              "id": "1",
+              "is-fixed": "true",
+              "name": "ShippingTrend",
+              "show-title": "false",
+              "w": "86845",
+              "x": "461",
+              "y": "15074"
+            }
+          },
+          {
+            "type": "DaystoShip",
+            "attrs": {
+              "h": "50689",
+              "id": "3",
+              "name": "DaystoShip",
+              "w": "86845",
+              "x": "461",
+              "y": "48520"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "7390",
+              "id": "10",
+              "type-v2": "title",
+              "w": "99078",
+              "x": "461",
+              "y": "791"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "160",
+              "h": "91012",
+              "id": "38",
+              "is-fixed": "true",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "12233",
+              "x": "87306",
+              "y": "8197"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "h": "12203",
+              "id": "40",
+              "mode": "radiolist",
+              "name": "ShippingTrend",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]",
+              "show-all": "false",
+              "show-exclude": "false",
+              "show-search": "false",
+              "type-v2": "filter",
+              "w": "11177",
+              "x": "87834",
+              "y": "9101"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "h": "12203",
+              "id": "41",
+              "mode": "radiolist",
+              "name": "ShippingTrend",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[qr:Order Date:ok]",
+              "show-all": "false",
+              "show-search": "false",
+              "type-v2": "filter",
+              "values": "relevant",
+              "w": "11177",
+              "x": "87834",
+              "y": "21304"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "h": "5876",
+              "id": "42",
+              "mode": "checkdropdown",
+              "name": "ShippingTrend",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]",
+              "show-all": "false",
+              "show-filter-state": "false",
+              "show-search": "false",
+              "type-v2": "filter",
+              "w": "11177",
+              "x": "87834",
+              "y": "33507"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "h": "5876",
+              "id": "43",
+              "mode": "checkdropdown",
+              "name": "ShippingTrend",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Ship Mode:nk]",
+              "type-v2": "filter",
+              "w": "11177",
+              "x": "87834",
+              "y": "39383"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "100000",
+              "id": "2",
+              "type-v2": "layout-basic",
+              "w": "100000",
+              "x": "0",
+              "y": "0"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "25384",
+              "id": "39",
+              "param": "horz",
+              "type-v2": "layout-flow",
+              "w": "99400",
+              "x": "300",
+              "y": "11731"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "h": "25384",
+              "id": "37",
+              "type-v2": "layout-basic",
+              "w": "99400",
+              "x": "300",
+              "y": "11731"
+            }
+          },
+          {
+            "type": null,
+            "attrs": {
+              "fixed-size": "160",
+              "h": "25384",
+              "id": "38",
+              "is-fixed": "true",
+              "param": "vert",
+              "type-v2": "layout-flow",
+              "w": "99400",
+              "x": "300",
+              "y": "11731"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "h": "5961",
+              "id": "40",
+              "mode": "dropdown",
+              "name": "ShippingTrend",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]",
+              "show-all": "false",
+              "show-exclude": "false",
+              "show-search": "false",
+              "type-v2": "filter",
+              "w": "98200",
+              "x": "900",
+              "y": "12501"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "h": "5961",
+              "id": "41",
+              "mode": "dropdown",
+              "name": "ShippingTrend",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[qr:Order Date:ok]",
+              "show-all": "false",
+              "show-search": "false",
+              "type-v2": "filter",
+              "w": "98200",
+              "x": "900",
+              "y": "18462"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "h": "5961",
+              "id": "42",
+              "mode": "checkdropdown",
+              "name": "ShippingTrend",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]",
+              "show-all": "false",
+              "show-filter-state": "false",
+              "show-search": "false",
+              "type-v2": "filter",
+              "w": "98200",
+              "x": "900",
+              "y": "24423"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "h": "5961",
+              "id": "43",
+              "mode": "checkdropdown",
+              "name": "ShippingTrend",
+              "param": "[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Ship Mode:nk]",
+              "type-v2": "filter",
+              "w": "98200",
+              "x": "900",
+              "y": "30384"
+            }
+          },
+          {
+            "type": "ShipSummary",
+            "attrs": {
+              "fixed-size": "53",
+              "h": "11346",
+              "id": "19",
+              "is-fixed": "true",
+              "name": "ShipSummary",
+              "show-title": "false",
+              "w": "99400",
+              "x": "300",
+              "y": "385"
+            }
+          },
+          {
+            "type": "ShippingTrend",
+            "attrs": {
+              "fixed-size": "296",
+              "h": "62500",
+              "id": "1",
+              "is-fixed": "true",
+              "name": "ShippingTrend",
+              "show-title": "false",
+              "w": "99400",
+              "x": "300",
+              "y": "37115"
+            }
+          }
+        ]
+      }
+    ],
+    "worksheets": [
+      {
+        "name": "CommissionProjection",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "CustomerOverview",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "CustomerRank",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "CustomerScatter",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "DaystoShip",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "Forecast",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "OTE",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "Performance",
+        "mark_types": [
+          "Bar"
+        ]
+      },
+      {
+        "name": "Product Detail Sheet",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "ProductDetails",
+        "mark_types": [
+          "Circle"
+        ]
+      },
+      {
+        "name": "ProductView",
+        "mark_types": [
+          "Square"
+        ]
+      },
+      {
+        "name": "QuotaAttainment",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "Sale Map",
+        "mark_types": [
+          "Multipolygon"
+        ]
+      },
+      {
+        "name": "Sales",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "Sales by Product",
+        "mark_types": [
+          "Area"
+        ]
+      },
+      {
+        "name": "Sales by Segment",
+        "mark_types": [
+          "Area"
+        ]
+      },
+      {
+        "name": "ShipSummary",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "ShippingTrend",
+        "mark_types": [
+          "Area"
+        ]
+      },
+      {
+        "name": "Tooltip: Profit Ratio by City",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "Total Sales",
+        "mark_types": [
+          "Automatic"
+        ]
+      },
+      {
+        "name": "What If Forecast",
+        "mark_types": [
+          "Automatic"
+        ]
+      }
+    ]
+  }
+}

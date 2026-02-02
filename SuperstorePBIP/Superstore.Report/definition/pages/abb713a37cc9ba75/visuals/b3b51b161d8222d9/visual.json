@@ -3,14 +3,14 @@
   "name": "b3b51b161d8222d9",
   "position": {
     "x": 6,
-    "y": 107,
+    "y": 479.15,
     "z": 1,
-    "height": 638,
+    "height": 251.85,
     "width": 1268,
     "tabOrder": 1
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "matrix",
     "query": {
       "queryState": {
         "Values": {
