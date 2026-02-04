@@ -211,6 +211,41 @@ def make_textbox_visual(name: str, text: str, x: float, y: float, width: float, 
     }
 
 
+def apply_tableau_like_area_formatting(visual: dict):
+    visual.setdefault("objects", {})
+    visual["objects"]["title"] = [
+        {
+            "properties": {
+                "show": {"expr": {"Literal": {"Value": "false"}}}
+            }
+        }
+    ]
+    visual["objects"]["legend"] = [
+        {
+            "properties": {
+                "show": {"expr": {"Literal": {"Value": "false"}}}
+            }
+        }
+    ]
+    visual["objects"]["categoryAxis"] = [
+        {
+            "properties": {
+                "showAxisTitle": {"expr": {"Literal": {"Value": "false"}}},
+                "show": {"expr": {"Literal": {"Value": "true"}}},
+            }
+        }
+    ]
+    visual["objects"]["valueAxis"] = [
+        {
+            "properties": {
+                "showAxisTitle": {"expr": {"Literal": {"Value": "false"}}},
+                "show": {"expr": {"Literal": {"Value": "true"}}},
+            }
+        }
+    ]
+    return visual
+
+
 def read_snapshot_names(snapshots_dir: Path) -> List[str]:
     if not snapshots_dir.exists():
         return []
@@ -567,6 +602,7 @@ def split_segment_visuals(
         visual_json["position"]["height"] = round(each_height, 2)
         visual_json["visual"]["visualType"] = "stackedAreaChart"
         visual_json["visual"]["autoSelectVisualType"] = False
+        apply_tableau_like_area_formatting(visual_json["visual"])
         query_state = visual_json["visual"].get("query", {}).get("queryState", {})
         query_state.pop("SmallMultiples", None)
         # For stacked area, force Profitability into Series for stacking
@@ -679,6 +715,7 @@ def split_category_visuals(
         visual_json["position"]["height"] = round(each_height, 2)
         visual_json["visual"]["visualType"] = "stackedAreaChart"
         visual_json["visual"]["autoSelectVisualType"] = False
+        apply_tableau_like_area_formatting(visual_json["visual"])
         query_state = visual_json["visual"].get("query", {}).get("queryState", {})
         query_state.pop("SmallMultiples", None)
         query_state.pop("Legend", None)

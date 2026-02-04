@@ -113,6 +113,7 @@ Output a complete PBIP folder (Report + SemanticModel) that recreates the Tablea
    - No missing fields or broken relationships.
    - Visuals render and align with snapshots.
    - Deliver a pixel‑matched final PBIP.
+   - Verify series assignments, legends, filters applied, and color coding against TWB + snapshots.
 
 ## Visual Type Mapping Rules (Tableau → Power BI)
 Use TWB `mark class`, worksheet shelves (Rows/Columns), and snapshots to select the correct Power BI visual. Do not guess; if multiple options are plausible, choose the one that matches the snapshot layout and encoding (color/size/label).
@@ -158,6 +159,11 @@ Use TWB `mark class`, worksheet shelves (Rows/Columns), and snapshots to select 
 - Always parse TWB shelves/marks for fields, aggregations, and calculations.
 - Use TWB filters/parameters for slicers unless snapshots show additional UI filters.
 
+### Verification requirements (must pass)
+- Series and legend fields match TWB shelves and snapshot legends.
+- Filters/slicers reflect TWB filters and any visible snapshot controls.
+- Color encodings match TWB style definitions and snapshot palettes.
+
 ### Quality checks for visuals
 - Every visual JSON must reference existing model fields.
 - Correct aggregation level per Tableau view (no implicit summation differences).
@@ -172,6 +178,54 @@ Use TWB `mark class`, worksheet shelves (Rows/Columns), and snapshots to select 
 - Visual types: cards, bar/column, line charts, maps, tables, matrices, textboxes
 - Visual JSONs must include valid query projections (Measures/Columns from the semantic model).
 - Use this Superstore PBIP structure as the schema blueprint when generating any new output.
+
+## Superstore Visual Schema Reference (template for any TWBX)
+- `SuperstorePBIP/Superstore.Report/definition/report.json` (report metadata + theme)
+- `SuperstorePBIP/Superstore.Report/definition/pages/pages.json` (page order + active page)
+- `SuperstorePBIP/Superstore.Report/definition/pages/<pageId>/page.json` (page size + layout)
+- `SuperstorePBIP/Superstore.Report/definition/pages/<pageId>/visuals/<visualId>/visual.json` (visual container schema)
+- Treat the Superstore `visual.json` structure and `visualType` strings as canonical; copy and adjust fields/queries/positions rather than inventing new shapes.
+
+## Concrete Superstore Visual Examples (use as exact templates)
+- Card KPI: `SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/41ed3157d0a3fcac830d/visual.json`
+-  - Copy `visualType`, `position`, and `queryState.Values` shape; swap the measure in `Values`.
+- Filled map with filters: `SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/cd34ef56ab7890cd/visual.json`
+-  - Copy `visualType`, `queryState.Location/Size`, and `filterConfig`; swap location/size fields and filter fields.
+- Line chart with series: `SuperstorePBIP/Superstore.Report/definition/pages/528bc4bc381542e0/visuals/528bc4bc381542e0/visual.json`
+-  - Copy `queryState.Category/Series/Y` shape and `sortDefinition`; swap Category/Series/Measure fields.
+- Clustered bar chart: `SuperstorePBIP/Superstore.Report/definition/pages/63c904559993935c/visuals/63c904559993935c/visual.json`
+-  - Copy `queryState.Category/Y` shape; swap dimension and measure fields.
+- Scatter chart with legend: `SuperstorePBIP/Superstore.Report/definition/pages/dd3b86d1ef21b9fb/visuals/product_sales_profit/visual.json`
+-  - Copy `queryState.X/Y/Details/Legend`; swap measures and detail/legend fields.
+- Matrix heatmap: `SuperstorePBIP/Superstore.Report/definition/pages/dd3b86d1ef21b9fb/visuals/product_heatmap/visual.json`
+-  - Copy `queryState.Rows/Columns/Values`; swap row/column dimensions and value measure.
+- Textbox title: `SuperstorePBIP/Superstore.Report/definition/pages/dd3b86d1ef21b9fb/visuals/product_title/visual.json`
+-  - Copy `visualType` and `objects.general.paragraphs`; swap text string and font size if needed.
+
+## Tableau → Power BI Chart Type Reference (expanded)
+- Bar (horizontal) → `clusteredBarChart` or `stackedBarChart` based on segments
+- Column (vertical) → `clusteredColumnChart` or `stackedColumnChart`
+- Line → `lineChart`
+- Area → `areaChart`
+- Dual‑axis (line + bar) → `comboChart` (or overlayed visuals if needed)
+- Scatter / Bubble → `scatterChart`
+- Pie / Donut → `pieChart` (donut styling via settings)
+- Treemap → `treemap`
+- Heatmap / Highlight table → `matrix` with conditional formatting
+- Map (points) → `map`
+- Filled map (regions) → `filledMap`
+- Gantt → `barChart` with start/end (stacked pattern)
+- Text table → `table` or `matrix` (if multi‑dimensional)
+
+## Schema‑to‑Schema Conversion (TWBX → PBIP)
+- TWB `datasource` and `column` → `SemanticModel/definition/tables/*.tmdl` columns + data types.
+- TWB calculations → TMDL measures or calculated columns (exact DAX translation).
+- TWB relationships/joins → `SemanticModel/definition/model.tmdl` relationships.
+- TWB worksheet shelves (Rows/Columns/Marks) → `visual.json` queryState mappings.
+- TWB filters/parameters → `visual.json` filters and report/page filters; slicers where applicable.
+- TWB dashboard layout → `page.json` and visual `position` blocks.
+- TWB encoding (color/size/label/detail/tooltip) → visual `Legend`, `Size`, `Values`, data labels, and tooltip fields.
+- Use snapshots only to validate layout/styling and resolve visual ambiguities; do not override TWB data logic.
 
 ## Output Required
 - Ready‑to‑open PBIP folder with:

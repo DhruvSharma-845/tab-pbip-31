@@ -71,7 +71,7 @@
       <connection class='federated'>
         <named-connections>
           <named-connection caption='Sample - Superstore' name='excel-direct.0lad5au144tqkt16qnaz70tec6fn'>
-            <connection class='excel-direct' cleaning='no' compat='no' dataRefreshTime='' filename='Data/Superstore/Sample - Superstore.xls' interpretationMode='0' password='' server='' validate='no' />
+            <connection class='excel-direct' cleaning='no' compat='no' dataRefreshTime='' filename='Data/Sample - Superstore.xls' interpretationMode='0' password='' server='' validate='no' />
           </named-connection>
         </named-connections>
         <relation type='collection'>
@@ -1053,7 +1053,7 @@
       <connection class='federated'>
         <named-connections>
           <named-connection caption='Sales Target' name='excel-direct.1sj83no0zjgqcn11x69nn1f7rbzm'>
-            <connection class='excel-direct' cleaning='no' compat='no' dataRefreshTime='' filename='Data/Superstore/Sales Target.xlsx' interpretationMode='0' password='' server='' validate='no' />
+            <connection class='excel-direct' cleaning='no' compat='no' dataRefreshTime='' filename='Data/Sales Target.xlsx' interpretationMode='0' password='' server='' validate='no' />
           </named-connection>
         </named-connections>
         <relation connection='excel-direct.1sj83no0zjgqcn11x69nn1f7rbzm' name='Sheet1' table='[Sheet1$]' type='table'>
@@ -1170,7 +1170,7 @@
       <connection class='federated'>
         <named-connections>
           <named-connection caption='Sales Commission' name='textscan.0bdqfzt0f0ynar1egmoso1fglwo7'>
-            <connection class='textscan' directory='Data/Superstore' filename='Sales Commission.csv' password='' server='' />
+            <connection class='textscan' directory='Data' filename='Sales Commission.csv' password='' server='' />
           </named-connection>
         </named-connections>
         <relation connection='textscan.0bdqfzt0f0ynar1egmoso1fglwo7' name='Sales Commission.csv' table='[Sales Commission#csv]' type='table'>
@@ -5178,11 +5178,11 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
       </datasource-dependencies>
       <zones>
         <zone h='100000' id='2' type-v2='layout-basic' w='100000' x='0' y='0'>
-          <zone h='98418' id='34' param='horz' type-v2='layout-flow' w='99078' x='461' y='791'>
-            <zone h='98418' id='32' type-v2='layout-basic' w='99078' x='461' y='791'>
-              <zone h='6591' id='9' type-v2='title' w='99078' x='461' y='791' />
-              <zone h='76920' id='29' layout-strategy-id='distribute-evenly' param='horz' type-v2='layout-flow' w='88303' x='461' y='22289'>
-                <zone h='76949' id='3' name='CustomerScatter' w='44167' x='461' y='22260'>
+          <zone h='98414' id='34' param='horz' type-v2='layout-flow' w='99078' x='461' y='793'>
+            <zone h='98414' id='32' type-v2='layout-basic' w='99078' x='461' y='793'>
+              <zone h='6590' id='9' type-v2='title' w='99078' x='461' y='793' />
+              <zone h='76917' id='29' layout-strategy-id='distribute-evenly' param='horz' type-v2='layout-flow' w='88303' x='461' y='22290'>
+                <zone h='76897' id='3' name='CustomerScatter' w='44167' x='461' y='22310'>
                   <layout-cache minheight='197' minwidth='184' type-h='scalable' type-w='scalable' />
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -5191,7 +5191,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     <format attr='margin' value='2' />
                   </zone-style>
                 </zone>
-                <zone h='76949' id='8' name='CustomerRank' w='44166' x='44628' y='22260'>
+                <zone h='76897' id='8' name='CustomerRank' w='44166' x='44628' y='22310'>
                   <layout-cache fixed-size-h='15837' minwidth='260' type-h='fixed' type-w='scalable' />
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -5201,7 +5201,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                   </zone-style>
                 </zone>
               </zone>
-              <zone h='14907' id='1' name='CustomerOverview' show-title='false' w='99078' x='461' y='7382'>
+              <zone h='14907' id='1' name='CustomerOverview' show-title='false' w='99078' x='461' y='7383'>
                 <layout-cache fixed-size-h='112' minwidth='660' type-h='fixed' type-w='scalable' />
                 <zone-style>
                   <format attr='border-color' value='#000000' />
@@ -5210,8 +5210,8 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                   <format attr='margin' value='4' />
                 </zone-style>
               </zone>
-              <zone h='76920' id='39' param='vert' type-v2='layout-flow' w='10775' x='88764' y='22289'>
-                <zone h='5876' id='35' mode='checkdropdown' name='CustomerScatter' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]' type-v2='filter' w='9719' x='89292' y='23193'>
+              <zone h='76917' id='39' param='vert' type-v2='layout-flow' w='10775' x='88764' y='22290'>
+                <zone h='5889' id='35' mode='checkdropdown' name='CustomerScatter' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]' type-v2='filter' w='9719' x='89292' y='23196'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -5220,7 +5220,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     <format attr='background-color' value='#f5f5f5' />
                   </zone-style>
                 </zone>
-                <zone h='12203' id='36' name='CustomerScatter' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Category:nk]' type-v2='filter' w='9719' x='89292' y='29069'>
+                <zone h='12231' id='36' name='CustomerScatter' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Category:nk]' type-v2='filter' w='9719' x='89292' y='29085'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -5229,7 +5229,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     <format attr='background-color' value='#f5f5f5' />
                   </zone-style>
                 </zone>
-                <zone h='12203' id='37' name='CustomerScatter' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Segment:nk]' type-v2='filter' w='9719' x='89292' y='41272'>
+                <zone h='12231' id='37' name='CustomerScatter' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Segment:nk]' type-v2='filter' w='9719' x='89292' y='41316'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -5238,7 +5238,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     <format attr='background-color' value='#f5f5f5' />
                   </zone-style>
                 </zone>
-                <zone h='7345' id='38' name='CustomerScatter' pane-specification-id='0' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]' type-v2='color' w='9719' x='89292' y='53475'>
+                <zone h='7361' id='38' name='CustomerScatter' pane-specification-id='0' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]' type-v2='color' w='9719' x='89292' y='53547'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -5494,7 +5494,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
       <zones>
         <zone h='100000' id='2' type-v2='layout-basic' w='100000' x='0' y='0'>
           <zone h='100000' id='18' param='vert' type-v2='layout-flow' w='100000' x='0' y='0'>
-            <zone h='4068' id='17' type-v2='title' w='99078' x='461' y='791'>
+            <zone h='4078' id='17' type-v2='title' w='99078' x='461' y='793'>
               <zone-style>
                 <format attr='border-color' value='#000000' />
                 <format attr='border-style' value='none' />
@@ -5502,10 +5502,10 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                 <format attr='margin-bottom' value='2' />
               </zone-style>
             </zone>
-            <zone h='94350' id='7' param='horz' type-v2='layout-flow' w='99078' x='461' y='4859'>
-              <zone h='94350' id='5' param='vert' type-v2='layout-flow' w='99078' x='461' y='4859'>
-                <zone fixed-size='62' h='7006' id='10' is-fixed='true' param='horz' type-v2='layout-flow' w='99078' x='461' y='4859'>
-                  <zone h='7006' id='19' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Order Date:qk]' type-v2='filter' values='context' w='46343' x='461' y='4859'>
+            <zone h='94336' id='7' param='horz' type-v2='layout-flow' w='99078' x='461' y='4871'>
+              <zone h='94336' id='5' param='vert' type-v2='layout-flow' w='99078' x='461' y='4871'>
+                <zone fixed-size='62' h='7022' id='10' is-fixed='true' param='horz' type-v2='layout-flow' w='99078' x='461' y='4871'>
+                  <zone h='7022' id='19' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Order Date:qk]' type-v2='filter' values='context' w='46343' x='461' y='4871'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -5513,7 +5513,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                       <format attr='background-color' value='#ffffff' />
                     </zone-style>
                   </zone>
-                  <zone h='7006' id='14' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]' type-v2='filter' w='10547' x='46804' y='4859'>
+                  <zone h='7022' id='14' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]' type-v2='filter' w='10547' x='46804' y='4871'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -5521,7 +5521,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                       <format attr='background-color' value='#ffffff' />
                     </zone-style>
                   </zone>
-                  <zone h='7006' id='15' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:State/Province:nk]' type-v2='filter' values='relevant' w='10547' x='57351' y='4859'>
+                  <zone h='7022' id='15' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:State/Province:nk]' type-v2='filter' values='relevant' w='10547' x='57351' y='4871'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -5529,7 +5529,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                       <format attr='background-color' value='#ffffff' />
                     </zone-style>
                   </zone>
-                  <zone h='7006' id='16' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:City:nk]' type-v2='filter' values='relevant' w='10547' x='67898' y='4859'>
+                  <zone h='7022' id='16' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:City:nk]' type-v2='filter' values='relevant' w='10547' x='67898' y='4871'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -5537,7 +5537,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                       <format attr='background-color' value='#ffffff' />
                     </zone-style>
                   </zone>
-                  <zone h='7006' id='8' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Category:nk]' type-v2='filter' values='relevant' w='10547' x='78445' y='4859'>
+                  <zone h='7022' id='8' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Category:nk]' type-v2='filter' values='relevant' w='10547' x='78445' y='4871'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -5545,7 +5545,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                       <format attr='background-color' value='#ffffff' />
                     </zone-style>
                   </zone>
-                  <zone h='7006' id='9' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Segment:nk]' type-v2='filter' values='relevant' w='10547' x='88992' y='4859'>
+                  <zone h='7022' id='9' mode='checkdropdown' name='Product Detail Sheet' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Segment:nk]' type-v2='filter' values='relevant' w='10547' x='88992' y='4871'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -5554,8 +5554,8 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     </zone-style>
                   </zone>
                 </zone>
-                <zone h='87344' id='3' type-v2='layout-basic' w='99078' x='461' y='11865'>
-                  <zone h='87344' id='1' name='Product Detail Sheet' w='99078' x='461' y='11865' />
+                <zone h='87314' id='3' type-v2='layout-basic' w='99078' x='461' y='11893'>
+                  <zone h='87314' id='1' name='Product Detail Sheet' w='99078' x='461' y='11893' />
                 </zone>
               </zone>
             </zone>
@@ -5707,7 +5707,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
         <zone h='100000' id='2' type-v2='layout-basic' w='100000' x='0' y='0'>
           <zone h='100000' id='39' param='horz' type-v2='layout-flow' w='100000' x='0' y='0'>
             <zone h='100000' id='12' param='vert' type-v2='layout-flow' w='100000' x='0' y='0'>
-              <zone fixed-size='117' h='13220' id='32' is-fixed='true' name='Total Sales' w='99078' x='461' y='791'>
+              <zone fixed-size='117' h='13250' id='32' is-fixed='true' name='Total Sales' w='99078' x='461' y='793'>
                 <layout-cache type-h='cell' type-w='cell' />
                 <zone-style>
                   <format attr='border-color' value='#000000' />
@@ -5716,9 +5716,9 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                   <format attr='padding' value='1' />
                 </zone-style>
               </zone>
-              <zone fixed-size='337' h='38079' id='26' is-fixed='true' param='horz' type-v2='layout-flow' w='99078' x='461' y='14011'>
-                <zone h='38079' id='44' param='horz' type-v2='layout-flow' w='99078' x='461' y='14011'>
-                  <zone h='38079' id='1' name='Sale Map' show-title='false' w='87411' x='461' y='14011'>
+              <zone fixed-size='337' h='38165' id='26' is-fixed='true' param='horz' type-v2='layout-flow' w='99078' x='461' y='14043'>
+                <zone h='38165' id='44' param='horz' type-v2='layout-flow' w='99078' x='461' y='14043'>
+                  <zone h='38165' id='1' name='Sale Map' show-title='false' w='87411' x='461' y='14043'>
                     <layout-cache minheight='201' minwidth='201' type-h='scalable' type-w='scalable' />
                     <zone-style>
                       <format attr='border-color' value='#000000' />
@@ -5727,8 +5727,8 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone fixed-size='169' h='38079' id='37' is-fixed='true' param='vert' type-v2='layout-flow' w='11667' x='87872' y='14011'>
-                    <zone h='5876' id='41' mode='dropdown' name='Sale Map' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]' type-v2='filter' w='10611' x='88400' y='14915'>
+                  <zone fixed-size='169' h='38165' id='37' is-fixed='true' param='vert' type-v2='layout-flow' w='11667' x='87872' y='14043'>
+                    <zone h='5889' id='41' mode='dropdown' name='Sale Map' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]' type-v2='filter' w='10611' x='88400' y='14949'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -5737,7 +5737,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                         <format attr='background-color' value='#f5f5f5' />
                       </zone-style>
                     </zone>
-                    <zone h='7797' id='40' name='Sale Map' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Order Date:qk]' type-v2='filter' w='10611' x='88400' y='20791'>
+                    <zone h='7814' id='40' name='Sale Map' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Order Date:qk]' type-v2='filter' w='10611' x='88400' y='20838'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -5746,7 +5746,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                         <format attr='background-color' value='#f5f5f5' />
                       </zone-style>
                     </zone>
-                    <zone h='7797' id='42' name='Sale Map' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]' type-v2='filter' w='10611' x='88400' y='28588'>
+                    <zone h='7814' id='42' name='Sale Map' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]' type-v2='filter' w='10611' x='88400' y='28652'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -5755,7 +5755,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                         <format attr='background-color' value='#f5f5f5' />
                       </zone-style>
                     </zone>
-                    <zone h='7345' id='43' name='Sale Map' pane-specification-id='2' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]' type-v2='color' w='10611' x='88400' y='36385'>
+                    <zone h='7361' id='43' name='Sale Map' pane-specification-id='2' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]' type-v2='color' w='10611' x='88400' y='36466'>
                       <zone-style>
                         <format attr='border-color' value='#000000' />
                         <format attr='border-style' value='none' />
@@ -5774,8 +5774,8 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                   </zone>
                 </zone>
               </zone>
-              <zone h='47119' id='22' param='horz' type-v2='layout-flow' w='99078' x='461' y='52090'>
-                <zone h='46215' id='8' name='Sales by Segment' w='49143' x='725' y='52542'>
+              <zone h='46999' id='22' param='horz' type-v2='layout-flow' w='99078' x='461' y='52208'>
+                <zone h='46093' id='8' name='Sales by Segment' w='49143' x='725' y='52661'>
                   <layout-cache minheight='367' minwidth='242' type-h='scalable' type-w='scalable' />
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -5784,7 +5784,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     <format attr='margin-right' value='2' />
                   </zone-style>
                 </zone>
-                <zone h='46215' id='10' name='Sales by Product' w='49406' x='49868' y='52542'>
+                <zone h='46093' id='10' name='Sales by Product' w='49406' x='49868' y='52661'>
                   <layout-cache minheight='367' minwidth='246' type-h='scalable' type-w='scalable' />
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -5942,11 +5942,11 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
       </datasource-dependencies>
       <zones>
         <zone h='100000' id='2' type-v2='layout-basic' w='100000' x='0' y='0'>
-          <zone h='98418' id='31' param='horz' type-v2='layout-flow' w='99078' x='461' y='791'>
-            <zone h='98418' id='29' type-v2='layout-basic' w='99078' x='461' y='791'>
-              <zone h='49187' id='16' param='horz' type-v2='layout-flow' w='99078' x='461' y='791'>
-                <zone h='49187' id='10' param='vert' type-v2='layout-flow' w='99078' x='461' y='791'>
-                  <zone h='4294' id='9' type-v2='title' w='99078' x='461' y='791'>
+          <zone h='98414' id='31' param='horz' type-v2='layout-flow' w='99078' x='461' y='793'>
+            <zone h='98414' id='29' type-v2='layout-basic' w='99078' x='461' y='793'>
+              <zone h='49185' id='16' param='horz' type-v2='layout-flow' w='99078' x='461' y='793'>
+                <zone h='49185' id='10' param='vert' type-v2='layout-flow' w='99078' x='461' y='793'>
+                  <zone h='4304' id='9' type-v2='title' w='99078' x='461' y='793'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -5954,9 +5954,9 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                       <format attr='margin' value='2' />
                     </zone-style>
                   </zone>
-                  <zone h='44893' id='5' param='horz' type-v2='layout-flow' w='99078' x='461' y='5085'>
-                    <zone h='44893' id='3' type-v2='layout-basic' w='99078' x='461' y='5085'>
-                      <zone h='44893' id='1' name='ProductView' w='87896' x='461' y='5085'>
+                  <zone h='44881' id='5' param='horz' type-v2='layout-flow' w='99078' x='461' y='5097'>
+                    <zone h='44881' id='3' type-v2='layout-basic' w='99078' x='461' y='5097'>
+                      <zone h='44881' id='1' name='ProductView' w='87896' x='461' y='5097'>
                         <zone-style>
                           <format attr='border-color' value='#000000' />
                           <format attr='border-style' value='none' />
@@ -5964,8 +5964,8 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                           <format attr='margin-right' value='3' />
                         </zone-style>
                       </zone>
-                      <zone h='44893' id='28' param='vert' type-v2='layout-flow' w='11182' x='88357' y='5085'>
-                        <zone h='14350' id='32' mode='radiolist' name='ProductView' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]' type-v2='filter' w='10126' x='88885' y='5989'>
+                      <zone h='44881' id='28' param='vert' type-v2='layout-flow' w='11182' x='88357' y='5097'>
+                        <zone h='14383' id='32' mode='radiolist' name='ProductView' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]' type-v2='filter' w='10126' x='88885' y='6003'>
                           <zone-style>
                             <format attr='border-color' value='#000000' />
                             <format attr='border-style' value='none' />
@@ -5974,7 +5974,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                             <format attr='background-color' value='#f5f5f5' />
                           </zone-style>
                         </zone>
-                        <zone h='7345' id='33' name='ProductView' pane-specification-id='0' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[sum:Sales:qk]' type-v2='color' w='10126' x='88885' y='20339'>
+                        <zone h='7361' id='33' name='ProductView' pane-specification-id='0' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[sum:Sales:qk]' type-v2='color' w='10126' x='88885' y='20386'>
                           <zone-style>
                             <format attr='border-color' value='#000000' />
                             <format attr='border-style' value='none' />
@@ -5982,7 +5982,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                             <format attr='margin' value='4' />
                           </zone-style>
                         </zone>
-                        <zone h='7345' id='34' name='ProductDetails' pane-specification-id='0' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]' type-v2='color' w='10126' x='88885' y='27684'>
+                        <zone h='7361' id='34' name='ProductDetails' pane-specification-id='0' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[usr:Calculation_9921103144103743:qk]' type-v2='color' w='10126' x='88885' y='27747'>
                           <zone-style>
                             <format attr='border-color' value='#000000' />
                             <format attr='border-style' value='none' />
@@ -6003,7 +6003,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                   </zone>
                 </zone>
               </zone>
-              <zone h='49231' id='8' name='ProductDetails' w='99078' x='461' y='49978' />
+              <zone h='49229' id='8' name='ProductDetails' w='99078' x='461' y='49978' />
             </zone>
           </zone>
           <zone-style>
@@ -6110,10 +6110,10 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
       </datasource-dependencies>
       <zones>
         <zone h='100000' id='2' type-v2='layout-basic' w='100000' x='0' y='0'>
-          <zone h='98418' id='39' param='horz' type-v2='layout-flow' w='99078' x='461' y='791'>
-            <zone h='98418' id='37' type-v2='layout-basic' w='99078' x='461' y='791'>
-              <zone h='91028' id='35' param='vert' type-v2='layout-flow' w='86845' x='461' y='8181'>
-                <zone fixed-size='53' h='6893' id='19' is-fixed='true' name='ShipSummary' show-title='false' w='86845' x='461' y='8181'>
+          <zone h='98414' id='39' param='horz' type-v2='layout-flow' w='99078' x='461' y='793'>
+            <zone h='98414' id='37' type-v2='layout-basic' w='99078' x='461' y='793'>
+              <zone h='91025' id='35' param='vert' type-v2='layout-flow' w='86845' x='461' y='8182'>
+                <zone fixed-size='53' h='6908' id='19' is-fixed='true' name='ShipSummary' show-title='false' w='86845' x='461' y='8182'>
                   <layout-cache type-h='cell' type-w='fixed' />
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -6123,16 +6123,16 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     <format attr='margin-bottom' value='4' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='296' h='33446' id='1' is-fixed='true' name='ShippingTrend' show-title='false' w='86845' x='461' y='15074'>
+                <zone fixed-size='296' h='33522' id='1' is-fixed='true' name='ShippingTrend' show-title='false' w='86845' x='461' y='15090'>
                   <layout-cache minheight='156' type-h='scalable' type-w='fixed' />
                 </zone>
-                <zone h='50689' id='3' name='DaystoShip' w='86845' x='461' y='48520'>
+                <zone h='50595' id='3' name='DaystoShip' w='86845' x='461' y='48612'>
                   <layout-cache fixed-size-h='17640' type-h='fixed' type-w='fixed' />
                 </zone>
               </zone>
-              <zone h='7390' id='10' type-v2='title' w='99078' x='461' y='791' />
-              <zone fixed-size='160' h='91012' id='38' is-fixed='true' param='vert' type-v2='layout-flow' w='12233' x='87306' y='8197'>
-                <zone h='12203' id='40' mode='radiolist' name='ShippingTrend' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]' show-all='false' show-exclude='false' show-search='false' type-v2='filter' w='11177' x='87834' y='9101'>
+              <zone h='7389' id='10' type-v2='title' w='99078' x='461' y='793' />
+              <zone fixed-size='160' h='91009' id='38' is-fixed='true' param='vert' type-v2='layout-flow' w='12233' x='87306' y='8198'>
+                <zone h='12231' id='40' mode='radiolist' name='ShippingTrend' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]' show-all='false' show-exclude='false' show-search='false' type-v2='filter' w='11177' x='87834' y='9104'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -6141,7 +6141,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     <format attr='background-color' value='#f5f5f5' />
                   </zone-style>
                 </zone>
-                <zone h='12203' id='41' mode='radiolist' name='ShippingTrend' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[qr:Order Date:ok]' show-all='false' show-search='false' type-v2='filter' values='relevant' w='11177' x='87834' y='21304'>
+                <zone h='12231' id='41' mode='radiolist' name='ShippingTrend' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[qr:Order Date:ok]' show-all='false' show-search='false' type-v2='filter' values='relevant' w='11177' x='87834' y='21335'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -6150,7 +6150,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     <format attr='background-color' value='#f5f5f5' />
                   </zone-style>
                 </zone>
-                <zone h='5876' id='42' mode='checkdropdown' name='ShippingTrend' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]' show-all='false' show-filter-state='false' show-search='false' type-v2='filter' w='11177' x='87834' y='33507'>
+                <zone h='5889' id='42' mode='checkdropdown' name='ShippingTrend' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Region:nk]' show-all='false' show-filter-state='false' show-search='false' type-v2='filter' w='11177' x='87834' y='33566'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -6159,7 +6159,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
                     <format attr='background-color' value='#f5f5f5' />
                   </zone-style>
                 </zone>
-                <zone h='5876' id='43' mode='checkdropdown' name='ShippingTrend' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Ship Mode:nk]' type-v2='filter' w='11177' x='87834' y='39383'>
+                <zone h='5889' id='43' mode='checkdropdown' name='ShippingTrend' param='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[none:Ship Mode:nk]' type-v2='filter' w='11177' x='87834' y='39455'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -6285,7 +6285,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
     </dashboard>
   </dashboards>
   <windows source-height='72'>
-    <window class='dashboard' name='Overview'>
+    <window class='dashboard' maximized='true' name='Overview'>
       <viewpoints>
         <viewpoint name='Sale Map'>
           <zoom type='entire-view' />
@@ -6300,7 +6300,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
           <zoom type='entire-view' />
         </viewpoint>
       </viewpoints>
-      <active id='32' />
+      <active id='8' />
       <device-preview>
         <device is-portrait='true' name='Generic Phone' type='Phone' />
       </device-preview>
@@ -6321,7 +6321,7 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
       </device-preview>
       <simple-id uuid='{FEA277C3-7B16-4040-A038-EBB39F245F48}' />
     </window>
-    <window class='dashboard' maximized='true' name='Customers'>
+    <window class='dashboard' name='Customers'>
       <viewpoints>
         <viewpoint name='CustomerOverview'>
           <zoom type='fit-width' />
