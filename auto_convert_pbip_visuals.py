@@ -179,6 +179,84 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
     }
 
 
+def parse_product_svg(svg_path: Path) -> Optional[dict]:
+    if not svg_path.exists():
+        return None
+    tree = ET.parse(svg_path)
+    root = tree.getroot()
+
+    rects = []
+    texts = []
+
+    def walk(node, current_mat):
+        transform = node.attrib.get("transform")
+        if transform:
+            current_mat = mat_mul(current_mat, parse_transform(transform))
+        tag = node.tag.split("}")[-1]
+        if tag == "rect":
+            x = float(node.attrib.get("x", "0"))
+            y = float(node.attrib.get("y", "0"))
+            w = float(node.attrib.get("width", "0"))
+            h = float(node.attrib.get("height", "0"))
+            (x1, y1) = apply_mat(current_mat, x, y)
+            (x2, y2) = apply_mat(current_mat, x + w, y + h)
+            rects.append(
+                {
+                    "x": min(x1, x2),
+                    "y": min(y1, y2),
+                    "w": abs(x2 - x1),
+                    "h": abs(y2 - y1),
+                }
+            )
+        if tag == "text" and node.text:
+            x = float(node.attrib.get("x", "0"))
+            y = float(node.attrib.get("y", "0"))
+            (x1, y1) = apply_mat(current_mat, x, y)
+            texts.append({"text": node.text.strip(), "x": x1, "y": y1})
+        for child in list(node):
+            walk(child, current_mat)
+
+    walk(root, [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+    def find_label(text_key: str) -> Optional[dict]:
+        for item in texts:
+            if text_key in item["text"]:
+                return item
+        return None
+
+    def pick_rect_near(label: dict) -> Optional[dict]:
+        candidates = [
+            r
+            for r in rects
+            if r["w"] > 300 and r["h"] > 200 and r["y"] > label["y"]
+        ]
+        if not candidates:
+            return None
+        candidates.sort(
+            key=lambda r: (abs(r["y"] - label["y"]), abs(r["x"] - label["x"]))
+        )
+        return candidates[0]
+
+    heatmap_label = find_label("Sales by Product Category")
+    scatter_label = find_label("Sales and Profit by Product Names")
+    if not heatmap_label or not scatter_label:
+        return None
+
+    heatmap_rect = pick_rect_near(heatmap_label)
+    scatter_rect = pick_rect_near(scatter_label)
+    if not heatmap_rect or not scatter_rect:
+        return None
+
+    max_x = max(r["x"] + r["w"] for r in rects) if rects else 1500
+    max_y = max(r["y"] + r["h"] for r in rects) if rects else 900
+    return {
+        "heatmap_rect": heatmap_rect,
+        "scatter_rect": scatter_rect,
+        "svg_width": max_x,
+        "svg_height": max_y,
+    }
+
+
 def make_textbox_visual(name: str, text: str, x: float, y: float, width: float, height: float) -> dict:
     return {
         "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
@@ -1085,6 +1163,31 @@ def apply_layout_overrides(
         return
 
     if profile == "product":
+        if svg_layout:
+            scale_x = page_width / svg_layout["svg_width"]
+            scale_y = page_height / svg_layout["svg_height"]
+            heatmap = svg_layout["heatmap_rect"]
+            scatter = svg_layout["scatter_rect"]
+            heatmap_box = {
+                "x": heatmap["x"] * scale_x,
+                "y": heatmap["y"] * scale_y,
+                "w": heatmap["w"] * scale_x,
+                "h": heatmap["h"] * scale_y,
+            }
+            scatter_box = {
+                "x": scatter["x"] * scale_x,
+                "y": scatter["y"] * scale_y,
+                "w": scatter["w"] * scale_x,
+                "h": scatter["h"] * scale_y,
+            }
+        else:
+            heatmap_box = {"x": 20, "y": 50, "w": 1240, "h": 280}
+            scatter_box = {
+                "x": 20,
+                "y": 350,
+                "w": 1240,
+                "h": max(page_height - 370, 300),
+            }
         for visual in visuals:
             title = visual.get("title", "").lower()
             fields = " ".join(visual.get("fields", [])).lower()
@@ -1094,16 +1197,16 @@ def apply_layout_overrides(
                 and "order year" in fields
                 and "category" in fields
             ):
-                visual["position"]["x"] = 20
-                visual["position"]["y"] = 50
-                visual["position"]["width"] = 1240
-                visual["position"]["height"] = 280
+                visual["position"]["x"] = round(heatmap_box["x"], 2)
+                visual["position"]["y"] = round(heatmap_box["y"], 2)
+                visual["position"]["width"] = round(heatmap_box["w"], 2)
+                visual["position"]["height"] = round(heatmap_box["h"], 2)
                 visual["visual"]["autoSelectVisualType"] = False
             if "sales and profit" in title or visual["recommended_type"] == "scatterChart":
-                visual["position"]["x"] = 20
-                visual["position"]["y"] = 350
-                visual["position"]["width"] = 1240
-                visual["position"]["height"] = max(page_height - 370, 300)
+                visual["position"]["x"] = round(scatter_box["x"], 2)
+                visual["position"]["y"] = round(scatter_box["y"], 2)
+                visual["position"]["width"] = round(scatter_box["w"], 2)
+                visual["position"]["height"] = round(scatter_box["h"], 2)
                 visual["visual"]["autoSelectVisualType"] = False
             if visual["visual_type"] == "textbox":
                 visual["position"]["y"] = 0
@@ -1156,7 +1259,8 @@ def process_report(
     report_dir: Path,
     snapshots_dir: Path,
     dry_run: bool,
-    svg_path: Optional[Path],
+    overview_svg_path: Optional[Path],
+    product_svg_path: Optional[Path],
 ) -> Dict:
     pages_path = report_dir / "definition" / "pages" / "pages.json"
     pages_meta = load_json(pages_path)
@@ -1285,8 +1389,10 @@ def process_report(
         snapshot_match = page_changes["snapshot_match"]
         profile = layout_profile(page_name, snapshot_match)
         svg_layout = None
-        if profile == "overview" and svg_path:
-            svg_layout = parse_overview_svg(svg_path)
+        if profile == "overview" and overview_svg_path:
+            svg_layout = parse_overview_svg(overview_svg_path)
+        if profile == "product" and product_svg_path:
+            svg_layout = parse_product_svg(product_svg_path)
         if profile:
             apply_layout_overrides(
                 profile, visuals, page_height, svg_layout, page_width, visuals_dir
@@ -1340,6 +1446,11 @@ def main():
         help="Overview SVG exported from Tableau.",
     )
     parser.add_argument(
+        "--product-svg",
+        default="tableau snapshots/ProductSVG.svg",
+        help="Product SVG exported from Tableau.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Do not modify visual.json files.",
@@ -1349,8 +1460,11 @@ def main():
     report_dir = Path(args.pbip_report)
     snapshots_dir = Path(args.snapshots_dir)
 
-    svg_path = Path(args.overview_svg) if args.overview_svg else None
-    report = process_report(report_dir, snapshots_dir, args.dry_run, svg_path)
+    overview_svg_path = Path(args.overview_svg) if args.overview_svg else None
+    product_svg_path = Path(args.product_svg) if args.product_svg else None
+    report = process_report(
+        report_dir, snapshots_dir, args.dry_run, overview_svg_path, product_svg_path
+    )
     out_path = Path(args.out_report)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")

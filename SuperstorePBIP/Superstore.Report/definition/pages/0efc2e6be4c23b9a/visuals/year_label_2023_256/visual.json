@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "year_label_2023_256",
   "position": {
-    "x": 246.89,
-    "y": 700.33,
+    "x": 0,
+    "y": 0,
     "z": 10,
-    "height": 16,
-    "width": 40,
+    "height": 40,
+    "width": 1280,
     "tabOrder": 0
   },
   "visual": {

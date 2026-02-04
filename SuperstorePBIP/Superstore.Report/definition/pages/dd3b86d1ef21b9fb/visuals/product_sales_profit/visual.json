@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "product_sales_profit",
   "position": {
-    "x": 20,
-    "y": 350,
+    "x": 6.75,
+    "y": 443.23,
     "z": 2,
-    "height": 361.0,
-    "width": 1240,
+    "height": 280.33,
+    "width": 1265.67,
     "tabOrder": 2
   },
   "visual": {
