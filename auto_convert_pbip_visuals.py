@@ -456,6 +456,150 @@ def split_segment_visuals(
     return visuals
 
 
+def split_category_visuals(
+    visuals_dir: Path,
+    visuals: List[dict],
+    page_height: float,
+) -> List[dict]:
+    category_visual = None
+    for visual in visuals:
+        name = str(visual.get("json", {}).get("name", ""))
+        fields_text = " ".join(visual.get("fields", [])).lower()
+        if name.startswith("cat_"):
+            category_visual = visual
+            break
+        if (
+            visual.get("recommended_type") in {"areaChart", "stackedAreaChart"}
+            and "category" in fields_text
+            and "order month" in fields_text
+        ):
+            category_visual = visual
+            break
+    if not category_visual:
+        return visuals
+
+    # Remove existing category split visuals
+    for visual in list(visuals):
+        name = str(visual.get("json", {}).get("name", ""))
+        if name.startswith("cat_"):
+            cat_dir = Path(visual["path"]).parent
+            if cat_dir.exists():
+                shutil.rmtree(cat_dir)
+            visuals.remove(visual)
+
+    # Remove the original category visual folder
+    original_dir = Path(category_visual["path"]).parent
+    if original_dir.exists():
+        shutil.rmtree(original_dir)
+
+    base_json = category_visual["json"]
+    base_position = category_visual["position"]
+    x = 640
+    width = 600
+    y = 390
+    total_height = max(page_height - 410, 300)
+
+    categories = [
+        ("Furniture", "furniture"),
+        ("Office Supplies", "office_supplies"),
+        ("Technology", "technology"),
+    ]
+    gap = 6
+    each_height = max((total_height - gap * (len(categories) - 1)) / len(categories), 80)
+
+    new_visuals = []
+    for idx, (category_label, suffix) in enumerate(categories):
+        visual_json = copy.deepcopy(base_json)
+        visual_json["name"] = f"cat_{suffix}"
+        visual_json["position"]["x"] = x
+        visual_json["position"]["y"] = round(y + idx * (each_height + gap), 2)
+        visual_json["position"]["width"] = width
+        visual_json["position"]["height"] = round(each_height, 2)
+        visual_json["visual"]["visualType"] = "stackedAreaChart"
+        visual_json["visual"]["autoSelectVisualType"] = False
+        query_state = visual_json["visual"].get("query", {}).get("queryState", {})
+        query_state.pop("SmallMultiples", None)
+        if "Series" in query_state and "Legend" not in query_state:
+            query_state["Legend"] = query_state.pop("Series")
+        if "Legend" not in query_state:
+            query_state["Legend"] = {
+                "projections": [
+                    {
+                        "field": {
+                            "Column": {
+                                "Expression": {"SourceRef": {"Entity": "Orders"}},
+                                "Property": "Profitability",
+                            }
+                        },
+                        "queryRef": "Orders.Profitability",
+                        "nativeQueryRef": "Profitability",
+                    }
+                ]
+            }
+        visual_json["visual"]["query"]["queryState"] = query_state
+
+        filter_config = visual_json.get("filterConfig", {})
+        filter_config["filters"] = [
+            {
+                "name": f"cat_value_{suffix}",
+                "displayName": "Category",
+                "field": {
+                    "Column": {
+                        "Expression": {"SourceRef": {"Entity": "Orders"}},
+                        "Property": "Category",
+                    }
+                },
+                "type": "Categorical",
+                "filter": {
+                    "Version": 2,
+                    "From": [{"Name": "Orders", "Entity": "Orders"}],
+                    "Where": [
+                        {
+                            "Condition": {
+                                "Comparison": {
+                                    "ComparisonKind": 0,
+                                    "Left": {
+                                        "Column": {
+                                            "Expression": {
+                                                "SourceRef": {"Entity": "Orders"}
+                                            },
+                                            "Property": "Category",
+                                        }
+                                    },
+                                    "Right": {"Literal": {"Value": category_label}},
+                                }
+                            }
+                        }
+                    ],
+                },
+            }
+        ]
+        visual_json["filterConfig"] = filter_config
+
+        visual_dir = visuals_dir / visual_json["name"]
+        visual_dir.mkdir(parents=True, exist_ok=True)
+        (visual_dir / "visual.json").write_text(
+            json.dumps(visual_json, indent=2), encoding="utf-8"
+        )
+        new_visuals.append(
+            {
+                "path": visual_dir / "visual.json",
+                "json": visual_json,
+                "visual": visual_json["visual"],
+                "position": visual_json["position"],
+                "visual_type": visual_json["visual"]["visualType"],
+                "fields": category_visual.get("fields", []),
+                "text": category_visual.get("text", []),
+                "title": category_visual.get("title", ""),
+                "recommended_type": "stackedAreaChart",
+            }
+        )
+
+    visuals = [v for v in visuals if v is not category_visual]
+    visuals.extend(new_visuals)
+    return visuals
+
+
 def recommend_visual_type(page_name: str, visual: dict) -> Tuple[str, str]:
     visual_type = visual["visual_type"]
     fields = visual["fields"]
@@ -575,7 +719,14 @@ def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float
             for v in visuals
             if v["recommended_type"] in {"areaChart", "stackedAreaChart"}
         ]
-        segmented = [v for v in areas if str(v.get("json", {}).get("name", "")).startswith("seg_")]
+        segmented = [
+            v
+            for v in areas
+            if str(v.get("json", {}).get("name", "")).startswith(("seg_", "cat_"))
+        ]
+        category_split = [
+            v for v in areas if str(v.get("json", {}).get("name", "")).startswith("cat_")
+        ]
         for visual in title:
             visual["position"]["y"] = 0
             visual["position"]["height"] = 40
@@ -596,6 +747,17 @@ def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float
             visual["position"]["y"] = 390
             visual["position"]["height"] = max(page_height - 410, 300)
             visual["visual"]["autoSelectVisualType"] = False
+        if category_split:
+            total_height = max(page_height - 410, 300)
+            gap = 6
+            each_height = max((total_height - gap * (len(category_split) - 1)) / len(category_split), 80)
+            category_split.sort(key=lambda v: v.get("json", {}).get("name", ""))
+            for idx, visual in enumerate(category_split):
+                visual["position"]["x"] = 640
+                visual["position"]["width"] = 600
+                visual["position"]["y"] = round(390 + idx * (each_height + gap), 2)
+                visual["position"]["height"] = round(each_height, 2)
+                visual["visual"]["autoSelectVisualType"] = False
         return
 
     if profile == "product":
@@ -782,6 +944,7 @@ def process_report(
                 visual["visual"]["query"]["queryState"] = query_state
                 lock_visual_type(visual["visual"])
             visuals = split_segment_visuals(visuals_dir, visuals, page_height)
+            visuals = split_category_visuals(visuals_dir, visuals, page_height)
 
         top, middle, bottom = [], [], []
         for visual in visuals:

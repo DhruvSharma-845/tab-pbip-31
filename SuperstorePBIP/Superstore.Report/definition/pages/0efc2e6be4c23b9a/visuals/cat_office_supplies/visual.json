@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "ab12cd34ef56ab78",
+  "name": "cat_office_supplies",
   "position": {
     "x": 640,
-    "y": 390,
+    "y": 499.0,
     "z": 2,
-    "height": 321.0,
+    "height": 103.0,
     "width": 600,
     "tabOrder": 2
   },
@@ -73,24 +73,6 @@
               "nativeQueryRef": "Sum of Sales"
             }
           ]
-        },
-        "SmallMultiples": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Category"
-                }
-              },
-              "queryRef": "Orders.Category",
-              "nativeQueryRef": "Category"
-            }
-          ]
         }
       },
       "sortDefinition": {
@@ -117,26 +99,8 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "cat_sales_filter",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Orders"
-                  }
-                },
-                "Property": "Sales"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "cat_category_filter",
+        "name": "cat_value_office_supplies",
+        "displayName": "Category",
         "field": {
           "Column": {
             "Expression": {
@@ -147,50 +111,40 @@
             "Property": "Category"
           }
         },
-        "type": "Categorical"
-      },
-      {
-        "name": "cat_date_filter",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Orders"
-              }
-            },
-            "Property": "Order Date"
-          }
-        },
         "type": "Categorical",
-        "howCreated": "User"
-      },
-      {
-        "name": "23d1903e8a5a61b9159b",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Orders"
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "Orders",
+              "Entity": "Orders"
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Category"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "Office Supplies"
+                    }
+                  }
+                }
               }
-            },
-            "Property": "Order Month"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "ffc731ff8911486c1b8f",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Orders"
-              }
-            },
-            "Property": "Profitability"
-          }
-        },
-        "type": "Categorical"
+            }
+          ]
+        }
       }
     ]
   }

@@ -224,8 +224,12 @@ table Orders
 				ChangedType = Table.TransformColumnTypes(Promoted, {{"Order Date", type date}, {"Ship Date", type date}, {"Sales", type number}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}}),
 				CleanNumbers = Table.TransformColumns(ChangedType, {{"Sales", each try Number.From(_) otherwise null, type number}, {"Profit", each try Number.From(_) otherwise null, type number}, {"Discount", each try Number.From(_) otherwise null, type number}, {"Quantity", each try Number.From(_) otherwise null, Int64.Type}}),
 				AddedMonth = Table.AddColumn(CleanNumbers, "Order Month", each Date.StartOfMonth([Order Date]), type date),
-				AddedProfitability = Table.AddColumn(AddedMonth, "Profitability", each if [Profit] >= 0 then "Profitable" else "Unprofitable", type text)
+				OrderProfit = Table.Group(AddedMonth, {"Order ID"}, {{"Order Profit", each List.Sum([Profit]), type number}}),
+				Merged = Table.NestedJoin(AddedMonth, {"Order ID"}, OrderProfit, {"Order ID"}, "OrderProfit", JoinKind.LeftOuter),
+				Expanded = Table.ExpandTableColumn(Merged, "OrderProfit", {"Order Profit"}, {"Order Profit"}),
+				AddedProfitability = Table.AddColumn(Expanded, "Profitability", each if [Order Profit] >= 0 then "Profitable" else "Unprofitable", type text),
+				RemovedOrderProfit = Table.RemoveColumns(AddedProfitability, {"Order Profit"})
 				in
-				AddedProfitability
+				RemovedOrderProfit
 	annotation PBI_ResultType = Table
 
