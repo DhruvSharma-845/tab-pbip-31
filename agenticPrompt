@@ -89,19 +89,24 @@ Output a complete PBIP folder (Report + SemanticModel) that recreates the Tablea
 1. **Parse TWBX**
    - Extract `.twb` XML and packaged data (may parse XML directly for full fidelity).
    - Identify datasources, columns, relationships, worksheets, dashboards, filters.
-2. **Build Semantic Model**
+2. **Understand Dashboard Images (required)**
+   - For each snapshot, detect chart types, encodings, and layout (title, axes, legends).
+   - Identify relationships in the chart (grouping, hierarchy, dual-axis, small multiples).
+   - Detect filters/slicers, parameter controls, and segment splits (by color, facet, or pane).
+   - Cross‑check image findings with TWB shelves/marks; image evidence overrides if TWB is ambiguous.
+3. **Build Semantic Model**
    - Create one TMDL file per datasource/table in `tables/`.
    - Add columns with correct data types and `summarizeBy`.
    - Generate exact DAX from Tableau calculations (measures and calculated columns).
    - Implement metric‑driven KPI switching using a calculation group.
    - Build relationships in `model.tmdl`.
-3. **Build Report**
+4. **Build Report**
    - Create one Power BI page per Tableau dashboard.
    - Recreate visuals to match snapshots (layout, size, colors, labels).
    - Complete visual JSONs for every KPI card.
    - Apply filters/slicers and interactions to match Tableau behavior.
    - If theme available, link it in `report.json`.
-4. **Validation**
+5. **Validation**
    - Report opens in Power BI Desktop.
    - No missing fields or broken relationships.
    - Visuals render and align with snapshots.
@@ -135,6 +140,18 @@ Use TWB `mark class`, worksheet shelves (Rows/Columns), and snapshots to select 
 - Size shelf → size encoding in scatter/bubble or bar thickness where supported.
 - Label shelf → data labels or table text.
 - Tooltip shelf → tooltips in visual configuration.
+
+### Image understanding requirements
+- Use snapshots to infer chart type when TWB is unclear or missing.
+- Identify segment splits:
+  - Color/legend splits (categorical series)
+  - Small multiples/panes (facet by dimension)
+  - Stacked vs grouped bars (segment within category)
+- Identify filter affordances (dropdowns, listboxes, range sliders) and map them to slicers/filters.
+- Identify relationships shown in the chart:
+  - Dual‑axis overlays
+  - Reference lines/bands
+  - Hierarchies and drill levels
 
 ### Quality checks for visuals
 - Every visual JSON must reference existing model fields.

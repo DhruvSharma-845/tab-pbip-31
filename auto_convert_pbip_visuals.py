@@ -408,6 +408,21 @@ def split_segment_visuals(
         query_state.pop("SmallMultiples", None)
         if "Series" in query_state and "Legend" not in query_state:
             query_state["Legend"] = query_state.pop("Series")
+        if "Legend" not in query_state:
+            query_state["Legend"] = {
+                "projections": [
+                    {
+                        "field": {
+                            "Column": {
+                                "Expression": {"SourceRef": {"Entity": "Orders"}},
+                                "Property": "Profitability",
+                            }
+                        },
+                        "queryRef": "Orders.Profitability",
+                        "nativeQueryRef": "Profitability",
+                    }
+                ]
+            }
         visual_json["visual"]["query"]["queryState"] = query_state
 
         filter_config = visual_json.get("filterConfig", {})
