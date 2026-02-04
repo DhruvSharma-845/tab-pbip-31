@@ -322,7 +322,7 @@ def build_segment_value_filter(entity: str, value: str, name_suffix: str) -> dic
         "type": "Categorical",
         "filter": {
             "Version": 2,
-            "From": [{"Entity": entity}],
+            "From": [{"Name": entity, "Entity": entity}],
             "Where": [
                 {
                     "Condition": {
