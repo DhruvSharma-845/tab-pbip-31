@@ -55,24 +55,6 @@
               "nativeQueryRef": "Sum of Sales"
             }
           ]
-        },
-        "Series": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Profitability"
-                }
-              },
-              "queryRef": "Orders.Profitability",
-              "nativeQueryRef": "Profitability"
-            }
-          ]
         }
       },
       "sortDefinition": {
@@ -98,68 +80,6 @@
   },
   "filterConfig": {
     "filters": [
-      {
-        "name": "seg_sales_filter",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Orders"
-                  }
-                },
-                "Property": "Sales"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "seg_date_filter",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Orders"
-              }
-            },
-            "Property": "Order Date"
-          }
-        },
-        "type": "Categorical",
-        "howCreated": "User"
-      },
-      {
-        "name": "43b5bb100a5c0434e5eb",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Orders"
-              }
-            },
-            "Property": "Order Month"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "20312f125bdfb7ed3967",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Orders"
-              }
-            },
-            "Property": "Profitability"
-          }
-        },
-        "type": "Categorical"
-      },
       {
         "name": "seg_value_consumer",
         "displayName": "Segment",

@@ -406,24 +406,14 @@ def split_segment_visuals(
         visual_json["visual"]["autoSelectVisualType"] = False
         query_state = visual_json["visual"].get("query", {}).get("queryState", {})
         query_state.pop("SmallMultiples", None)
-        if "Legend" in query_state and "Series" not in query_state:
-            query_state["Series"] = query_state.pop("Legend")
+        if "Series" in query_state and "Legend" not in query_state:
+            query_state["Legend"] = query_state.pop("Series")
         visual_json["visual"]["query"]["queryState"] = query_state
 
         filter_config = visual_json.get("filterConfig", {})
-        filters = [
-            f
-            for f in filter_config.get("filters", [])
-            if not (
-                f.get("field", {})
-                .get("Column", {})
-                .get("Property", "")
-                .lower()
-                == "segment"
-            )
+        filter_config["filters"] = [
+            build_segment_value_filter("Orders", segment_label, suffix)
         ]
-        filters.append(build_segment_value_filter("Orders", segment_label, suffix))
-        filter_config["filters"] = filters
         visual_json["filterConfig"] = filter_config
 
         visual_dir = visuals_dir / visual_json["name"]
