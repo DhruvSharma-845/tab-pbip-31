@@ -51,24 +51,6 @@
             }
           ]
         },
-        "Series": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Category"
-                }
-              },
-              "queryRef": "Orders.Category",
-              "nativeQueryRef": "Category"
-            }
-          ]
-        },
         "Y": {
           "projections": [
             {
@@ -89,6 +71,24 @@
               },
               "queryRef": "Sum(Orders.Sales)",
               "nativeQueryRef": "Sum of Sales"
+            }
+          ]
+        },
+        "SmallMultiples": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Category"
+                }
+              },
+              "queryRef": "Orders.Category",
+              "nativeQueryRef": "Category"
             }
           ]
         }

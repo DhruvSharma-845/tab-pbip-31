@@ -294,6 +294,19 @@ def lock_visual_type(visual: dict):
         visual["autoSelectVisualType"] = False
 
 
+def ensure_small_multiples(query_state: dict, field_name: str):
+    if "SmallMultiples" in query_state:
+        return
+    series = query_state.get("Series")
+    if series and isinstance(series, dict):
+        query_state["SmallMultiples"] = series
+        query_state.pop("Series", None)
+        return
+    legend = query_state.get("Legend")
+    if legend and isinstance(legend, dict):
+        query_state["SmallMultiples"] = legend
+
+
 def recommend_visual_type(page_name: str, visual: dict) -> Tuple[str, str]:
     visual_type = visual["visual_type"]
     fields = visual["fields"]
@@ -603,6 +616,19 @@ def process_report(
                     visual["visual"]["visualType"] = "barChart"
                     visual["visual"]["autoSelectVisualType"] = False
                     visual["recommended_type"] = "barChart"
+
+        if page_name.lower() == "overview":
+            for visual in visuals:
+                if visual["recommended_type"] not in {"areaChart", "stackedAreaChart"}:
+                    continue
+                fields_text = " ".join(visual.get("fields", [])).lower()
+                query_state = visual["visual"].get("query", {}).get("queryState", {})
+                if "segment" in fields_text:
+                    ensure_small_multiples(query_state, "Segment")
+                elif "category" in fields_text:
+                    ensure_small_multiples(query_state, "Category")
+                visual["visual"]["query"]["queryState"] = query_state
+                lock_visual_type(visual["visual"])
 
         top, middle, bottom = [], [], []
         for visual in visuals:
