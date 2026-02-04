@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "9c3a1b2d4e5f6078",
+  "name": "seg_home_office",
   "position": {
     "x": 20,
-    "y": 390,
+    "y": 608.0,
     "z": 1,
-    "height": 321.0,
+    "height": 103.0,
     "width": 600,
     "tabOrder": 1
   },
@@ -73,24 +73,6 @@
               "nativeQueryRef": "Sum of Sales"
             }
           ]
-        },
-        "SmallMultiples": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Segment"
-                }
-              },
-              "queryRef": "Orders.Segment",
-              "nativeQueryRef": "Segment"
-            }
-          ]
         }
       },
       "sortDefinition": {
@@ -136,20 +118,6 @@
         "type": "Advanced"
       },
       {
-        "name": "seg_category_filter",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Orders"
-              }
-            },
-            "Property": "Segment"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
         "name": "seg_date_filter",
         "field": {
           "Column": {
@@ -191,6 +159,53 @@
           }
         },
         "type": "Categorical"
+      },
+      {
+        "name": "seg_value_home_office",
+        "displayName": "Segment",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Segment"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Entity": "Orders"
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Segment"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "Home Office"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
       }
     ]
   }

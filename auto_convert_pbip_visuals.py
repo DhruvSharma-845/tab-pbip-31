@@ -1,6 +1,8 @@
 import argparse
+import copy
 import json
 import re
+import shutil
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -307,6 +309,146 @@ def ensure_small_multiples(query_state: dict, field_name: str):
         query_state["SmallMultiples"] = legend
 
 
+def build_segment_value_filter(entity: str, value: str, name_suffix: str) -> dict:
+    return {
+        "name": f"seg_value_{name_suffix}",
+        "displayName": "Segment",
+        "field": {
+            "Column": {
+                "Expression": {"SourceRef": {"Entity": entity}},
+                "Property": "Segment",
+            }
+        },
+        "type": "Categorical",
+        "filter": {
+            "Version": 2,
+            "From": [{"Entity": entity}],
+            "Where": [
+                {
+                    "Condition": {
+                        "Comparison": {
+                            "ComparisonKind": 0,
+                            "Left": {
+                                "Column": {
+                                    "Expression": {"SourceRef": {"Entity": entity}},
+                                    "Property": "Segment",
+                                }
+                            },
+                            "Right": {"Literal": {"Value": value}},
+                        }
+                    }
+                }
+            ],
+        },
+    }
+
+
+def split_segment_visuals(
+    visuals_dir: Path,
+    visuals: List[dict],
+    page_height: float,
+) -> List[dict]:
+    segment_visual = None
+    for visual in visuals:
+        name = str(visual.get("json", {}).get("name", ""))
+        fields_text = " ".join(visual.get("fields", [])).lower()
+        if name.startswith("seg_"):
+            segment_visual = visual
+            break
+        if (
+            visual.get("recommended_type") in {"areaChart", "stackedAreaChart"}
+            and "segment" in fields_text
+            and "order month" in fields_text
+        ):
+            segment_visual = visual
+            break
+    if not segment_visual:
+        return visuals
+
+    # Clean any existing segment split visuals
+    for visual in list(visuals):
+        name = str(visual.get("json", {}).get("name", ""))
+        if name.startswith("seg_"):
+            seg_dir = Path(visual["path"]).parent
+            if seg_dir.exists():
+                shutil.rmtree(seg_dir)
+            visuals.remove(visual)
+
+    # Remove the original segment visual folder before cloning
+    original_dir = Path(segment_visual["path"]).parent
+    if original_dir.exists():
+        shutil.rmtree(original_dir)
+
+    base_json = segment_visual["json"]
+    base_position = segment_visual["position"]
+    x = base_position.get("x", 20)
+    width = base_position.get("width", 600)
+    y = 390
+    total_height = max(page_height - 410, 300)
+
+    segments = [
+        ("Consumer", "consumer"),
+        ("Corporate", "corporate"),
+        ("Home Office", "home_office"),
+    ]
+    gap = 6
+    each_height = max((total_height - gap * (len(segments) - 1)) / len(segments), 80)
+
+    new_visuals = []
+    for idx, (segment_label, suffix) in enumerate(segments):
+        visual_json = copy.deepcopy(base_json)
+        visual_json["name"] = f"seg_{suffix}"
+        visual_json["position"]["x"] = x
+        visual_json["position"]["y"] = round(y + idx * (each_height + gap), 2)
+        visual_json["position"]["width"] = width
+        visual_json["position"]["height"] = round(each_height, 2)
+        visual_json["visual"]["visualType"] = "stackedAreaChart"
+        visual_json["visual"]["autoSelectVisualType"] = False
+        query_state = visual_json["visual"].get("query", {}).get("queryState", {})
+        query_state.pop("SmallMultiples", None)
+        visual_json["visual"]["query"]["queryState"] = query_state
+
+        filter_config = visual_json.get("filterConfig", {})
+        filters = [
+            f
+            for f in filter_config.get("filters", [])
+            if not (
+                f.get("field", {})
+                .get("Column", {})
+                .get("Property", "")
+                .lower()
+                == "segment"
+            )
+        ]
+        filters.append(build_segment_value_filter("Orders", segment_label, suffix))
+        filter_config["filters"] = filters
+        visual_json["filterConfig"] = filter_config
+
+        visual_dir = visuals_dir / visual_json["name"]
+        visual_dir.mkdir(parents=True, exist_ok=True)
+        (visual_dir / "visual.json").write_text(
+            json.dumps(visual_json, indent=2), encoding="utf-8"
+        )
+        new_visuals.append(
+            {
+                "path": visual_dir / "visual.json",
+                "json": visual_json,
+                "visual": visual_json["visual"],
+                "position": visual_json["position"],
+                "visual_type": visual_json["visual"]["visualType"],
+                "fields": segment_visual.get("fields", []),
+                "text": segment_visual.get("text", []),
+                "title": segment_visual.get("title", ""),
+                "recommended_type": "stackedAreaChart",
+            }
+        )
+
+    # Remove original segment visual from list and add new visuals
+    visuals = [v for v in visuals if v is not segment_visual]
+    visuals.extend(new_visuals)
+    return visuals
+
+
 def recommend_visual_type(page_name: str, visual: dict) -> Tuple[str, str]:
     visual_type = visual["visual_type"]
     fields = visual["fields"]
@@ -426,6 +568,7 @@ def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float
             for v in visuals
             if v["recommended_type"] in {"areaChart", "stackedAreaChart"}
         ]
+        segmented = [v for v in areas if str(v.get("json", {}).get("name", "")).startswith("seg_")]
         for visual in title:
             visual["position"]["y"] = 0
             visual["position"]["height"] = 40
@@ -441,6 +584,8 @@ def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float
             visual["position"]["width"] = 1240
             visual["visual"]["autoSelectVisualType"] = False
         for visual in areas:
+            if visual in segmented:
+                continue
             visual["position"]["y"] = 390
             visual["position"]["height"] = max(page_height - 410, 300)
             visual["visual"]["autoSelectVisualType"] = False
@@ -629,6 +774,7 @@ def process_report(
                     ensure_small_multiples(query_state, "Category")
                 visual["visual"]["query"]["queryState"] = query_state
                 lock_visual_type(visual["visual"])
+            visuals = split_segment_visuals(visuals_dir, visuals, page_height)
 
         top, middle, bottom = [], [], []
         for visual in visuals:
