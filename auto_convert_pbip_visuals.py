@@ -239,6 +239,7 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
         )
         return candidates[0]
 
+    page_title = find_label("Product Drilldown")
     heatmap_label = find_label("Sales by Product Category")
     scatter_label = find_label("Sales and Profit by Product Names")
     if not heatmap_label or not scatter_label:
@@ -256,6 +257,9 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
         "scatter_rect": scatter_rect,
         "svg_width": max_x,
         "svg_height": max_y,
+        "page_title": page_title,
+        "heatmap_title": heatmap_label,
+        "scatter_title": scatter_label,
     }
 
 
@@ -342,6 +346,33 @@ def apply_tableau_like_area_formatting(visual: dict):
             "properties": {
                 "showAxisTitle": {"expr": {"Literal": {"Value": "false"}}},
                 "show": {"expr": {"Literal": {"Value": "true"}}},
+            }
+        }
+    ]
+    return visual
+
+
+def hide_visual_title(visual: dict):
+    visual.setdefault("objects", {})
+    visual.setdefault("visualContainerObjects", {})
+    visual["objects"]["title"] = [
+        {
+            "properties": {
+                "show": {"expr": {"Literal": {"Value": "false"}}}
+            }
+        }
+    ]
+    visual["visualContainerObjects"]["title"] = [
+        {
+            "properties": {
+                "show": {"expr": {"Literal": {"Value": "false"}}}
+            }
+        }
+    ]
+    visual["visualContainerObjects"]["subTitle"] = [
+        {
+            "properties": {
+                "show": {"expr": {"Literal": {"Value": "false"}}}
             }
         }
     ]
@@ -705,7 +736,8 @@ def split_segment_visuals(
         visual_json["visual"]["visualType"] = "stackedAreaChart"
         visual_json["visual"]["autoSelectVisualType"] = False
         apply_tableau_like_area_formatting(visual_json["visual"])
-        query_state = visual_json["visual"].get("query", {}).get("queryState", {})
+        visual_json["visual"].setdefault("query", {})
+        query_state = visual_json["visual"]["query"].get("queryState", {})
         query_state.pop("SmallMultiples", None)
         # For stacked area, force Profitability into Series for stacking
         query_state.pop("Legend", None)
@@ -818,7 +850,8 @@ def split_category_visuals(
         visual_json["visual"]["visualType"] = "stackedAreaChart"
         visual_json["visual"]["autoSelectVisualType"] = False
         apply_tableau_like_area_formatting(visual_json["visual"])
-        query_state = visual_json["visual"].get("query", {}).get("queryState", {})
+        visual_json["visual"].setdefault("query", {})
+        query_state = visual_json["visual"]["query"].get("queryState", {})
         query_state.pop("SmallMultiples", None)
         query_state.pop("Legend", None)
         query_state["Series"] = {
@@ -1216,6 +1249,11 @@ def apply_layout_overrides(
                 "w": 1240,
                 "h": max(page_height - 370, 300),
             }
+        # Remove old product subtitle labels if present
+        for label_name in ["product_heatmap_title", "product_scatter_title"]:
+            label_dir = visuals_dir / label_name
+            if label_dir.exists():
+                shutil.rmtree(label_dir)
         for visual in visuals:
             title = visual.get("title", "").lower()
             fields = " ".join(visual.get("fields", [])).lower()
@@ -1230,15 +1268,44 @@ def apply_layout_overrides(
                 visual["position"]["width"] = round(heatmap_box["w"], 2)
                 visual["position"]["height"] = round(heatmap_box["h"], 2)
                 visual["visual"]["autoSelectVisualType"] = False
+                hide_visual_title(visual["visual"])
             if "sales and profit" in title or visual["recommended_type"] == "scatterChart":
                 visual["position"]["x"] = round(scatter_box["x"], 2)
                 visual["position"]["y"] = round(scatter_box["y"], 2)
                 visual["position"]["width"] = round(scatter_box["w"], 2)
                 visual["position"]["height"] = round(scatter_box["h"], 2)
                 visual["visual"]["autoSelectVisualType"] = False
+                hide_visual_title(visual["visual"])
             if visual["visual_type"] == "textbox":
                 visual["position"]["y"] = 0
                 visual["position"]["height"] = 40
+        if svg_layout:
+            if svg_layout.get("heatmap_title"):
+                item = svg_layout["heatmap_title"]
+                label_x = item["x"] * scale_x
+                label_y = item["y"] * scale_y
+                label_name = "product_heatmap_title"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], label_x, label_y - 18, 560, 22
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+            if svg_layout.get("scatter_title"):
+                item = svg_layout["scatter_title"]
+                label_x = item["x"] * scale_x
+                label_y = item["y"] * scale_y
+                label_name = "product_scatter_title"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], label_x, label_y - 18, 620, 22
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
         return
 
     if profile == "customers":
@@ -1419,6 +1486,8 @@ def process_report(
         svg_layout = None
         if profile == "overview" and overview_svg_path:
             svg_layout = parse_overview_svg(overview_svg_path)
+        if profile == "product" and product_svg_path:
+            svg_layout = parse_product_svg(product_svg_path)
         if profile == "product" and product_svg_path:
             svg_layout = parse_product_svg(product_svg_path)
         if profile:
