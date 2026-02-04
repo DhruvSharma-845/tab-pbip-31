@@ -176,6 +176,8 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
         "svg_height": max_y,
         "segment_labels": segment_names,
         "year_labels": year_labels,
+        "segment_title": segment_label,
+        "category_title": category_label,
     }
 
 
@@ -323,7 +325,7 @@ def apply_tableau_like_area_formatting(visual: dict):
     visual["objects"]["legend"] = [
         {
             "properties": {
-                "show": {"expr": {"Literal": {"Value": "false"}}}
+                "show": {"expr": {"Literal": {"Value": "true"}}}
             }
         }
     ]
@@ -1101,7 +1103,20 @@ def apply_layout_overrides(
                     )
                     visual["position"]["height"] = round(each_height, 2)
                     visual["visual"]["autoSelectVisualType"] = False
-                # Add segment labels as textboxes using SVG positions
+            # Add segment title and labels as textboxes using SVG positions
+            if svg_layout.get("segment_title"):
+                item = svg_layout["segment_title"]
+                label_x = item["x"] * scale_x
+                label_y = item["y"] * scale_y
+                label_name = "seg_title"
+                textbox = make_textbox_visual(
+                    label_name, item["text"] + " All", label_x, label_y - 18, 460, 22
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
                 if svg_layout.get("segment_labels"):
                     for item in svg_layout["segment_labels"]:
                         label_x = item["x"] * scale_x
@@ -1132,6 +1147,19 @@ def apply_layout_overrides(
                     )
                     visual["position"]["height"] = round(each_height, 2)
                     visual["visual"]["autoSelectVisualType"] = False
+            if svg_layout.get("category_title"):
+                item = svg_layout["category_title"]
+                label_x = item["x"] * scale_x
+                label_y = item["y"] * scale_y
+                label_name = "cat_title"
+                textbox = make_textbox_visual(
+                    label_name, item["text"] + " All", label_x, label_y - 18, 560, 22
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
             # Add year labels from SVG
             if svg_layout.get("year_labels"):
                 for item in svg_layout["year_labels"]:
