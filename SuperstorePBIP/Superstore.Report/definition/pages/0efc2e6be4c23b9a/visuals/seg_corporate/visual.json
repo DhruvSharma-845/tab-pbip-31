@@ -56,7 +56,7 @@
             }
           ]
         },
-        "Legend": {
+        "Series": {
           "projections": [
             {
               "field": {

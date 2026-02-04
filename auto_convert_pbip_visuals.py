@@ -569,10 +569,9 @@ def split_segment_visuals(
         visual_json["visual"]["autoSelectVisualType"] = False
         query_state = visual_json["visual"].get("query", {}).get("queryState", {})
         query_state.pop("SmallMultiples", None)
-        if "Series" in query_state and "Legend" not in query_state:
-            query_state["Legend"] = query_state.pop("Series")
-        if "Legend" not in query_state:
-            query_state["Legend"] = {
+        # For stacked area, force Profitability into Series for stacking
+        query_state.pop("Legend", None)
+        query_state["Series"] = {
                 "projections": [
                     {
                         "field": {
@@ -682,10 +681,8 @@ def split_category_visuals(
         visual_json["visual"]["autoSelectVisualType"] = False
         query_state = visual_json["visual"].get("query", {}).get("queryState", {})
         query_state.pop("SmallMultiples", None)
-        if "Series" in query_state and "Legend" not in query_state:
-            query_state["Legend"] = query_state.pop("Series")
-        if "Legend" not in query_state:
-            query_state["Legend"] = {
+        query_state.pop("Legend", None)
+        query_state["Series"] = {
                 "projections": [
                     {
                         "field": {
