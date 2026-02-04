@@ -1328,6 +1328,20 @@ def apply_layout_overrides(
                     (label_dir / "visual.json").write_text(
                         json.dumps(textbox, indent=2), encoding="utf-8"
                     )
+            # Add category labels for the three charts
+            if category_split:
+                for idx, label in enumerate(["Furniture", "Office Supplies", "Technology"]):
+                    label_x = cat_box["x"] - 80 if cat_box["x"] > 80 else 4
+                    label_y = cat_box["y"] + idx * (each_height + gap)
+                    label_name = f"cat_label_{label.lower().replace(' ', '_')}"
+                    textbox = make_textbox_visual(
+                        label_name, label, label_x, label_y - 12, 120, 20
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
         elif category_split:
             total_height = max(page_height - 410, 300)
             gap = 6
@@ -1362,6 +1376,9 @@ def apply_layout_overrides(
                 "w": scatter["w"] * scale_x,
                 "h": scatter["h"] * scale_y,
             }
+            # Remove old product labels if present
+            for label_dir in visuals_dir.glob("product_*_title"):
+                shutil.rmtree(label_dir)
         else:
             heatmap_box = {"x": 20, "y": 50, "w": 1240, "h": 280}
             scatter_box = {

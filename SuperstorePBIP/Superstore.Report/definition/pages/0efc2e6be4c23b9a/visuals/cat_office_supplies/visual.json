@@ -129,24 +129,6 @@
     },
     "query": {
       "queryState": {
-        "Series": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Profitability"
-                }
-              },
-              "queryRef": "Orders.Profitability",
-              "nativeQueryRef": "Profitability"
-            }
-          ]
-        },
         "Category": {
           "projections": [
             {
@@ -185,6 +167,24 @@
               },
               "queryRef": "Sum(Orders.Sales)",
               "nativeQueryRef": "Sum of Sales"
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Profitability"
+                }
+              },
+              "queryRef": "Orders.Profitability",
+              "nativeQueryRef": "Profitability"
             }
           ]
         }
