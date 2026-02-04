@@ -163,6 +163,14 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
     for item in texts:
         if item["text"] in {"Consumer", "Corporate", "Home Office"}:
             segment_names.append(item)
+    category_names = []
+    for item in texts:
+        if item["text"] in {"Furniture", "Office Supplies", "Technology"}:
+            category_names.append(item)
+    legend_names = []
+    for item in texts:
+        if item["text"] in {"Profitable", "Unprofitable"}:
+            legend_names.append(item)
     year_labels = []
     for item in texts:
         if item["text"].isdigit() and len(item["text"]) == 4:
@@ -175,6 +183,8 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
         "svg_width": max_x,
         "svg_height": max_y,
         "segment_labels": segment_names,
+        "category_labels": category_names,
+        "legend_labels": legend_names,
         "year_labels": year_labels,
         "segment_title": segment_label,
         "category_title": category_label,
@@ -1235,6 +1245,10 @@ def apply_layout_overrides(
                     shutil.rmtree(label_dir)
             for label_dir in visuals_dir.glob("year_label_*"):
                 shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("cat_label_*"):
+                shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("legend_label_*"):
+                shutil.rmtree(label_dir)
             segment_split = [
                 v
                 for v in areas
@@ -1328,14 +1342,28 @@ def apply_layout_overrides(
                     (label_dir / "visual.json").write_text(
                         json.dumps(textbox, indent=2), encoding="utf-8"
                     )
-            # Add category labels for the three charts
-            if category_split:
-                for idx, label in enumerate(["Furniture", "Office Supplies", "Technology"]):
-                    label_x = cat_box["x"] - 80 if cat_box["x"] > 80 else 4
-                    label_y = cat_box["y"] + idx * (each_height + gap)
-                    label_name = f"cat_label_{label.lower().replace(' ', '_')}"
+            # Add category labels from SVG positions
+            if svg_layout.get("category_labels"):
+                for item in svg_layout["category_labels"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"cat_label_{item['text'].lower().replace(' ', '_')}"
                     textbox = make_textbox_visual(
-                        label_name, label, label_x, label_y - 12, 120, 20
+                        label_name, item["text"], label_x, label_y - 12, 140, 20
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
+            # Add legend labels from SVG positions
+            if svg_layout.get("legend_labels"):
+                for item in svg_layout["legend_labels"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"legend_label_{item['text'].lower()}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x, label_y - 10, 120, 16
                     )
                     label_dir = visuals_dir / label_name
                     label_dir.mkdir(parents=True, exist_ok=True)
