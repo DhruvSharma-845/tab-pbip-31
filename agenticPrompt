@@ -89,11 +89,13 @@ Output a complete PBIP folder (Report + SemanticModel) that recreates the Tablea
 1. **Parse TWBX**
    - Extract `.twb` XML and packaged data (may parse XML directly for full fidelity).
    - Identify datasources, columns, relationships, worksheets, dashboards, filters.
-2. **Understand Dashboard Images (required)**
+2. **Understand TWB + Dashboard Images (required)**
+   - Use TWB XML as the primary source for fields, measures, filters, and relationships.
+   - Use snapshots to validate layout, legend placement, styling, and chart‑type nuances.
    - For each snapshot, detect chart types, encodings, and layout (title, axes, legends).
-   - Identify relationships in the chart (grouping, hierarchy, dual-axis, small multiples).
+   - Identify relationships in the chart (grouping, hierarchy, dual‑axis, small multiples).
    - Detect filters/slicers, parameter controls, and segment splits (by color, facet, or pane).
-   - Cross‑check image findings with TWB shelves/marks; image evidence overrides if TWB is ambiguous.
+   - Resolve conflicts by preferring TWB for data/logic and snapshots for visuals/layout.
 3. **Build Semantic Model**
    - Create one TMDL file per datasource/table in `tables/`.
    - Add columns with correct data types and `summarizeBy`.
@@ -152,6 +154,9 @@ Use TWB `mark class`, worksheet shelves (Rows/Columns), and snapshots to select 
   - Dual‑axis overlays
   - Reference lines/bands
   - Hierarchies and drill levels
+### TWB as primary source
+- Always parse TWB shelves/marks for fields, aggregations, and calculations.
+- Use TWB filters/parameters for slicers unless snapshots show additional UI filters.
 
 ### Quality checks for visuals
 - Every visual JSON must reference existing model fields.

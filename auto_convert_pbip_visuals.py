@@ -159,11 +159,55 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
 
     max_x = max(r["x"] + r["w"] for r in rects) if rects else 1500
     max_y = max(r["y"] + r["h"] for r in rects) if rects else 900
+    segment_names = []
+    for item in texts:
+        if item["text"] in {"Consumer", "Corporate", "Home Office"}:
+            segment_names.append(item)
     return {
         "segment_rect": segment_rect,
         "category_rect": category_rect,
         "svg_width": max_x,
         "svg_height": max_y,
+        "segment_labels": segment_names,
+    }
+
+
+def make_textbox_visual(name: str, text: str, x: float, y: float, width: float, height: float) -> dict:
+    return {
+        "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+        "name": name,
+        "position": {
+            "x": round(x, 2),
+            "y": round(y, 2),
+            "z": 10,
+            "height": round(height, 2),
+            "width": round(width, 2),
+            "tabOrder": 0,
+        },
+        "visual": {
+            "visualType": "textbox",
+            "objects": {
+                "general": [
+                    {
+                        "properties": {
+                            "paragraphs": [
+                                {
+                                    "textRuns": [
+                                        {
+                                            "value": text,
+                                            "textStyle": {
+                                                "fontSize": "12pt"
+                                            },
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "drillFilterOtherVisuals": True,
+        },
     }
 
 
@@ -830,6 +874,7 @@ def apply_layout_overrides(
     page_height: float,
     svg_layout: Optional[dict],
     page_width: float,
+    visuals_dir: Path,
 ):
     if profile == "overview":
         title = [v for v in visuals if v["visual_type"] == "textbox"]
@@ -911,6 +956,21 @@ def apply_layout_overrides(
                     )
                     visual["position"]["height"] = round(each_height, 2)
                     visual["visual"]["autoSelectVisualType"] = False
+                # Add segment labels as textboxes
+                label_width = min(140, max(seg_box["x"] - 4, 80))
+                label_x = max(seg_box["x"] - label_width - 6, 0)
+                label_map = ["Consumer", "Corporate", "Home Office"]
+                for idx, label in enumerate(label_map):
+                    label_y = seg_box["y"] + idx * (each_height + gap)
+                    label_name = f"seg_label_{label.lower().replace(' ', '_')}"
+                    textbox = make_textbox_visual(
+                        label_name, label, label_x, label_y, label_width, each_height
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
             if category_split:
                 gap = 6
                 each_height = max(
@@ -1148,7 +1208,9 @@ def process_report(
         if profile == "overview" and svg_path:
             svg_layout = parse_overview_svg(svg_path)
         if profile:
-            apply_layout_overrides(profile, visuals, page_height, svg_layout, page_width)
+            apply_layout_overrides(
+                profile, visuals, page_height, svg_layout, page_width, visuals_dir
+            )
             if profile in {"overview", "product", "order_details"}:
                 for visual in visuals:
                     if visual["visual_type"] in {"textbox", "slicer", "card"}:
