@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "cat_technology",
   "position": {
-    "x": 640,
-    "y": 608.0,
+    "x": 640.0,
+    "y": 622.26,
     "z": 2,
-    "height": 103.0,
-    "width": 600,
+    "height": 97.99,
+    "width": 629.04,
     "tabOrder": 2
   },
   "visual": {

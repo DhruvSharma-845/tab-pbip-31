@@ -1,8 +1,10 @@
 import argparse
 import copy
 import json
+import math
 import re
 import shutil
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -46,6 +48,123 @@ def jaccard(a: set, b: set) -> float:
     if not a or not b:
         return 0.0
     return len(a & b) / len(a | b)
+
+
+def parse_transform(transform: str) -> List[List[float]]:
+    if not transform:
+        return [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    transform = transform.strip()
+    if transform.startswith("matrix"):
+        values = transform.replace("matrix(", "").replace(")", "").split(",")
+        a, b, c, d, e, f = [float(v) for v in values]
+        return [[a, c, e], [b, d, f], [0, 0, 1]]
+    if transform.startswith("translate"):
+        values = transform.replace("translate(", "").replace(")", "").split(",")
+        tx = float(values[0])
+        ty = float(values[1]) if len(values) > 1 else 0.0
+        return [[1, 0, tx], [0, 1, ty], [0, 0, 1]]
+    return [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+
+
+def mat_mul(a: List[List[float]], b: List[List[float]]) -> List[List[float]]:
+    return [
+        [
+            a[0][0] * b[0][0] + a[0][1] * b[1][0] + a[0][2] * b[2][0],
+            a[0][0] * b[0][1] + a[0][1] * b[1][1] + a[0][2] * b[2][1],
+            a[0][0] * b[0][2] + a[0][1] * b[1][2] + a[0][2] * b[2][2],
+        ],
+        [
+            a[1][0] * b[0][0] + a[1][1] * b[1][0] + a[1][2] * b[2][0],
+            a[1][0] * b[0][1] + a[1][1] * b[1][1] + a[1][2] * b[2][1],
+            a[1][0] * b[0][2] + a[1][1] * b[1][2] + a[1][2] * b[2][2],
+        ],
+        [0, 0, 1],
+    ]
+
+
+def apply_mat(m: List[List[float]], x: float, y: float) -> Tuple[float, float]:
+    return (
+        m[0][0] * x + m[0][1] * y + m[0][2],
+        m[1][0] * x + m[1][1] * y + m[1][2],
+    )
+
+
+def parse_overview_svg(svg_path: Path) -> Optional[dict]:
+    if not svg_path.exists():
+        return None
+    tree = ET.parse(svg_path)
+    root = tree.getroot()
+
+    rects = []
+    texts = []
+
+    def walk(node, current_mat):
+        transform = node.attrib.get("transform")
+        if transform:
+            current_mat = mat_mul(current_mat, parse_transform(transform))
+        tag = node.tag.split("}")[-1]
+        if tag == "rect":
+            x = float(node.attrib.get("x", "0"))
+            y = float(node.attrib.get("y", "0"))
+            w = float(node.attrib.get("width", "0"))
+            h = float(node.attrib.get("height", "0"))
+            (x1, y1) = apply_mat(current_mat, x, y)
+            (x2, y2) = apply_mat(current_mat, x + w, y + h)
+            rects.append(
+                {
+                    "x": min(x1, x2),
+                    "y": min(y1, y2),
+                    "w": abs(x2 - x1),
+                    "h": abs(y2 - y1),
+                }
+            )
+        if tag == "text" and node.text:
+            x = float(node.attrib.get("x", "0"))
+            y = float(node.attrib.get("y", "0"))
+            (x1, y1) = apply_mat(current_mat, x, y)
+            texts.append({"text": node.text.strip(), "x": x1, "y": y1})
+        for child in list(node):
+            walk(child, current_mat)
+
+    walk(root, [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+    def find_label(text_key: str) -> Optional[dict]:
+        for item in texts:
+            if text_key in item["text"]:
+                return item
+        return None
+
+    def pick_rect_near(label: dict) -> Optional[dict]:
+        candidates = [
+            r
+            for r in rects
+            if r["w"] > 300 and r["h"] > 200 and r["y"] > label["y"]
+        ]
+        if not candidates:
+            return None
+        candidates.sort(
+            key=lambda r: (abs(r["y"] - label["y"]), abs(r["x"] - label["x"]))
+        )
+        return candidates[0]
+
+    segment_label = find_label("Monthly Sales by Segment")
+    category_label = find_label("Monthly Sales by Product Category")
+    if not segment_label or not category_label:
+        return None
+
+    segment_rect = pick_rect_near(segment_label)
+    category_rect = pick_rect_near(category_label)
+    if not segment_rect or not category_rect:
+        return None
+
+    max_x = max(r["x"] + r["w"] for r in rects) if rects else 1500
+    max_y = max(r["y"] + r["h"] for r in rects) if rects else 900
+    return {
+        "segment_rect": segment_rect,
+        "category_rect": category_rect,
+        "svg_width": max_x,
+        "svg_height": max_y,
+    }
 
 
 def read_snapshot_names(snapshots_dir: Path) -> List[str]:
@@ -705,7 +824,13 @@ def layout_profile(page_name: str, snapshot_name: Optional[str]) -> Optional[str
     return None
 
 
-def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float):
+def apply_layout_overrides(
+    profile: str,
+    visuals: List[dict],
+    page_height: float,
+    svg_layout: Optional[dict],
+    page_width: float,
+):
     if profile == "overview":
         title = [v for v in visuals if v["visual_type"] == "textbox"]
         cards = [v for v in visuals if v["recommended_type"] == "card"]
@@ -747,10 +872,69 @@ def apply_layout_overrides(profile: str, visuals: List[dict], page_height: float
             visual["position"]["y"] = 390
             visual["position"]["height"] = max(page_height - 410, 300)
             visual["visual"]["autoSelectVisualType"] = False
-        if category_split:
+        if svg_layout:
+            scale_x = page_width / svg_layout["svg_width"]
+            scale_y = page_height / svg_layout["svg_height"]
+            seg = svg_layout["segment_rect"]
+            cat = svg_layout["category_rect"]
+            seg_box = {
+                "x": seg["x"] * scale_x,
+                "y": seg["y"] * scale_y,
+                "w": seg["w"] * scale_x,
+                "h": seg["h"] * scale_y,
+            }
+            cat_box = {
+                "x": cat["x"] * scale_x,
+                "y": cat["y"] * scale_y,
+                "w": cat["w"] * scale_x,
+                "h": cat["h"] * scale_y,
+            }
+            segment_split = [
+                v
+                for v in areas
+                if str(v.get("json", {}).get("name", "")).startswith("seg_")
+            ]
+            if segment_split:
+                gap = 6
+                each_height = max(
+                    (seg_box["h"] - gap * (len(segment_split) - 1)) / len(segment_split),
+                    80,
+                )
+                segment_split.sort(
+                    key=lambda v: v.get("json", {}).get("name", "")
+                )
+                for idx, visual in enumerate(segment_split):
+                    visual["position"]["x"] = round(seg_box["x"], 2)
+                    visual["position"]["width"] = round(seg_box["w"], 2)
+                    visual["position"]["y"] = round(
+                        seg_box["y"] + idx * (each_height + gap), 2
+                    )
+                    visual["position"]["height"] = round(each_height, 2)
+                    visual["visual"]["autoSelectVisualType"] = False
+            if category_split:
+                gap = 6
+                each_height = max(
+                    (cat_box["h"] - gap * (len(category_split) - 1)) / len(category_split),
+                    80,
+                )
+                category_split.sort(
+                    key=lambda v: v.get("json", {}).get("name", "")
+                )
+                for idx, visual in enumerate(category_split):
+                    visual["position"]["x"] = round(cat_box["x"], 2)
+                    visual["position"]["width"] = round(cat_box["w"], 2)
+                    visual["position"]["y"] = round(
+                        cat_box["y"] + idx * (each_height + gap), 2
+                    )
+                    visual["position"]["height"] = round(each_height, 2)
+                    visual["visual"]["autoSelectVisualType"] = False
+        elif category_split:
             total_height = max(page_height - 410, 300)
             gap = 6
-            each_height = max((total_height - gap * (len(category_split) - 1)) / len(category_split), 80)
+            each_height = max(
+                (total_height - gap * (len(category_split) - 1)) / len(category_split),
+                80,
+            )
             category_split.sort(key=lambda v: v.get("json", {}).get("name", ""))
             for idx, visual in enumerate(category_split):
                 visual["position"]["x"] = 640
@@ -832,6 +1016,7 @@ def process_report(
     report_dir: Path,
     snapshots_dir: Path,
     dry_run: bool,
+    svg_path: Optional[Path],
 ) -> Dict:
     pages_path = report_dir / "definition" / "pages" / "pages.json"
     pages_meta = load_json(pages_path)
@@ -844,6 +1029,7 @@ def process_report(
         page_json = load_json(page_path / "page.json")
         page_name = page_json.get("displayName", page_id)
         page_height = float(page_json.get("height", 720))
+        page_width = float(page_json.get("width", 1280))
 
         visuals_dir = page_path / "visuals"
         if not visuals_dir.exists():
@@ -958,8 +1144,11 @@ def process_report(
 
         snapshot_match = page_changes["snapshot_match"]
         profile = layout_profile(page_name, snapshot_match)
+        svg_layout = None
+        if profile == "overview" and svg_path:
+            svg_layout = parse_overview_svg(svg_path)
         if profile:
-            apply_layout_overrides(profile, visuals, page_height)
+            apply_layout_overrides(profile, visuals, page_height, svg_layout, page_width)
             if profile in {"overview", "product", "order_details"}:
                 for visual in visuals:
                     if visual["visual_type"] in {"textbox", "slicer", "card"}:
@@ -1004,6 +1193,11 @@ def main():
         help="Output report JSON path.",
     )
     parser.add_argument(
+        "--overview-svg",
+        default="tableau snapshots/OverviewSVG.svg",
+        help="Overview SVG exported from Tableau.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Do not modify visual.json files.",
@@ -1013,7 +1207,8 @@ def main():
     report_dir = Path(args.pbip_report)
     snapshots_dir = Path(args.snapshots_dir)
 
-    report = process_report(report_dir, snapshots_dir, args.dry_run)
+    svg_path = Path(args.overview_svg) if args.overview_svg else None
+    report = process_report(report_dir, snapshots_dir, args.dry_run, svg_path)
     out_path = Path(args.out_report)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
