@@ -379,6 +379,45 @@ def hide_visual_title(visual: dict):
     return visual
 
 
+def ensure_area_query_state(query_state: dict):
+    if "Category" not in query_state:
+        query_state["Category"] = {
+            "projections": [
+                {
+                    "field": {
+                        "Column": {
+                            "Expression": {"SourceRef": {"Entity": "Orders"}},
+                            "Property": "Order Month",
+                        }
+                    },
+                    "queryRef": "Orders.Order Month",
+                    "nativeQueryRef": "Order Month",
+                }
+            ]
+        }
+    if "Y" not in query_state:
+        query_state["Y"] = {
+            "projections": [
+                {
+                    "field": {
+                        "Aggregation": {
+                            "Expression": {
+                                "Column": {
+                                    "Expression": {"SourceRef": {"Entity": "Orders"}},
+                                    "Property": "Sales",
+                                }
+                            },
+                            "Function": 0,
+                        }
+                    },
+                    "queryRef": "Sum(Orders.Sales)",
+                    "nativeQueryRef": "Sum of Sales",
+                }
+            ]
+        }
+    return query_state
+
+
 def read_snapshot_names(snapshots_dir: Path) -> List[str]:
     if not snapshots_dir.exists():
         return []
@@ -755,6 +794,7 @@ def split_segment_visuals(
                     }
                 ]
             }
+        query_state = ensure_area_query_state(query_state)
         visual_json["visual"]["query"]["queryState"] = query_state
 
         filter_config = visual_json.get("filterConfig", {})
@@ -797,7 +837,7 @@ def split_category_visuals(
     for visual in visuals:
         name = str(visual.get("json", {}).get("name", ""))
         fields_text = " ".join(visual.get("fields", [])).lower()
-        if name.startswith("cat_"):
+        if name.startswith("cat_") and visual.get("visual_type") != "textbox":
             category_visual = visual
             break
         if (
@@ -886,7 +926,7 @@ def split_category_visuals(
     # Remove existing category split visuals
     for visual in list(visuals):
         name = str(visual.get("json", {}).get("name", ""))
-        if name.startswith("cat_"):
+        if name.startswith("cat_") and name != "cat_title":
             cat_dir = Path(visual["path"]).parent
             if cat_dir.exists():
                 shutil.rmtree(cat_dir)
@@ -894,7 +934,7 @@ def split_category_visuals(
 
     # Remove the original category visual folder
     original_dir = Path(category_visual["path"]).parent
-    if original_dir.exists():
+    if original_dir.exists() and original_dir.name != "cat_title":
         shutil.rmtree(original_dir)
 
     base_json = category_visual["json"]
@@ -941,6 +981,7 @@ def split_category_visuals(
                     }
                 ]
             }
+        query_state = ensure_area_query_state(query_state)
         visual_json["visual"]["query"]["queryState"] = query_state
 
         filter_config = visual_json.get("filterConfig", {})
@@ -1119,7 +1160,14 @@ def apply_layout_overrides(
     visuals_dir: Path,
 ):
     if profile == "overview":
-        title = [v for v in visuals if v["visual_type"] == "textbox"]
+        title = [
+            v
+            for v in visuals
+            if v["visual_type"] == "textbox"
+            and not str(v.get("json", {}).get("name", "")).startswith(
+                ("seg_label_", "year_label_", "seg_title", "cat_title")
+            )
+        ]
         cards = [v for v in visuals if v["recommended_type"] == "card"]
         maps = [
             v
