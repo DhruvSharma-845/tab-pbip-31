@@ -33,24 +33,6 @@
             }
           ]
         },
-        "Legend": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Profitability"
-                }
-              },
-              "queryRef": "Orders.Profitability",
-              "nativeQueryRef": "Profitability"
-            }
-          ]
-        },
         "Y": {
           "projections": [
             {
@@ -71,6 +53,24 @@
               },
               "queryRef": "Sum(Orders.Sales)",
               "nativeQueryRef": "Sum of Sales"
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Profitability"
+                }
+              },
+              "queryRef": "Orders.Profitability",
+              "nativeQueryRef": "Profitability"
             }
           ]
         }

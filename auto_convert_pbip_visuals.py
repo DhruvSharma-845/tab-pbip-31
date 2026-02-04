@@ -406,6 +406,8 @@ def split_segment_visuals(
         visual_json["visual"]["autoSelectVisualType"] = False
         query_state = visual_json["visual"].get("query", {}).get("queryState", {})
         query_state.pop("SmallMultiples", None)
+        if "Legend" in query_state and "Series" not in query_state:
+            query_state["Series"] = query_state.pop("Legend")
         visual_json["visual"]["query"]["queryState"] = query_state
 
         filter_config = visual_json.get("filterConfig", {})
