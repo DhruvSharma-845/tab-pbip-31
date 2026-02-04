@@ -163,12 +163,19 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
     for item in texts:
         if item["text"] in {"Consumer", "Corporate", "Home Office"}:
             segment_names.append(item)
+    year_labels = []
+    for item in texts:
+        if item["text"].isdigit() and len(item["text"]) == 4:
+            year = int(item["text"])
+            if 2020 <= year <= 2030:
+                year_labels.append(item)
     return {
         "segment_rect": segment_rect,
         "category_rect": category_rect,
         "svg_width": max_x,
         "svg_height": max_y,
         "segment_labels": segment_names,
+        "year_labels": year_labels,
     }
 
 
@@ -196,7 +203,7 @@ def make_textbox_visual(name: str, text: str, x: float, y: float, width: float, 
                                         {
                                             "value": text,
                                             "textStyle": {
-                                                "fontSize": "12pt"
+                                                "fontSize": "10pt"
                                             },
                                         }
                                     ]
@@ -213,7 +220,22 @@ def make_textbox_visual(name: str, text: str, x: float, y: float, width: float, 
 
 def apply_tableau_like_area_formatting(visual: dict):
     visual.setdefault("objects", {})
+    visual.setdefault("visualContainerObjects", {})
     visual["objects"]["title"] = [
+        {
+            "properties": {
+                "show": {"expr": {"Literal": {"Value": "false"}}}
+            }
+        }
+    ]
+    visual["visualContainerObjects"]["title"] = [
+        {
+            "properties": {
+                "show": {"expr": {"Literal": {"Value": "false"}}}
+            }
+        }
+    ]
+    visual["visualContainerObjects"]["subTitle"] = [
         {
             "properties": {
                 "show": {"expr": {"Literal": {"Value": "false"}}}
@@ -968,6 +990,17 @@ def apply_layout_overrides(
                 "w": cat["w"] * scale_x,
                 "h": cat["h"] * scale_y,
             }
+            # Remove old label visuals
+            for label_name in [
+                "seg_label_consumer",
+                "seg_label_corporate",
+                "seg_label_home_office",
+            ]:
+                label_dir = visuals_dir / label_name
+                if label_dir.exists():
+                    shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("year_label_*"):
+                shutil.rmtree(label_dir)
             segment_split = [
                 v
                 for v in areas
@@ -990,21 +1023,20 @@ def apply_layout_overrides(
                     )
                     visual["position"]["height"] = round(each_height, 2)
                     visual["visual"]["autoSelectVisualType"] = False
-                # Add segment labels as textboxes
-                label_width = min(140, max(seg_box["x"] - 4, 80))
-                label_x = max(seg_box["x"] - label_width - 6, 0)
-                label_map = ["Consumer", "Corporate", "Home Office"]
-                for idx, label in enumerate(label_map):
-                    label_y = seg_box["y"] + idx * (each_height + gap)
-                    label_name = f"seg_label_{label.lower().replace(' ', '_')}"
-                    textbox = make_textbox_visual(
-                        label_name, label, label_x, label_y, label_width, each_height
-                    )
-                    label_dir = visuals_dir / label_name
-                    label_dir.mkdir(parents=True, exist_ok=True)
-                    (label_dir / "visual.json").write_text(
-                        json.dumps(textbox, indent=2), encoding="utf-8"
-                    )
+                # Add segment labels as textboxes using SVG positions
+                if svg_layout.get("segment_labels"):
+                    for item in svg_layout["segment_labels"]:
+                        label_x = item["x"] * scale_x
+                        label_y = item["y"] * scale_y
+                        label_name = f"seg_label_{item['text'].lower().replace(' ', '_')}"
+                        textbox = make_textbox_visual(
+                            label_name, item["text"], label_x, label_y - 12, 120, 20
+                        )
+                        label_dir = visuals_dir / label_name
+                        label_dir.mkdir(parents=True, exist_ok=True)
+                        (label_dir / "visual.json").write_text(
+                            json.dumps(textbox, indent=2), encoding="utf-8"
+                        )
             if category_split:
                 gap = 6
                 each_height = max(
@@ -1022,6 +1054,20 @@ def apply_layout_overrides(
                     )
                     visual["position"]["height"] = round(each_height, 2)
                     visual["visual"]["autoSelectVisualType"] = False
+            # Add year labels from SVG
+            if svg_layout.get("year_labels"):
+                for item in svg_layout["year_labels"]:
+                    year_x = item["x"] * scale_x
+                    year_y = item["y"] * scale_y
+                    label_name = f"year_label_{item['text']}_{int(year_x)}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], year_x - 10, year_y - 10, 40, 16
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
         elif category_split:
             total_height = max(page_height - 410, 300)
             gap = 6

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "seg_label_corporate",
   "position": {
-    "x": 0,
-    "y": 518.28,
+    "x": 14.33,
+    "y": 546.17,
     "z": 10,
-    "height": 97.99,
-    "width": 80,
+    "height": 20,
+    "width": 120,
     "tabOrder": 0
   },
   "visual": {
@@ -21,7 +21,7 @@
                   {
                     "value": "Corporate",
                     "textStyle": {
-                      "fontSize": "12pt"
+                      "fontSize": "10pt"
                     }
                   }
                 ]

@@ -4355,9 +4355,9 @@ Year: <[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[yr:Order Date:ok]>, Month: <[fe
             <column-instance column='[Calculation_9921103144103743]' derivation='User' name='[usr:Calculation_9921103144103743:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Tooltip (Country/Region,State/Province)]'>
-            <groupfilter function='crossjoin' user:ui-action-filter='[Action - Tooltip: Profit Ratio by City]' user:ui-enumeration='all' user:ui-marker='enumerate'>
-              <groupfilter function='level-members' level='[Country/Region]' />
-              <groupfilter function='level-members' level='[State/Province]' />
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action - Tooltip: Profit Ratio by City]' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate'>
+              <groupfilter function='member' level='[Country/Region]' member='&quot;United States&quot;' />
+              <groupfilter function='member' level='[State/Province]' member='&quot;New Hampshire&quot;' />
             </groupfilter>
           </filter>
           <filter class='categorical' column='[federated.10nnk8d1vgmw8q17yu76u06pnbcj].[Tooltip (State/Province)]'>
