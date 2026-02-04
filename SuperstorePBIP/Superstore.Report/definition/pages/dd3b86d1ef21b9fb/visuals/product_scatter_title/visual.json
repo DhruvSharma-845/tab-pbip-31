@@ -3,9 +3,9 @@
   "name": "product_scatter_title",
   "position": {
     "x": 10.12,
-    "y": 372.31,
+    "y": 0,
     "z": 10,
-    "height": 22,
+    "height": 40,
     "width": 620,
     "tabOrder": 0
   },

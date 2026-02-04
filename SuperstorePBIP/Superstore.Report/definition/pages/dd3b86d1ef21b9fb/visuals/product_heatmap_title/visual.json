@@ -3,9 +3,9 @@
   "name": "product_heatmap_title",
   "position": {
     "x": 10.96,
-    "y": 41.54,
+    "y": 0,
     "z": 10,
-    "height": 22,
+    "height": 40,
     "width": 560,
     "tabOrder": 0
   },

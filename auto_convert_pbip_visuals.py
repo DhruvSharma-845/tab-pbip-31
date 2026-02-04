@@ -808,7 +808,80 @@ def split_category_visuals(
             category_visual = visual
             break
     if not category_visual:
-        return visuals
+        # build a base visual from scratch if missing
+        base_json = {
+            "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+            "name": "category_base",
+            "position": {"x": 640, "y": 390, "z": 2, "height": 321, "width": 600},
+            "visual": {
+                "visualType": "stackedAreaChart",
+                "autoSelectVisualType": False,
+                "query": {
+                    "queryState": {
+                        "Category": {
+                            "projections": [
+                                {
+                                    "field": {
+                                        "Column": {
+                                            "Expression": {"SourceRef": {"Entity": "Orders"}},
+                                            "Property": "Order Month",
+                                        }
+                                    },
+                                    "queryRef": "Orders.Order Month",
+                                    "nativeQueryRef": "Order Month",
+                                }
+                            ]
+                        },
+                        "Y": {
+                            "projections": [
+                                {
+                                    "field": {
+                                        "Aggregation": {
+                                            "Expression": {
+                                                "Column": {
+                                                    "Expression": {"SourceRef": {"Entity": "Orders"}},
+                                                    "Property": "Sales",
+                                                }
+                                            },
+                                            "Function": 0,
+                                        }
+                                    },
+                                    "queryRef": "Sum(Orders.Sales)",
+                                    "nativeQueryRef": "Sum of Sales",
+                                }
+                            ]
+                        },
+                        "Series": {
+                            "projections": [
+                                {
+                                    "field": {
+                                        "Column": {
+                                            "Expression": {"SourceRef": {"Entity": "Orders"}},
+                                            "Property": "Profitability",
+                                        }
+                                    },
+                                    "queryRef": "Orders.Profitability",
+                                    "nativeQueryRef": "Profitability",
+                                }
+                            ]
+                        },
+                    }
+                },
+                "drillFilterOtherVisuals": True,
+            },
+            "filterConfig": {"filters": []},
+        }
+        category_visual = {
+            "path": visuals_dir / "category_base" / "visual.json",
+            "json": base_json,
+            "visual": base_json["visual"],
+            "position": base_json["position"],
+            "visual_type": base_json["visual"]["visualType"],
+            "fields": ["Orders.Order Month", "Aggregation(Orders.Sales)", "Orders.Profitability"],
+            "text": [],
+            "title": "Sales by Product Category",
+            "recommended_type": "stackedAreaChart",
+        }
 
     # Remove existing category split visuals
     for visual in list(visuals):
