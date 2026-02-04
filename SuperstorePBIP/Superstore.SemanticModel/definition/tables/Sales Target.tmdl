@@ -29,7 +29,7 @@ table 'Sales Target'
 		mode: import
 		source =
 			let
-				Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\\Sales Target.xlsx"), null, true),
+			Source = Excel.Workbook(File.Contents("C:\Users\Pooja Satija\Downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\SuperstorePBIP\Data\Superstore\Sales Target.xlsx"), null, true),
 				Sheet1 = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
 				Promoted = Table.PromoteHeaders(Sheet1, [PromoteAllScalars=true])
 			in
