@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "commission_label_commission_rate",
   "position": {
-    "x": 8.13,
-    "y": 3.63,
+    "x": 714.2,
+    "y": 54.98,
     "z": 10,
-    "height": 30,
-    "width": 520,
+    "height": 16,
+    "width": 180,
     "tabOrder": 0
   },
   "visual": {

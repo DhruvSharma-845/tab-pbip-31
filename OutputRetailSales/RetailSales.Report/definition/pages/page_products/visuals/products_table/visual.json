@@ -2,16 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "products_table",
   "position": {
-    "x": 640,
-    "y": 60,
-    "z": 2,
+    "x": 20,
+    "y": 100,
+    "z": 5,
     "height": 350,
-    "width": 600,
-    "tabOrder": 2
+    "width": 500,
+    "tabOrder": 5
   },
   "visual": {
     "visualType": "tableEx",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
@@ -46,36 +45,50 @@
             },
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 0
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
               "nativeQueryRef": "Total Sales"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
-                    }
-                  },
-                  "Property": "Active Stores"
-                }
-              },
-              "queryRef": "Retail Sales Data.Active Stores",
-              "nativeQueryRef": "Active Stores"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Product Performance'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

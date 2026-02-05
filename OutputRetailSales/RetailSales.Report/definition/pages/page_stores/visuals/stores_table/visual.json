@@ -3,15 +3,14 @@
   "name": "stores_table",
   "position": {
     "x": 20,
-    "y": 430,
-    "z": 3,
-    "height": 270,
-    "width": 1220,
-    "tabOrder": 3
+    "y": 100,
+    "z": 5,
+    "height": 350,
+    "width": 500,
+    "tabOrder": 5
   },
   "visual": {
     "visualType": "tableEx",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
@@ -52,20 +51,6 @@
                       "Entity": "Retail Sales Data"
                     }
                   },
-                  "Property": "State"
-                }
-              },
-              "queryRef": "Retail Sales Data.State",
-              "nativeQueryRef": "State"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
-                    }
-                  },
                   "Property": "City"
                 }
               },
@@ -74,22 +59,50 @@
             },
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 0
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
               "nativeQueryRef": "Total Sales"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Store Performance'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

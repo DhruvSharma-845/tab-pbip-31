@@ -2,38 +2,65 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "exec_products_card",
   "position": {
-    "x": 460,
-    "y": 60,
-    "z": 3,
+    "x": 400,
+    "y": 170,
+    "z": 7,
     "height": 100,
-    "width": 200,
-    "tabOrder": 3
+    "width": 180,
+    "tabOrder": 7
   },
   "visual": {
     "visualType": "card",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Product"
                     }
                   },
-                  "Property": "Distinct Products Sold"
+                  "Function": 5
                 }
               },
-              "queryRef": "Retail Sales Data.Distinct Products Sold",
-              "nativeQueryRef": "Distinct Products Sold"
+              "queryRef": "CountNonNull(Retail Sales Data.Product)",
+              "nativeQueryRef": "Products"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Products'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

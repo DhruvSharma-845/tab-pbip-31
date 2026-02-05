@@ -3,10 +3,10 @@
   "name": "product_line_title",
   "position": {
     "x": 20,
-    "y": 10,
+    "y": 20,
     "z": 0,
-    "height": 40,
-    "width": 300,
+    "height": 50,
+    "width": 450,
     "tabOrder": 0
   },
   "visual": {
@@ -19,10 +19,10 @@
               {
                 "textRuns": [
                   {
-                    "value": "Retail Sales",
+                    "value": "Retail Sales - Product Line Deep-dive",
                     "textStyle": {
                       "fontWeight": "bold",
-                      "fontSize": "18pt"
+                      "fontSize": "24pt"
                     }
                   }
                 ]

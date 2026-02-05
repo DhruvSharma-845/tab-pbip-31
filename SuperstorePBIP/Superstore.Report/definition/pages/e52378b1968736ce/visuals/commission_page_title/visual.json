@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "products_question_1",
+  "name": "commission_page_title",
   "position": {
     "x": 10,
-    "y": 130,
+    "y": 5,
     "z": 10,
     "height": 30,
-    "width": 450,
-    "tabOrder": 10
+    "width": 460,
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "textbox",
@@ -19,11 +19,10 @@
               {
                 "textRuns": [
                   {
-                    "value": "How did the performance of our Products evolve?",
+                    "value": "Sales Commission Model",
                     "textStyle": {
-                      "fontWeight": "bold",
-                      "fontSize": "12pt",
-                      "color": "#2b5c8a"
+                      "fontSize": "14pt",
+                      "fontWeight": "bold"
                     }
                   }
                 ]
@@ -32,6 +31,7 @@
           }
         }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
   }
 }

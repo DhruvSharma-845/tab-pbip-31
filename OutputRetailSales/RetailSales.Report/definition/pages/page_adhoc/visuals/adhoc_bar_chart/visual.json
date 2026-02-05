@@ -3,15 +3,14 @@
   "name": "adhoc_bar_chart",
   "position": {
     "x": 20,
-    "y": 60,
-    "z": 4,
+    "y": 170,
+    "z": 5,
     "height": 300,
-    "width": 450,
-    "tabOrder": 4
+    "width": 640,
+    "tabOrder": 5
   },
   "visual": {
     "visualType": "clusteredBarChart",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Category": {
@@ -36,22 +35,50 @@
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 0
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
               "nativeQueryRef": "Total Sales"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Total Sales by Product Line'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

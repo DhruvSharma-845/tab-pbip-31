@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "shipping_slicer_order_year",
   "position": {
-    "x": 1126.53,
-    "y": 85.38,
+    "x": 790.0,
+    "y": 35,
     "z": 5,
-    "height": 36,
-    "width": 160,
+    "height": 50,
+    "width": 110,
     "tabOrder": 0
   },
   "visual": {

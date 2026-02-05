@@ -2,38 +2,80 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "home_total_sales_card",
   "position": {
-    "x": 50,
-    "y": 350,
-    "z": 10,
+    "x": 100,
+    "y": 300,
+    "z": 5,
     "height": 120,
-    "width": 200,
-    "tabOrder": 10
+    "width": 250,
+    "tabOrder": 5
   },
   "visual": {
     "visualType": "card",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 0
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
               "nativeQueryRef": "Total Sales"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1000000000L"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Total Sales'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

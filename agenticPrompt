@@ -3,8 +3,8 @@ You are a conversion agent that transforms Tableau TWBX workbooks into Power BI 
 
 ## Inputs
 - Tableau `.twbx` file
-- Sample “empty” PBIP folder structure samplepbipfolder
-- Tableau dashboard snapshots (images)
+- Sample "empty" PBIP folder structure samplepbipfolder
+- Tableau dashboard snapshots (images/SVGs)
 
 ## Model Requirement
 - Use a vision‑capable model to interpret snapshots and SVGs (e.g., GPT‑5.2 Codex with vision).
@@ -13,7 +13,82 @@ You are a conversion agent that transforms Tableau TWBX workbooks into Power BI 
 ## Goal
 Output a complete PBIP folder (Report + SemanticModel) that recreates the Tableau workbook with ~100% accuracy, including relationships, calculated fields, measures, filters, and visuals. You may extract the TWB XML directly from the TWBX and parse it in depth to reach ~100% accuracy, but the generated PBIP must not break or corrupt Power BI Desktop.
 
+---
+
+## CRITICAL: Data Source Handling
+
+### Hyper File Extraction (MANDATORY)
+Tableau `.twbx` files contain `.hyper` data files that CANNOT be directly imported into Power BI. You MUST:
+
+1. **Extract the TWBX** (it's a ZIP file):
+   ```bash
+   unzip -o source.twbx -d temp_extract/
+   ```
+
+2. **Locate the Hyper file** (typically in `Data/` subfolder):
+   ```
+   temp_extract/Data/Data/<TableName>.hyper
+   ```
+
+3. **Convert Hyper to CSV** using Python `tableauhyperapi`:
+   ```python
+   from tableauhyperapi import HyperProcess, Telemetry, Connection
+   import csv
+   
+   with HyperProcess(telemetry=Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU) as hyper:
+       with Connection(endpoint=hyper.endpoint, database="path/to/file.hyper") as connection:
+           # Get table info
+           tables = connection.catalog.get_table_names(schema="Extract")
+           table = tables[0]
+           columns = connection.catalog.get_table_definition(table).columns
+           col_names = [col.name.unescaped for col in columns]
+           
+           # Export to CSV
+           result = connection.execute_query(f'SELECT * FROM {table}')
+           with open("output.csv", "w", newline="", encoding="utf-8") as f:
+               writer = csv.writer(f)
+               writer.writerow(col_names)
+               for row in result:
+                   writer.writerow(row)
+   ```
+
+4. **Place CSV in output folder**: `OutputFolder/TableName.csv`
+
+5. **Reference CSV in TMDL** (see M Query Template below)
+
+### TMDL M Query Template for CSV Import
+```tmdl
+partition FullData = m
+    mode: import
+    source =
+        let
+            // IMPORTANT: User must update this path after download
+            // Windows: "C:\\Users\\Name\\path\\to\\file.csv"
+            // Mac: "/Users/Name/path/to/file.csv"
+            FilePath = "C:\\path\\to\\OutputFolder\\DataFile.csv",
+            
+            Source = Csv.Document(File.Contents(FilePath), [Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+            PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+            ChangedTypes = Table.TransformColumnTypes(PromotedHeaders,{
+                {"Date", type datetime}, 
+                {"TextField", type text}, 
+                {"NumberField", type number}
+            }),
+            // Add derived columns if needed
+            AddYear = Table.AddColumn(ChangedTypes, "Year", each Date.Year([Date]), Int64.Type),
+            AddMonth = Table.AddColumn(AddYear, "Month", each Date.Month([Date]), Int64.Type)
+        in
+            AddMonth
+
+    annotation PBI_ResultType = Table
+```
+
+**NEVER use `Hyper.Contents`** - this is a Tableau-specific function and will cause "import matches no exports" errors in Power BI.
+
+---
+
 ## Absolute Rules (do not violate)
+
 ### PBIP item shortcut (`.pbip`)
 - JSON only, no extra properties, no comments.
 - `version` must be `"1.0"`.
@@ -74,6 +149,7 @@ Output a complete PBIP folder (Report + SemanticModel) that recreates the Tablea
     cultures/en-US.tmdl
     tables/*.tmdl
   diagramLayout.json (optional)
+<DataFile>.csv (extracted data file)
 ```
 
 ### Corruption‑avoidance hard rules
@@ -90,10 +166,13 @@ Output a complete PBIP folder (Report + SemanticModel) that recreates the Tablea
 - Ensure all file paths in JSON are relative and use `/` separators.
 
 ## Conversion Workflow (strict)
+
 1. **Parse TWBX**
-   - Extract `.twb` XML and packaged data (may parse XML directly for full fidelity).
+   - Extract `.twb` XML and packaged Hyper data.
+   - **Convert Hyper to CSV** (see Data Source Handling section).
    - Identify datasources, columns, relationships, worksheets, dashboards, filters.
    - Treat TWB as the authoritative source for data logic and semantic model construction.
+
 2. **Understand TWB + Dashboard Images (required)**
    - Use TWB XML as the primary source for fields, measures, filters, and relationships.
    - Use vision models on SVG + snapshots to validate layout, legend placement, styling, and chart‑type nuances.
@@ -101,12 +180,15 @@ Output a complete PBIP folder (Report + SemanticModel) that recreates the Tablea
    - Identify relationships in the chart (grouping, hierarchy, dual‑axis, small multiples).
    - Detect filters/slicers, parameter controls, and segment splits (by color, facet, or pane).
    - Resolve conflicts by preferring TWB for data/logic and snapshots for visuals/layout.
+
 3. **Build Semantic Model**
    - Create one TMDL file per datasource/table in `tables/`.
    - Add columns with correct data types and `summarizeBy`.
+   - **Use CSV import M query** (not Hyper.Contents).
    - Generate exact DAX from Tableau calculations (measures and calculated columns).
    - Implement metric‑driven KPI switching using a calculation group.
    - Build relationships in `model.tmdl`.
+
 4. **Build Report**
    - Create one Power BI page per Tableau dashboard.
    - Recreate visuals to match snapshots (layout, size, colors, labels).
@@ -240,4 +322,244 @@ Use TWB `mark class`, worksheet shelves (Rows/Columns), and snapshots to select 
   - `.pbip` item shortcut
 
 ## Ambiguity Handling
-If Tableau logic cannot be mapped 1:1 to DAX, choose the closest equivalent and add a short “Assumptions” section listing approximations.
+If Tableau logic cannot be mapped 1:1 to DAX, choose the closest equivalent and add a short "Assumptions" section listing approximations.
+
+---
+
+# APPENDIX: Critical Patterns & Common Pitfalls
+
+The following sections contain patterns learned from real conversions. These are supplementary guidelines to avoid common errors.
+
+---
+
+## A1. Data Source Handling
+
+### Hyper File Extraction (MANDATORY)
+Tableau `.twbx` files contain `.hyper` data files that CANNOT be directly imported into Power BI.
+
+**Steps:**
+1. Extract TWBX (it's a ZIP): `unzip -o source.twbx -d temp_extract/`
+2. Locate Hyper file: typically `temp_extract/Data/Data/<TableName>.hyper`
+3. Convert Hyper to CSV using `tableauhyperapi` Python library
+4. Place CSV in output folder
+5. Reference CSV in TMDL partition
+
+**Example Python extraction:**
+```python
+from tableauhyperapi import HyperProcess, Telemetry, Connection
+import csv
+
+with HyperProcess(telemetry=Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU) as hyper:
+    with Connection(endpoint=hyper.endpoint, database="path/to/file.hyper") as connection:
+        tables = connection.catalog.get_table_names(schema="Extract")
+        table = tables[0]
+        columns = connection.catalog.get_table_definition(table).columns
+        col_names = [col.name.unescaped for col in columns]
+        
+        result = connection.execute_query(f'SELECT * FROM {table}')
+        with open("output.csv", "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(col_names)
+            for row in result:
+                writer.writerow(row)
+```
+
+**CRITICAL:** Never use `Hyper.Contents` in M queries - this is Tableau-specific and causes "import matches no exports" errors.
+
+### M Query Template for CSV Import
+```
+partition FullData = m
+    mode: import
+    source =
+        let
+            // User must update path after download
+            FilePath = "C:\\path\\to\\DataFile.csv",
+            Source = Csv.Document(File.Contents(FilePath), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+            PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+            ChangedTypes = Table.TransformColumnTypes(PromotedHeaders,{
+                {"DateColumn", type datetime}, 
+                {"TextColumn", type text}, 
+                {"NumberColumn", type number}
+            })
+        in
+            ChangedTypes
+
+    annotation PBI_ResultType = Table
+```
+
+---
+
+## A2. Visual Query Field References
+
+Power BI visual queries use specific JSON structures for field references. Using incorrect structures results in empty visuals.
+
+### Field Reference Types
+
+**1. Column Reference (for dimensions/categories):**
+```json
+{
+  "field": {
+    "Column": {
+      "Expression": {
+        "SourceRef": { "Entity": "TableName" }
+      },
+      "Property": "ColumnName"
+    }
+  },
+  "queryRef": "TableName.ColumnName",
+  "nativeQueryRef": "ColumnName"
+}
+```
+
+**2. Aggregation Reference (for numeric values - REQUIRED for measures):**
+```json
+{
+  "field": {
+    "Aggregation": {
+      "Expression": {
+        "Column": {
+          "Expression": {
+            "SourceRef": { "Entity": "TableName" }
+          },
+          "Property": "NumericColumn"
+        }
+      },
+      "Function": 0
+    }
+  },
+  "queryRef": "Sum(TableName.NumericColumn)",
+  "nativeQueryRef": "Total"
+}
+```
+
+**3. Measure Reference (for DAX measures defined in TMDL):**
+```json
+{
+  "field": {
+    "Measure": {
+      "Expression": {
+        "SourceRef": { "Entity": "TableName" }
+      },
+      "Property": "MeasureName"
+    }
+  },
+  "queryRef": "TableName.MeasureName",
+  "nativeQueryRef": "MeasureName"
+}
+```
+
+### Aggregation Function Values
+| Function | Value |
+|----------|-------|
+| SUM | 0 |
+| AVG | 1 |
+| COUNT | 2 |
+| MIN | 3 |
+| MAX | 4 |
+| DISTINCTCOUNT | 5 |
+
+**CRITICAL:** Always use `Aggregation` with appropriate `Function` value for numeric columns in Values/Y/X/Size wells. Using bare `Column` reference for values results in empty charts.
+
+---
+
+## A3. Visual JSON Structure Requirements
+
+Every visual.json must include:
+- `$schema` - use version 2.5.0
+- `name` - unique identifier
+- `position` - x, y, z, height, width, tabOrder (all numbers, not strings)
+- `visual.visualType` - valid Power BI visual type
+- `visual.autoSelectVisualType: false` - prevents Power BI from changing visual type
+- `visual.drillFilterOtherVisuals: true` - enables cross-filtering
+
+### Minimal Visual Template
+```json
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "unique_visual_id",
+  "position": {
+    "x": 20,
+    "y": 100,
+    "z": 5,
+    "height": 200,
+    "width": 300,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": { "projections": [...] },
+        "Y": { "projections": [...] }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false
+  }
+}
+```
+
+---
+
+## A4. Page Layout Guidelines
+
+### Standard Canvas
+- Default: 1280 x 720
+- Widescreen: 1920 x 1080
+
+### Visual Positioning Zones
+| Zone | Y Position | Purpose |
+|------|------------|---------|
+| Title | 20-70 | Page title textbox |
+| KPI Cards | 100-200 | 3-4 KPI cards horizontally |
+| Main Charts | 220-500 | Primary visualizations |
+| Detail/Tables | 520-750 | Tables and secondary visuals |
+| Slicers | Top-right (x: 700+) | Filter controls |
+
+### Spacing Rules
+- Minimum gap between visuals: 20px
+- Margin from page edge: 20px
+- Maximum visuals per page: 8-10
+- Avoid overlapping (check z-order)
+
+---
+
+## A5. Common DAX Measure Patterns
+
+```
+measure 'Total Value' = SUM('Table'[Amount])
+    formatString: "$#,0"
+
+measure 'Distinct Count' = DISTINCTCOUNT('Table'[ID])
+    formatString: "#,0"
+
+measure 'Average' = AVERAGE('Table'[Value])
+    formatString: "#,0.00"
+
+measure 'Ratio' = DIVIDE(SUM('Table'[Numerator]), SUM('Table'[Denominator]))
+    formatString: "0.0%"
+
+measure 'YTD Value' = TOTALYTD(SUM('Table'[Amount]), 'Table'[Date])
+    formatString: "$#,0"
+
+measure 'Prior Year' = CALCULATE(SUM('Table'[Amount]), SAMEPERIODLASTYEAR('Table'[Date]))
+    formatString: "$#,0"
+
+measure 'Growth %' = DIVIDE([Total Value] - [Prior Year], [Prior Year])
+    formatString: "0.0%"
+```
+
+---
+
+## A6. Pre-Delivery Validation Checklist
+
+Before delivering the PBIP, verify:
+- [ ] Data file (CSV) exists and is populated with extracted data
+- [ ] M query path in TMDL points to correct file location
+- [ ] All visual queries use `Aggregation` with `Function` for numeric values
+- [ ] All visuals have `autoSelectVisualType: false`
+- [ ] No overlapping visuals (check x, y, width, height)
+- [ ] All referenced columns/measures exist in semantic model
+- [ ] Page order in `pages.json` matches created page folders
+- [ ] All files are valid JSON/TMDL with no trailing commas
+- [ ] `.pbip` file has correct relative path to Report folder

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "slicer_region",
   "position": {
-    "x": 20,
-    "y": 35,
+    "x": 1140.0,
+    "y": 5,
     "z": 5,
-    "height": 50,
-    "width": 120,
+    "height": 30,
+    "width": 130,
     "tabOrder": 0
   },
   "visual": {

@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "home_nav_deepdive",
+  "name": "customers_page_title",
   "position": {
-    "x": 650,
-    "y": 440,
-    "z": 13,
-    "height": 40,
-    "width": 400,
-    "tabOrder": 13
+    "x": 10,
+    "y": 5,
+    "z": 10,
+    "height": 30,
+    "width": 460,
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "textbox",
@@ -19,10 +19,10 @@
               {
                 "textRuns": [
                   {
-                    "value": "Deep-dive   |   Store   |   Product Line   |   Product",
+                    "value": "Customer Analysis",
                     "textStyle": {
-                      "fontSize": "11pt",
-                      "color": "#555555"
+                      "fontSize": "14pt",
+                      "fontWeight": "bold"
                     }
                   }
                 ]
@@ -31,6 +31,7 @@
           }
         }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
   }
 }

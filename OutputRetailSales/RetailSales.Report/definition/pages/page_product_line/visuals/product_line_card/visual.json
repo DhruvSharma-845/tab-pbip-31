@@ -2,38 +2,65 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "product_line_card",
   "position": {
-    "x": 20,
-    "y": 60,
+    "x": 350,
+    "y": 90,
     "z": 2,
-    "height": 120,
-    "width": 280,
+    "height": 100,
+    "width": 200,
     "tabOrder": 2
   },
   "visual": {
     "visualType": "card",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 0
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
               "nativeQueryRef": "Total Sales"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Product Line Sales'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

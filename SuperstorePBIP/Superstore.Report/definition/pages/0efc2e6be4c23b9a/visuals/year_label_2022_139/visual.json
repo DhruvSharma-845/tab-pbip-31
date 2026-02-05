@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "year_label_2022_139",
   "position": {
-    "x": 0,
-    "y": 0,
+    "x": 129.26,
+    "y": 700.33,
     "z": 10,
-    "height": 40,
-    "width": 1280,
+    "height": 16,
+    "width": 40,
     "tabOrder": 0
   },
   "visual": {

@@ -3,15 +3,14 @@
   "name": "product_stores_table",
   "position": {
     "x": 20,
-    "y": 470,
-    "z": 5,
-    "height": 230,
-    "width": 1220,
-    "tabOrder": 5
+    "y": 480,
+    "z": 6,
+    "height": 250,
+    "width": 970,
+    "tabOrder": 6
   },
   "visual": {
     "visualType": "tableEx",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
@@ -38,30 +37,58 @@
                       "Entity": "Retail Sales Data"
                     }
                   },
-                  "Property": "Store Type"
+                  "Property": "City"
                 }
               },
-              "queryRef": "Retail Sales Data.Store Type",
-              "nativeQueryRef": "Store Type"
+              "queryRef": "Retail Sales Data.City",
+              "nativeQueryRef": "City"
             },
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 0
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
               "nativeQueryRef": "Total Sales"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Stores Selling This Product'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "exec_subtitle",
   "position": {
-    "x": 10,
-    "y": 35,
+    "x": 20,
+    "y": 70,
     "z": 1,
-    "height": 25,
-    "width": 300,
+    "height": 40,
+    "width": 400,
     "tabOrder": 1
   },
   "visual": {
@@ -19,10 +19,10 @@
               {
                 "textRuns": [
                   {
-                    "value": "Salesforce | Retail Sales",
+                    "value": "Executive Summary",
                     "textStyle": {
-                      "fontSize": "10pt",
-                      "color": "#666666"
+                      "fontSize": "18pt",
+                      "color": "#555555"
                     }
                   }
                 ]

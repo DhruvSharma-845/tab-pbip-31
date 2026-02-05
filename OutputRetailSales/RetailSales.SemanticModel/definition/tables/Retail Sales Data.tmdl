@@ -107,10 +107,8 @@ table 'Retail Sales Data'
 		mode: import
 		source =
 			let
-				// Data source path - update this to your local path
-				// Windows example: "C:\Users\YourName\tab-pbip-31\OutputRetailSales\RetailSalesData.csv"
-				// Mac example: "/Users/dhrsharm/tab-pbip-31/OutputRetailSales/RetailSalesData.csv"
-				FilePath = "/Users/dhrsharm/tab-pbip-31/OutputRetailSales/RetailSalesData.csv",
+				// Data source path
+				FilePath = "C:\users\pooja satija\downloads\tab-pbip-31-code-new-visuals\tab-pbip-31-code-new-visuals\OutputRetailSales\RetailSalesData.csv",
 				
 				// Load CSV data extracted from Tableau TWBX (661,076 rows)
 				Source = Csv.Document(File.Contents(FilePath), [Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),

@@ -3,31 +3,35 @@
   "name": "products_scatter",
   "position": {
     "x": 20,
-    "y": 60,
-    "z": 1,
-    "height": 350,
-    "width": 600,
-    "tabOrder": 1
+    "y": 470,
+    "z": 7,
+    "height": 250,
+    "width": 970,
+    "tabOrder": 7
   },
   "visual": {
     "visualType": "scatterChart",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "X": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 0
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
               "nativeQueryRef": "Total Sales"
             }
           ]
@@ -36,17 +40,22 @@
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Store"
                     }
                   },
-                  "Property": "Active Stores"
+                  "Function": 5
                 }
               },
-              "queryRef": "Retail Sales Data.Active Stores",
-              "nativeQueryRef": "Active Stores"
+              "queryRef": "CountNonNull(Retail Sales Data.Store)",
+              "nativeQueryRef": "Store Count"
             }
           ]
         },
@@ -81,13 +90,36 @@
                   "Property": "Product Line"
                 }
               },
-              "queryRef": "Retail Sales Data.Product Line.Legend",
+              "queryRef": "Retail Sales Data.Product Line",
               "nativeQueryRef": "Product Line"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Product Sales Impact'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

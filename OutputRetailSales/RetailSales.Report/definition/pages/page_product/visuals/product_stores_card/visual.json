@@ -2,38 +2,65 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "product_stores_card",
   "position": {
-    "x": 340,
-    "y": 60,
+    "x": 570,
+    "y": 90,
     "z": 3,
-    "height": 120,
-    "width": 300,
+    "height": 100,
+    "width": 200,
     "tabOrder": 3
   },
   "visual": {
     "visualType": "card",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Store"
                     }
                   },
-                  "Property": "Active Stores"
+                  "Function": 5
                 }
               },
-              "queryRef": "Retail Sales Data.Active Stores",
-              "nativeQueryRef": "Active Stores"
+              "queryRef": "CountNonNull(Retail Sales Data.Store)",
+              "nativeQueryRef": "Stores Selling"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Stores Selling'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

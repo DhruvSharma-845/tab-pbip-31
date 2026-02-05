@@ -3,15 +3,14 @@
   "name": "product_line_products_table",
   "position": {
     "x": 20,
-    "y": 440,
+    "y": 480,
     "z": 7,
-    "height": 260,
-    "width": 1220,
+    "height": 250,
+    "width": 970,
     "tabOrder": 7
   },
   "visual": {
     "visualType": "tableEx",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
@@ -32,36 +31,69 @@
             },
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Store"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 5
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
-              "nativeQueryRef": "Total Sales"
+              "queryRef": "CountNonNull(Retail Sales Data.Store)",
+              "nativeQueryRef": "Store Count"
             },
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
                     }
                   },
-                  "Property": "Active Stores"
+                  "Function": 0
                 }
               },
-              "queryRef": "Retail Sales Data.Active Stores",
-              "nativeQueryRef": "Active Stores"
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
+              "nativeQueryRef": "Total Sales"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Products in This Line'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

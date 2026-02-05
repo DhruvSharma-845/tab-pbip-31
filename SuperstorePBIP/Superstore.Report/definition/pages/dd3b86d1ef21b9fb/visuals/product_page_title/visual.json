@@ -3,9 +3,9 @@
   "name": "product_page_title",
   "position": {
     "x": 10,
-    "y": 0,
+    "y": 5,
     "z": 10,
-    "height": 40,
+    "height": 30,
     "width": 400,
     "tabOrder": 0
   },

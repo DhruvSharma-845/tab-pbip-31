@@ -2,38 +2,65 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "exec_active_stores_card",
   "position": {
-    "x": 240,
-    "y": 60,
-    "z": 2,
+    "x": 210,
+    "y": 170,
+    "z": 6,
     "height": 100,
-    "width": 200,
-    "tabOrder": 2
+    "width": 180,
+    "tabOrder": 6
   },
   "visual": {
     "visualType": "card",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Store"
                     }
                   },
-                  "Property": "Active Stores"
+                  "Function": 5
                 }
               },
-              "queryRef": "Retail Sales Data.Active Stores",
+              "queryRef": "CountNonNull(Retail Sales Data.Store)",
               "nativeQueryRef": "Active Stores"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Active Stores'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

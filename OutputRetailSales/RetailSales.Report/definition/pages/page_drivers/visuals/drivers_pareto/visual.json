@@ -2,19 +2,18 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "drivers_pareto",
   "position": {
-    "x": 640,
-    "y": 60,
-    "z": 2,
-    "height": 300,
-    "width": 600,
-    "tabOrder": 2
+    "x": 20,
+    "y": 470,
+    "z": 7,
+    "height": 250,
+    "width": 970,
+    "tabOrder": 7
   },
   "visual": {
-    "visualType": "lineClusteredColumnComboChart",
-    "autoSelectVisualType": true,
+    "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
@@ -24,34 +23,77 @@
                       "Entity": "Retail Sales Data"
                     }
                   },
-                  "Property": "Store Type"
+                  "Property": "Product Line"
                 }
               },
-              "queryRef": "Retail Sales Data.Store Type",
-              "nativeQueryRef": "Store Type"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
+              "queryRef": "Retail Sales Data.Product Line",
+              "nativeQueryRef": "Product Line"
+            },
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Product"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 5
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
+              "queryRef": "CountNonNull(Retail Sales Data.Product)",
+              "nativeQueryRef": "Product Count"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
               "nativeQueryRef": "Total Sales"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Product Line Analysis'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

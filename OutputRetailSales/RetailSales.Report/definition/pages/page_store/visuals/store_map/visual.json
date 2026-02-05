@@ -2,19 +2,18 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "store_map",
   "position": {
-    "x": 340,
-    "y": 60,
-    "z": 2,
+    "x": 20,
+    "y": 480,
+    "z": 7,
     "height": 250,
-    "width": 400,
-    "tabOrder": 2
+    "width": 970,
+    "tabOrder": 7
   },
   "visual": {
     "visualType": "map",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
-        "Location": {
+        "Category": {
           "projections": [
             {
               "field": {
@@ -31,9 +30,55 @@
               "nativeQueryRef": "City"
             }
           ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
+              "nativeQueryRef": "Total Sales"
+            }
+          ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Store Location'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

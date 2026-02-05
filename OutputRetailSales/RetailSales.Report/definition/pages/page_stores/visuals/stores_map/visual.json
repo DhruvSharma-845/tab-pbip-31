@@ -2,19 +2,18 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "stores_map",
   "position": {
-    "x": 20,
-    "y": 60,
-    "z": 1,
+    "x": 540,
+    "y": 100,
+    "z": 6,
     "height": 350,
-    "width": 600,
-    "tabOrder": 1
+    "width": 450,
+    "tabOrder": 6
   },
   "visual": {
     "visualType": "map",
-    "autoSelectVisualType": true,
     "query": {
       "queryState": {
-        "Location": {
+        "Category": {
           "projections": [
             {
               "field": {
@@ -36,22 +35,50 @@
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Retail Sales Data"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Retail Sales Data"
+                        }
+                      },
+                      "Property": "Sales Amount"
                     }
                   },
-                  "Property": "Total Sales"
+                  "Function": 0
                 }
               },
-              "queryRef": "Retail Sales Data.Total Sales",
+              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
               "nativeQueryRef": "Total Sales"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "autoSelectVisualType": false,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sales by State'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

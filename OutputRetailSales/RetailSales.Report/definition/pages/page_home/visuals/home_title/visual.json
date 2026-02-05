@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "home_title",
   "position": {
-    "x": 200,
-    "y": 200,
+    "x": 300,
+    "y": 150,
     "z": 0,
-    "height": 60,
-    "width": 400,
+    "height": 80,
+    "width": 600,
     "tabOrder": 0
   },
   "visual": {
@@ -19,10 +19,10 @@
               {
                 "textRuns": [
                   {
-                    "value": "Retail Sales",
+                    "value": "Retail Sales Dashboard",
                     "textStyle": {
                       "fontWeight": "bold",
-                      "fontSize": "32pt"
+                      "fontSize": "36pt"
                     }
                   }
                 ]

@@ -2141,33 +2141,21 @@ def apply_layout_overrides(
                 shutil.rmtree(label_dir)
             for label_dir in visuals_dir.glob("slicer_*"):
                 shutil.rmtree(label_dir)
-            # Create slicers based on filter labels from SVG
+            # Create slicers at top-right corner to avoid clutter
             filter_mapping = {
                 "region": ("Orders", "Region", "dropdown"),
-                "order_date": ("Orders", "Order Date", "date"),
-                "profit_ratio": ("Orders", "Profit Ratio", "dropdown"),
             }
-            slicer_x = 20  # Starting x position for slicers
-            slicer_y = 35  # Y position (below title)
-            slicer_width = 120
-            slicer_height = 50
-            slicer_gap = 10
+            slicer_x = page_width - 140  # Position at right side
+            slicer_y = 5  # Y position (at top)
+            slicer_width = 130
+            slicer_height = 30
             for filter_key, (entity, property, stype) in filter_mapping.items():
                 slicer_name = f"slicer_{filter_key}"
-                if stype == "date":
-                    slicer = make_date_slicer(
-                        slicer_name, entity, property,
-                        slicer_x, slicer_y, slicer_width + 80, slicer_height,
-                        title=property
-                    )
-                    slicer_x += slicer_width + 80 + slicer_gap
-                else:
-                    slicer = make_slicer_visual(
-                        slicer_name, entity, property,
-                        slicer_x, slicer_y, slicer_width, slicer_height,
-                        slicer_type=stype, title=property
-                    )
-                    slicer_x += slicer_width + slicer_gap
+                slicer = make_slicer_visual(
+                    slicer_name, entity, property,
+                    slicer_x, slicer_y, slicer_width, slicer_height,
+                    slicer_type=stype, title=property
+                )
                 slicer_dir = visuals_dir / slicer_name
                 slicer_dir.mkdir(parents=True, exist_ok=True)
                 (slicer_dir / "visual.json").write_text(
@@ -3054,6 +3042,18 @@ def process_report(
                 # Check if the visual's parent directory still exists
                 # (might have been deleted during slicer cleanup)
                 if visual["path"].parent.exists():
+                    # Skip writing back generated label visuals - they are created fresh
+                    name = str(visual.get("json", {}).get("name", ""))
+                    skip_patterns = (
+                        "year_label_", "seg_label_", "cat_label_", "legend_label_",
+                        "filter_label_", "filter_value_", "slicer_", "product_",
+                        "customer_slicer_", "order_slicer_", "shipping_slicer_",
+                        "commission_slicer_", "overview_page_title", "customers_section_",
+                        "order_filter_", "order_table_", "commission_label_", "commission_value_",
+                        "shipping_filter_", "shipping_title_",
+                    )
+                    if any(name.startswith(p) for p in skip_patterns):
+                        continue
                     write_json(visual["path"], visual["json"])
 
         if page_changes["visual_changes"]:
