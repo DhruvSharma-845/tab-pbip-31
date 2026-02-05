@@ -1,0 +1,75 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "stores_scatter",
+  "position": {
+    "x": 640,
+    "y": 60,
+    "z": 2,
+    "height": 350,
+    "width": 600,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "Total Sales"
+                }
+              },
+              "queryRef": "Retail Sales Data.Total Sales",
+              "nativeQueryRef": "Total Sales"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "Distinct Products Sold"
+                }
+              },
+              "queryRef": "Retail Sales Data.Distinct Products Sold",
+              "nativeQueryRef": "Distinct Products Sold"
+            }
+          ]
+        },
+        "Details": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "Store"
+                }
+              },
+              "queryRef": "Retail Sales Data.Store",
+              "nativeQueryRef": "Store"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

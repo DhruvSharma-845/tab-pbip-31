@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "store_map",
+  "position": {
+    "x": 340,
+    "y": 60,
+    "z": 2,
+    "height": 250,
+    "width": 400,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "map",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Location": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "City"
+                }
+              },
+              "queryRef": "Retail Sales Data.City",
+              "nativeQueryRef": "City"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

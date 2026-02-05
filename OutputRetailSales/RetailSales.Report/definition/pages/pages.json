@@ -1,0 +1,15 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json",
+  "pageOrder": [
+    "page_home",
+    "page_executive_summary",
+    "page_drivers",
+    "page_stores",
+    "page_store",
+    "page_products",
+    "page_product",
+    "page_product_line",
+    "page_adhoc"
+  ],
+  "activePageName": "page_home"
+}

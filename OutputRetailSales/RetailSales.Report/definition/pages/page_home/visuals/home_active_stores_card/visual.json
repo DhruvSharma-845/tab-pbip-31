@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "home_active_stores_card",
+  "position": {
+    "x": 320,
+    "y": 100,
+    "z": 2,
+    "height": 120,
+    "width": 280,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "card",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "Active Stores"
+                }
+              },
+              "queryRef": "Retail Sales Data.Active Stores",
+              "nativeQueryRef": "Active Stores"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

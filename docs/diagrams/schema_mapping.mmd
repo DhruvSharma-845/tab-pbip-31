@@ -1,0 +1,46 @@
+%%{init: {'theme': 'base'}}%%
+flowchart LR
+    subgraph TABLEAU["TABLEAU (TWB XML)"]
+        direction TB
+        T1["datasource"]
+        T2["column"]
+        T3["calculated-field"]
+        T4["relation / join"]
+        T5["worksheet"]
+        T6["dashboard"]
+        T7["filter"]
+        T8["parameter"]
+        T9["mark / encoding"]
+        T10["style / format"]
+    end
+
+    subgraph POWERBI["POWER BI (PBIP)"]
+        direction TB
+        P1["tables/*.tmdl<br/>(Table definition)"]
+        P2["tables/*.tmdl<br/>(Column)"]
+        P3["tables/*.tmdl<br/>(Measure / Calc Column)"]
+        P4["model.tmdl<br/>(Relationship)"]
+        P5["visuals/*/visual.json<br/>(Visual Container)"]
+        P6["pages/*/page.json<br/>(Report Page)"]
+        P7["visual.json filters<br/>+ Slicer visuals"]
+        P8["What-If Parameter<br/>/ Calculation Group"]
+        P9["queryState fields<br/>(Category/Y/Legend)"]
+        P10["objects / vcObjects<br/>(Visual formatting)"]
+    end
+
+    T1 -->|"1:1"| P1
+    T2 -->|"1:1"| P2
+    T3 -->|"translate"| P3
+    T4 -->|"1:1"| P4
+    T5 -->|"1:N"| P5
+    T6 -->|"1:1"| P6
+    T7 -->|"1:N"| P7
+    T8 -->|"translate"| P8
+    T9 -->|"map"| P9
+    T10 -->|"map"| P10
+
+    classDef tableau fill:#4A6FA5,stroke:#2C4A6B,color:#fff,stroke-width:2px
+    classDef powerbi fill:#F2C94C,stroke:#C9A227,stroke-width:2px
+
+    class T1,T2,T3,T4,T5,T6,T7,T8,T9,T10 tableau
+    class P1,P2,P3,P4,P5,P6,P7,P8,P9,P10 powerbi

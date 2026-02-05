@@ -1,0 +1,74 @@
+%%{init: {'theme': 'base'}}%%
+flowchart TB
+    subgraph INPUT["Generated PBIP Files"]
+        F1["visual.json"]
+        F2["page.json"]
+        F3["model.tmdl"]
+        F4["tables/*.tmdl"]
+    end
+
+    subgraph LAYER1["Layer 1: SCHEMA VALIDATION"]
+        V1["✓ JSON Schema Check"]
+        V1A["• visualContainer 2.5.0"]
+        V1B["• page 2.0.0"]
+        V1C["• report 3.1.0"]
+        V1 --> V1A
+        V1 --> V1B
+        V1 --> V1C
+    end
+
+    subgraph LAYER2["Layer 2: REFERENCE INTEGRITY"]
+        V2["✓ Field Reference Check"]
+        V2A["• Visual queries → Model fields"]
+        V2B["• Measure refs → Existing measures"]
+        V2C["• Table refs → Existing tables"]
+        V2 --> V2A
+        V2 --> V2B
+        V2 --> V2C
+    end
+
+    subgraph LAYER3["Layer 3: TYPE VALIDATION"]
+        V3["✓ Data Type Consistency"]
+        V3A["• Column types match usage"]
+        V3B["• Aggregation compatibility"]
+        V3C["• DAX expression types"]
+        V3 --> V3A
+        V3 --> V3B
+        V3 --> V3C
+    end
+
+    subgraph LAYER4["Layer 4: POSITION VALIDATION"]
+        V4["✓ Layout Constraints"]
+        V4A["• Non-negative positions"]
+        V4B["• Numeric values (not strings)"]
+        V4C["• Within page bounds"]
+        V4 --> V4A
+        V4 --> V4B
+        V4 --> V4C
+    end
+
+    subgraph LAYER5["Layer 5: ID UNIQUENESS"]
+        V5["✓ Identifier Validation"]
+        V5A["• Unique page names"]
+        V5B["• Unique visual IDs per page"]
+        V5C["• No ID collisions"]
+        V5 --> V5A
+        V5 --> V5B
+        V5 --> V5C
+    end
+
+    subgraph OUTPUT["Validated PBIP"]
+        OUT["✅ Ready for Power BI Desktop"]
+    end
+
+    INPUT --> LAYER1 --> LAYER2 --> LAYER3 --> LAYER4 --> LAYER5 --> OUTPUT
+
+    classDef input fill:#FFCDD2,stroke:#C62828,stroke-width:2px
+    classDef layer fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    classDef check fill:#C8E6C9,stroke:#388E3C,stroke-width:1px
+    classDef output fill:#A5D6A7,stroke:#2E7D32,stroke-width:2px
+
+    class F1,F2,F3,F4 input
+    class V1,V2,V3,V4,V5 layer
+    class V1A,V1B,V1C,V2A,V2B,V2C,V3A,V3B,V3C,V4A,V4B,V4C,V5A,V5B,V5C check
+    class OUT output

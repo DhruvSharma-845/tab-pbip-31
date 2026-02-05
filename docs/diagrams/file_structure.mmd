@@ -1,0 +1,65 @@
+%%{init: {'theme': 'base'}}%%
+flowchart TB
+    subgraph TWBX_STRUCTURE["📦 TWBX INPUT STRUCTURE"]
+        direction TB
+        TW1["Workbook.twbx<br/>(ZIP archive)"]
+        TW2["Workbook.twb<br/>(XML)"]
+        TW3["Data/<br/>Extract files"]
+        TW4[".hyper / .tde"]
+        TW5["Images/<br/>(optional)"]
+
+        TW1 --> TW2
+        TW1 --> TW3
+        TW3 --> TW4
+        TW1 --> TW5
+    end
+
+    subgraph PBIP_STRUCTURE["📁 PBIP OUTPUT STRUCTURE"]
+        direction TB
+        PB1["Project.pbip<br/>(JSON shortcut)"]
+
+        subgraph REPORT["Project.Report/"]
+            R1["definition.pbir"]
+            subgraph RDEF["definition/"]
+                R2["report.json"]
+                R3["version.json"]
+                subgraph PAGES["pages/"]
+                    R4["pages.json"]
+                    subgraph PAGE1["&lt;pageId&gt;/"]
+                        R5["page.json"]
+                        subgraph VIS["visuals/"]
+                            R6["&lt;visualId&gt;/<br/>visual.json"]
+                        end
+                    end
+                end
+            end
+        end
+
+        subgraph SEMANTIC["Project.SemanticModel/"]
+            S1["definition.pbism"]
+            subgraph SDEF["definition/"]
+                S2["database.tmdl"]
+                S3["model.tmdl"]
+                subgraph CULTURES["cultures/"]
+                    S4["en-US.tmdl"]
+                end
+                subgraph TABLES["tables/"]
+                    S5["Orders.tmdl"]
+                    S6["Products.tmdl"]
+                    S7["..."]
+                end
+            end
+        end
+
+        PB1 --> REPORT
+        PB1 --> SEMANTIC
+    end
+
+    TWBX_STRUCTURE ==>|"CONVERSION"| PBIP_STRUCTURE
+
+    classDef twbx fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    classDef pbip fill:#E8F5E9,stroke:#388E3C,stroke-width:2px
+    classDef folder fill:#FFF3E0,stroke:#F57C00,stroke-width:1px
+
+    class TW1,TW2,TW3,TW4,TW5 twbx
+    class PB1,R1,R2,R3,R4,R5,R6,S1,S2,S3,S4,S5,S6,S7 pbip

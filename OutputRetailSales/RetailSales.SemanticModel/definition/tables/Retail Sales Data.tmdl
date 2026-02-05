@@ -1,0 +1,116 @@
+table 'Retail Sales Data'
+	lineageTag: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+	column Date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: Date
+		lineageTag: 11111111-1111-1111-1111-111111111111
+
+	column 'Store Type'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Store Type
+		lineageTag: 22222222-2222-2222-2222-222222222222
+
+	column Product
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Product
+		lineageTag: 33333333-3333-3333-3333-333333333333
+
+	column Store
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Store
+		lineageTag: 44444444-4444-4444-4444-444444444444
+
+	column Country
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Country
+		lineageTag: 55555555-5555-5555-5555-555555555555
+
+	column 'Product Line'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Product Line
+		lineageTag: 66666666-6666-6666-6666-666666666666
+
+	column City
+		dataType: string
+		summarizeBy: none
+		sourceColumn: City
+		lineageTag: 77777777-7777-7777-7777-777777777777
+
+	column State
+		dataType: string
+		summarizeBy: none
+		sourceColumn: State
+		lineageTag: 88888888-8888-8888-8888-888888888888
+
+	column 'Store Latitude'
+		dataType: double
+		summarizeBy: none
+		sourceColumn: Store Latitude
+		lineageTag: 99999999-9999-9999-9999-999999999999
+
+	column 'Store Longitude'
+		dataType: double
+		summarizeBy: none
+		sourceColumn: Store Longitude
+		lineageTag: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+
+	column 'Sales Amount'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Sales Amount
+		lineageTag: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+
+	column Year
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Year
+		lineageTag: cccccccc-cccc-cccc-cccc-cccccccccccc
+
+	column Month
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Month
+		lineageTag: dddddddd-dddd-dddd-dddd-dddddddddddd
+
+	measure 'Total Sales' = SUM('Retail Sales Data'[Sales Amount])
+		formatString: "$#,0"
+
+	measure 'Active Stores' = DISTINCTCOUNT('Retail Sales Data'[Store])
+		formatString: "#,0"
+
+	measure 'Distinct Products Sold' = DISTINCTCOUNT('Retail Sales Data'[Product])
+		formatString: "#,0"
+
+	measure 'Sales per Store' = DIVIDE(SUM('Retail Sales Data'[Sales Amount]), DISTINCTCOUNT('Retail Sales Data'[Store]))
+		formatString: "$#,0"
+
+	measure 'Total Sales YTD' = TOTALYTD(SUM('Retail Sales Data'[Sales Amount]), 'Retail Sales Data'[Date])
+		formatString: "$#,0"
+
+	measure 'Total Sales PY' = CALCULATE(SUM('Retail Sales Data'[Sales Amount]), SAMEPERIODLASTYEAR('Retail Sales Data'[Date]))
+		formatString: "$#,0"
+
+	measure 'Sales Growth %' = DIVIDE([Total Sales] - [Total Sales PY], [Total Sales PY])
+		formatString: "0.0%"
+
+	measure 'Number of Product Lines' = DISTINCTCOUNT('Retail Sales Data'[Product Line])
+		formatString: "#,0"
+
+	partition FullData = m
+		mode: import
+		source =
+			let
+				Source = Hyper.Contents("Data/Retail Sales Data.hyper"),
+				Extract = Source{[Schema="Extract",Item="Extract"]}[Data]
+			in
+				Extract
+
+	annotation PBI_ResultType = Table
+

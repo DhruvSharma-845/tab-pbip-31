@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "store_slicer",
+  "position": {
+    "x": 760,
+    "y": 60,
+    "z": 3,
+    "height": 300,
+    "width": 280,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "slicer",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "Store"
+                }
+              },
+              "queryRef": "Retail Sales Data.Store",
+              "nativeQueryRef": "Store"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

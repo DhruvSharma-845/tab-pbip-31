@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "adhoc_store_type_slicer",
+  "position": {
+    "x": 1000,
+    "y": 230,
+    "z": 2,
+    "height": 150,
+    "width": 250,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "slicer",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "Store Type"
+                }
+              },
+              "queryRef": "Retail Sales Data.Store Type",
+              "nativeQueryRef": "Store Type"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

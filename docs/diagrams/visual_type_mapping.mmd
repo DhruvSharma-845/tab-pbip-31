@@ -1,0 +1,72 @@
+%%{init: {'theme': 'base'}}%%
+flowchart LR
+    subgraph TABLEAU_MARKS["TABLEAU MARK TYPES"]
+        direction TB
+        M1["bar"]
+        M2["line"]
+        M3["area"]
+        M4["circle"]
+        M5["square"]
+        M6["text"]
+        M7["pie"]
+        M8["map"]
+        M9["gantt"]
+        M10["shape"]
+    end
+
+    subgraph DECISION["DECISION LOGIC"]
+        direction TB
+        D1{"Axis<br/>Orientation?"}
+        D2{"Multiple<br/>Dimensions?"}
+        D3{"Filled<br/>Regions?"}
+        D4{"Conditional<br/>Formatting?"}
+        D5{"Size/Color<br/>Encoding?"}
+    end
+
+    subgraph POWERBI_VISUALS["POWER BI VISUAL TYPES"]
+        direction TB
+        V1["clusteredBarChart"]
+        V2["clusteredColumnChart"]
+        V3["lineChart"]
+        V4["areaChart"]
+        V5["scatterChart"]
+        V6["table"]
+        V7["matrix"]
+        V8["pieChart"]
+        V9["map"]
+        V10["filledMap"]
+        V11["comboChart"]
+        V12["card"]
+        V13["treemap"]
+    end
+
+    M1 --> D1
+    D1 -->|"horizontal"| V1
+    D1 -->|"vertical"| V2
+
+    M2 --> V3
+    M3 --> V4
+
+    M4 --> D5
+    D5 -->|"yes"| V5
+
+    M5 --> D4
+    D4 -->|"yes"| V7
+
+    M6 --> D2
+    D2 -->|"single"| V6
+    D2 -->|"multiple"| V7
+
+    M7 --> V8
+
+    M8 --> D3
+    D3 -->|"points"| V9
+    D3 -->|"filled"| V10
+
+    classDef tableau fill:#4A6FA5,stroke:#2C4A6B,color:#fff,stroke-width:2px
+    classDef decision fill:#FFF9C4,stroke:#F9A825,stroke-width:2px
+    classDef powerbi fill:#F2C94C,stroke:#C9A227,stroke-width:2px
+
+    class M1,M2,M3,M4,M5,M6,M7,M8,M9,M10 tableau
+    class D1,D2,D3,D4,D5 decision
+    class V1,V2,V3,V4,V5,V6,V7,V8,V9,V10,V11,V12,V13 powerbi

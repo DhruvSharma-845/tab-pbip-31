@@ -1,0 +1,69 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4A90A4', 'secondaryColor': '#F5A623', 'tertiaryColor': '#7ED321'}}}%%
+flowchart TB
+    subgraph INPUT["📥 INPUT LAYER"]
+        TWBX["📦 TWBX Package<br/>.twbx / .twb"]
+        IMAGES["🖼️ Dashboard Snapshots<br/>PNG / SVG"]
+        TEMPLATE["📋 Sample PBIP Template<br/>samplepbipfolder"]
+    end
+
+    subgraph EXTRACTION["🔍 EXTRACTION LAYER"]
+        XML_PARSER["🔧 TWB XML Parser<br/>• Datasources<br/>• Calculations<br/>• Worksheets<br/>• Relationships"]
+        VISION["👁️ Vision Model<br/>• Chart detection<br/>• Layout analysis<br/>• Color extraction<br/>• Label parsing"]
+        LOADER["📂 Template Loader<br/>• Schema refs<br/>• Visual templates<br/>• TMDL patterns"]
+    end
+
+    subgraph TRANSFORM["⚙️ TRANSFORMATION LAYER"]
+        subgraph SEMANTIC["Semantic Model Generator"]
+            SM1["Datasource → TMDL Tables"]
+            SM2["Calculations → DAX"]
+            SM3["Relationships → Model"]
+            SM4["Parameters → Calc Groups"]
+        end
+        subgraph REPORT["Report Generator"]
+            RG1["Dashboards → Pages"]
+            RG2["Worksheets → Visuals"]
+            RG3["Filters → Slicers"]
+            RG4["Actions → Drill-through"]
+        end
+    end
+
+    subgraph OUTPUT["📤 OUTPUT LAYER"]
+        PBIP["📄 Project.pbip"]
+        subgraph REPORT_OUT["Project.Report/"]
+            PBIR["definition.pbir"]
+            REPORT_JSON["report.json"]
+            PAGES["pages/*.json"]
+            VISUALS["visuals/*.json"]
+        end
+        subgraph MODEL_OUT["Project.SemanticModel/"]
+            PBISM["definition.pbism"]
+            DATABASE["database.tmdl"]
+            MODEL["model.tmdl"]
+            TABLES["tables/*.tmdl"]
+        end
+    end
+
+    TWBX --> XML_PARSER
+    IMAGES --> VISION
+    TEMPLATE --> LOADER
+
+    XML_PARSER --> SEMANTIC
+    XML_PARSER --> REPORT
+    VISION --> REPORT
+    LOADER --> SEMANTIC
+    LOADER --> REPORT
+
+    SEMANTIC --> MODEL_OUT
+    REPORT --> REPORT_OUT
+    REPORT_OUT --> PBIP
+    MODEL_OUT --> PBIP
+
+    classDef inputClass fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    classDef extractClass fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+    classDef transformClass fill:#E8F5E9,stroke:#388E3C,stroke-width:2px
+    classDef outputClass fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+
+    class TWBX,IMAGES,TEMPLATE inputClass
+    class XML_PARSER,VISION,LOADER extractClass
+    class SM1,SM2,SM3,SM4,RG1,RG2,RG3,RG4 transformClass
+    class PBIP,PBIR,REPORT_JSON,PAGES,VISUALS,PBISM,DATABASE,MODEL,TABLES outputClass

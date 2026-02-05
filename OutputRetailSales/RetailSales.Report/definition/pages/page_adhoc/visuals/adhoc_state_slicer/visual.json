@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "adhoc_state_slicer",
+  "position": {
+    "x": 1000,
+    "y": 400,
+    "z": 3,
+    "height": 200,
+    "width": 250,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "slicer",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "State"
+                }
+              },
+              "queryRef": "Retail Sales Data.State",
+              "nativeQueryRef": "State"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
