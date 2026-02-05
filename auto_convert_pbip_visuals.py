@@ -1189,9 +1189,7 @@ def apply_layout_overrides(
             v
             for v in visuals
             if v["visual_type"] == "textbox"
-            and not str(v.get("json", {}).get("name", "")).startswith(
-                ("seg_label_", "year_label_", "seg_title", "cat_title")
-            )
+            and str(v.get("json", {}).get("name", "")) == "5c90e8b318980f413a25"
         ]
         cards = [v for v in visuals if v["recommended_type"] == "card"]
         maps = [
