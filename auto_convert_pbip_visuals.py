@@ -89,14 +89,14 @@ def apply_mat(m: List[List[float]], x: float, y: float) -> Tuple[float, float]:
     )
 
 
-def parse_overview_svg(svg_path: Path) -> Optional[dict]:
+def parse_svg_elements(svg_path: Path) -> Optional[dict]:
     if not svg_path.exists():
         return None
     tree = ET.parse(svg_path)
     root = tree.getroot()
 
-    rects = []
-    texts = []
+    rects: List[dict] = []
+    texts: List[dict] = []
 
     def walk(node, current_mat):
         transform = node.attrib.get("transform")
@@ -119,46 +119,66 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
                 }
             )
         if tag == "text" and node.text:
-            x = float(node.attrib.get("x", "0"))
-            y = float(node.attrib.get("y", "0"))
-            (x1, y1) = apply_mat(current_mat, x, y)
-            texts.append({"text": node.text.strip(), "x": x1, "y": y1})
+            value = node.text.strip()
+            if value:
+                x = float(node.attrib.get("x", "0"))
+                y = float(node.attrib.get("y", "0"))
+                (x1, y1) = apply_mat(current_mat, x, y)
+                texts.append({"text": value, "x": x1, "y": y1})
         for child in list(node):
             walk(child, current_mat)
 
     walk(root, [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    max_x = max((r["x"] + r["w"]) for r in rects) if rects else 1500
+    max_y = max((r["y"] + r["h"]) for r in rects) if rects else 900
+    return {"rects": rects, "texts": texts, "svg_width": max_x, "svg_height": max_y}
 
-    def find_label(text_key: str) -> Optional[dict]:
-        for item in texts:
-            if text_key in item["text"]:
-                return item
+
+def find_label(texts: List[dict], text_key: str) -> Optional[dict]:
+    for item in texts:
+        if text_key in item["text"]:
+            return item
+    return None
+
+
+def pick_rect_near(
+    rects: List[dict],
+    label: Optional[dict],
+    min_w: float = 300,
+    min_h: float = 200,
+) -> Optional[dict]:
+    if not label:
         return None
+    candidates = [
+        r
+        for r in rects
+        if r["w"] >= min_w and r["h"] >= min_h and r["y"] >= label["y"]
+    ]
+    if not candidates:
+        return None
+    candidates.sort(
+        key=lambda r: (abs(r["y"] - label["y"]), abs(r["x"] - label["x"]))
+    )
+    return candidates[0]
 
-    def pick_rect_near(label: dict) -> Optional[dict]:
-        candidates = [
-            r
-            for r in rects
-            if r["w"] > 300 and r["h"] > 200 and r["y"] > label["y"]
-        ]
-        if not candidates:
-            return None
-        candidates.sort(
-            key=lambda r: (abs(r["y"] - label["y"]), abs(r["x"] - label["x"]))
-        )
-        return candidates[0]
 
-    segment_label = find_label("Monthly Sales by Segment")
-    category_label = find_label("Monthly Sales by Product Category")
+def parse_overview_svg(svg_path: Path) -> Optional[dict]:
+    svg_data = parse_svg_elements(svg_path)
+    if not svg_data:
+        return None
+    rects = svg_data["rects"]
+    texts = svg_data["texts"]
+
+    segment_label = find_label(texts, "Monthly Sales by Segment")
+    category_label = find_label(texts, "Monthly Sales by Product Category")
     if not segment_label or not category_label:
         return None
 
-    segment_rect = pick_rect_near(segment_label)
-    category_rect = pick_rect_near(category_label)
+    segment_rect = pick_rect_near(rects, segment_label, min_w=300, min_h=200)
+    category_rect = pick_rect_near(rects, category_label, min_w=300, min_h=200)
     if not segment_rect or not category_rect:
         return None
 
-    max_x = max(r["x"] + r["w"] for r in rects) if rects else 1500
-    max_y = max(r["y"] + r["h"] for r in rects) if rects else 900
     segment_names = []
     for item in texts:
         if item["text"] in {"Consumer", "Corporate", "Home Office"}:
@@ -188,8 +208,8 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
     return {
         "segment_rect": segment_rect,
         "category_rect": category_rect,
-        "svg_width": max_x,
-        "svg_height": max_y,
+        "svg_width": svg_data["svg_width"],
+        "svg_height": svg_data["svg_height"],
         "segment_labels": segment_names,
         "category_labels": category_names,
         "legend_labels": legend_names,
@@ -301,6 +321,153 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
         "filter_labels": filter_labels,
         "filter_values": filter_values,
         "scatter_subtitle": scatter_subtitle,
+    }
+
+
+def parse_customers_svg(svg_path: Path) -> Optional[dict]:
+    svg_data = parse_svg_elements(svg_path)
+    if not svg_data:
+        return None
+    rects = svg_data["rects"]
+    texts = svg_data["texts"]
+
+    page_title = find_label(texts, "Customer Analysis")
+    summary_label = find_label(texts, "Count of Customers")
+    scatter_label = find_label(texts, "Sales and Profit by Customer")
+    ranking_label = find_label(texts, "Customer Ranking")
+
+    summary_rect = pick_rect_near(rects, summary_label, min_w=800, min_h=60)
+    scatter_rect = pick_rect_near(rects, scatter_label, min_w=400, min_h=250)
+    ranking_rect = pick_rect_near(rects, ranking_label, min_w=400, min_h=250)
+
+    return {
+        "svg_width": svg_data["svg_width"],
+        "svg_height": svg_data["svg_height"],
+        "page_title": page_title,
+        "summary_label": summary_label,
+        "scatter_label": scatter_label,
+        "ranking_label": ranking_label,
+        "summary_rect": summary_rect,
+        "scatter_rect": scatter_rect,
+        "ranking_rect": ranking_rect,
+    }
+
+
+def parse_order_details_svg(svg_path: Path) -> Optional[dict]:
+    svg_data = parse_svg_elements(svg_path)
+    if not svg_data:
+        return None
+    rects = svg_data["rects"]
+    texts = svg_data["texts"]
+
+    page_title = find_label(texts, "Order Details")
+    table_label = find_label(texts, "Product Detail Sheet")
+    table_rect = pick_rect_near(rects, table_label, min_w=900, min_h=400)
+
+    filter_labels = []
+    for item in texts:
+        if item["text"] in {
+            "Order Date",
+            "Region",
+            "State/Province",
+            "City",
+            "Category",
+            "Segment",
+        }:
+            filter_labels.append(item)
+    filter_values = []
+    for item in texts:
+        if "to" in item["text"] or item["text"] == "All":
+            if len(item["text"]) <= 30:
+                filter_values.append(item)
+
+    return {
+        "svg_width": svg_data["svg_width"],
+        "svg_height": svg_data["svg_height"],
+        "page_title": page_title,
+        "table_label": table_label,
+        "table_rect": table_rect,
+        "filter_labels": filter_labels,
+        "filter_values": filter_values,
+    }
+
+
+def parse_commission_svg(svg_path: Path) -> Optional[dict]:
+    svg_data = parse_svg_elements(svg_path)
+    if not svg_data:
+        return None
+    rects = svg_data["rects"]
+    texts = svg_data["texts"]
+
+    page_title = find_label(texts, "Sales Commission Model")
+    left_table_label = find_label(
+        texts, "Estimated Quota Attainment Results with These Assumptions"
+    )
+    right_table_label = find_label(
+        texts, "Total Compensation with These Assumptions"
+    )
+    left_table_rect = pick_rect_near(rects, left_table_label, min_w=500, min_h=200)
+    right_table_rect = pick_rect_near(rects, right_table_label, min_w=500, min_h=200)
+
+    top_labels = []
+    for item in texts:
+        if item["text"] in {"New quota", "Base salary", "Sort by", "Commission rate"}:
+            top_labels.append(item)
+    top_values = []
+    for item in texts:
+        if item["text"] in {"$500K", "$50,000", "Names", "18.4%"}:
+            top_values.append(item)
+
+    return {
+        "svg_width": svg_data["svg_width"],
+        "svg_height": svg_data["svg_height"],
+        "page_title": page_title,
+        "left_table_label": left_table_label,
+        "right_table_label": right_table_label,
+        "left_table_rect": left_table_rect,
+        "right_table_rect": right_table_rect,
+        "top_labels": top_labels,
+        "top_values": top_values,
+    }
+
+
+def parse_shipping_svg(svg_path: Path) -> Optional[dict]:
+    svg_data = parse_svg_elements(svg_path)
+    if not svg_data:
+        return None
+    rects = svg_data["rects"]
+    texts = svg_data["texts"]
+
+    page_title = find_label(texts, "On-Time Shipment Trends")
+    top_chart_label = find_label(texts, "On-Time Shipment Trends")
+    mid_chart_label = find_label(texts, "Week of Order Date")
+    bottom_table_label = find_label(texts, "Days to Ship by Product")
+
+    top_chart_rect = pick_rect_near(rects, top_chart_label, min_w=700, min_h=150)
+    mid_chart_rect = pick_rect_near(rects, mid_chart_label, min_w=700, min_h=120)
+    bottom_table_rect = pick_rect_near(rects, bottom_table_label, min_w=700, min_h=200)
+
+    filter_labels = []
+    for item in texts:
+        if item["text"] in {"Order Year", "Order Quarter", "Region", "Ship Mode"}:
+            filter_labels.append(item)
+    filter_values = []
+    for item in texts:
+        if item["text"] in {"All", "Q1", "Q2", "Q3", "Q4", "2022", "2023", "2024", "2025"}:
+            filter_values.append(item)
+
+    return {
+        "svg_width": svg_data["svg_width"],
+        "svg_height": svg_data["svg_height"],
+        "page_title": page_title,
+        "top_chart_label": top_chart_label,
+        "mid_chart_label": mid_chart_label,
+        "bottom_table_label": bottom_table_label,
+        "top_chart_rect": top_chart_rect,
+        "mid_chart_rect": mid_chart_rect,
+        "bottom_table_rect": bottom_table_rect,
+        "filter_labels": filter_labels,
+        "filter_values": filter_values,
     }
 
 
@@ -884,6 +1051,23 @@ def ensure_product_heatmap_query(visual: dict, entity: str):
     )
     query["queryState"] = query_state
     visual["query"] = query
+
+
+def get_slicer_property(visual: dict) -> Optional[str]:
+    try:
+        projections = (
+            visual.get("query", {})
+            .get("queryState", {})
+            .get("Values", {})
+            .get("projections", [])
+        )
+        if not projections:
+            return None
+        field = projections[0].get("field", {})
+        column = field.get("Column", {})
+        return column.get("Property")
+    except AttributeError:
+        return None
 
 def split_segment_visuals(
     visuals_dir: Path,
@@ -1728,44 +1912,328 @@ def apply_layout_overrides(
         return
 
     if profile == "customers":
-        for visual in visuals:
-            title = visual.get("title", "").lower()
-            if "overview" in title:
-                visual["position"]["y"] = 40
-                visual["position"]["height"] = 120
-            if "scatter" in title:
-                visual["position"]["x"] = 20
-                visual["position"]["y"] = 200
-                visual["position"]["width"] = 600
-                visual["position"]["height"] = max(page_height - 220, 400)
-            if "rank" in title:
-                visual["position"]["x"] = 640
-                visual["position"]["y"] = 200
-                visual["position"]["width"] = 620
-                visual["position"]["height"] = max(page_height - 220, 400)
+        if svg_layout:
+            scale_x = page_width / svg_layout["svg_width"]
+            scale_y = page_height / svg_layout["svg_height"]
+            summary_rect = svg_layout.get("summary_rect")
+            scatter_rect = svg_layout.get("scatter_rect")
+            ranking_rect = svg_layout.get("ranking_rect")
+
+            for label_dir in visuals_dir.glob("customers_section_*"):
+                shutil.rmtree(label_dir)
+
+            for visual in visuals:
+                if visual["visual_type"] == "textbox":
+                    if svg_layout.get("page_title"):
+                        item = svg_layout["page_title"]
+                        visual["position"]["x"] = round(item["x"] * scale_x, 2)
+                        visual["position"]["y"] = round(item["y"] * scale_y - 22, 2)
+                        visual["position"]["width"] = 600
+                        visual["position"]["height"] = 30
+                    continue
+                if visual["visual_type"] == "matrix" and summary_rect:
+                    visual["position"]["x"] = round(summary_rect["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(summary_rect["y"] * scale_y, 2)
+                    visual["position"]["width"] = round(summary_rect["w"] * scale_x, 2)
+                    visual["position"]["height"] = round(summary_rect["h"] * scale_y, 2)
+                if visual["visual_type"] == "scatterChart" and scatter_rect:
+                    visual["position"]["x"] = round(scatter_rect["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(scatter_rect["y"] * scale_y, 2)
+                    visual["position"]["width"] = round(scatter_rect["w"] * scale_x, 2)
+                    visual["position"]["height"] = round(scatter_rect["h"] * scale_y, 2)
+                if visual["visual_type"] == "barChart" and ranking_rect:
+                    visual["position"]["x"] = round(ranking_rect["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(ranking_rect["y"] * scale_y, 2)
+                    visual["position"]["width"] = round(ranking_rect["w"] * scale_x, 2)
+                    visual["position"]["height"] = round(ranking_rect["h"] * scale_y, 2)
+
+            for key in ["scatter_label", "ranking_label"]:
+                item = svg_layout.get(key)
+                if not item:
+                    continue
+                label_name = f"customers_section_{key}"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 18, 420, 20
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+        else:
+            for visual in visuals:
+                title = visual.get("title", "").lower()
+                if "overview" in title:
+                    visual["position"]["y"] = 40
+                    visual["position"]["height"] = 120
+                if "scatter" in title:
+                    visual["position"]["x"] = 20
+                    visual["position"]["y"] = 200
+                    visual["position"]["width"] = 600
+                    visual["position"]["height"] = max(page_height - 220, 400)
+                if "rank" in title:
+                    visual["position"]["x"] = 640
+                    visual["position"]["y"] = 200
+                    visual["position"]["width"] = 620
+                    visual["position"]["height"] = max(page_height - 220, 400)
         return
 
     if profile == "order_details":
         slicers = [v for v in visuals if v["visual_type"] == "slicer"]
         tables = [v for v in visuals if v["visual_type"] in {"tableEx", "matrix"}]
-        for visual in visuals:
-            if visual["visual_type"] == "textbox":
-                visual["position"]["y"] = 0
-                visual["position"]["height"] = 40
-        if slicers:
-            slicers.sort(key=lambda v: v["position"]["x"])
-            x_positions = [20, 240, 460, 680, 900, 1120]
-            for idx, visual in enumerate(slicers):
-                visual["position"]["y"] = 40
-                visual["position"]["height"] = 40
-                visual["position"]["width"] = 180
-                visual["position"]["x"] = x_positions[idx % len(x_positions)]
-        for visual in tables:
-            visual["position"]["x"] = 20
-            visual["position"]["y"] = 90
-            visual["position"]["width"] = 1240
-            visual["position"]["height"] = max(page_height - 110, 520)
-            visual["visual"]["autoSelectVisualType"] = False
+        if svg_layout:
+            scale_x = page_width / svg_layout["svg_width"]
+            scale_y = page_height / svg_layout["svg_height"]
+            table_rect = svg_layout.get("table_rect")
+
+            for label_dir in visuals_dir.glob("order_filter_*"):
+                shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("order_table_title"):
+                shutil.rmtree(label_dir)
+
+            for visual in visuals:
+                if visual["visual_type"] == "textbox":
+                    if svg_layout.get("page_title"):
+                        item = svg_layout["page_title"]
+                        visual["position"]["x"] = round(item["x"] * scale_x, 2)
+                        visual["position"]["y"] = round(item["y"] * scale_y - 22, 2)
+                        visual["position"]["width"] = 600
+                        visual["position"]["height"] = 30
+                    continue
+                if visual["visual_type"] in {"tableEx", "matrix"} and table_rect:
+                    visual["position"]["x"] = round(table_rect["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(table_rect["y"] * scale_y, 2)
+                    visual["position"]["width"] = round(table_rect["w"] * scale_x, 2)
+                    visual["position"]["height"] = round(table_rect["h"] * scale_y, 2)
+                    visual["visual"]["autoSelectVisualType"] = False
+
+            label_by_name = {item["text"]: item for item in svg_layout.get("filter_labels", [])}
+            for visual in slicers:
+                prop = get_slicer_property(visual["visual"])
+                if not prop:
+                    continue
+                label = label_by_name.get(prop)
+                if label:
+                    visual["position"]["x"] = round(label["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(label["y"] * scale_y + 6, 2)
+                    visual["position"]["width"] = 160
+                    visual["position"]["height"] = 36
+
+            for item in svg_layout.get("filter_labels", []):
+                label_name = f"order_filter_label_{item['text'].lower().replace(' ', '_')}"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 160, 16
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+            for item in svg_layout.get("filter_values", []):
+                label_name = f"order_filter_value_{item['text'].lower().replace(' ', '_')}_{int(item['x'])}"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 220, 16
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+            if svg_layout.get("table_label"):
+                item = svg_layout["table_label"]
+                label_name = "order_table_title"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 18, 360, 18
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+        else:
+            for visual in visuals:
+                if visual["visual_type"] == "textbox":
+                    visual["position"]["y"] = 0
+                    visual["position"]["height"] = 40
+            if slicers:
+                slicers.sort(key=lambda v: v["position"]["x"])
+                x_positions = [20, 240, 460, 680, 900, 1120]
+                for idx, visual in enumerate(slicers):
+                    visual["position"]["y"] = 40
+                    visual["position"]["height"] = 40
+                    visual["position"]["width"] = 180
+                    visual["position"]["x"] = x_positions[idx % len(x_positions)]
+            for visual in tables:
+                visual["position"]["x"] = 20
+                visual["position"]["y"] = 90
+                visual["position"]["width"] = 1240
+                visual["position"]["height"] = max(page_height - 110, 520)
+                visual["visual"]["autoSelectVisualType"] = False
+        return
+
+    if profile == "commission":
+        if svg_layout:
+            scale_x = page_width / svg_layout["svg_width"]
+            scale_y = page_height / svg_layout["svg_height"]
+            left_table_rect = svg_layout.get("left_table_rect")
+            right_table_rect = svg_layout.get("right_table_rect")
+
+            for label_dir in visuals_dir.glob("commission_*"):
+                shutil.rmtree(label_dir)
+
+            cards = [v for v in visuals if v["visual_type"] == "card"]
+            tables = [v for v in visuals if v["visual_type"] == "tableEx"]
+
+            for visual in visuals:
+                if visual["visual_type"] == "textbox":
+                    if svg_layout.get("page_title"):
+                        item = svg_layout["page_title"]
+                        visual["position"]["x"] = round(item["x"] * scale_x, 2)
+                        visual["position"]["y"] = round(item["y"] * scale_y - 22, 2)
+                        visual["position"]["width"] = 520
+                        visual["position"]["height"] = 30
+                    continue
+
+            if left_table_rect and tables:
+                tables[0]["position"]["x"] = round(left_table_rect["x"] * scale_x, 2)
+                tables[0]["position"]["y"] = round(left_table_rect["y"] * scale_y, 2)
+                tables[0]["position"]["width"] = round(left_table_rect["w"] * scale_x, 2)
+                tables[0]["position"]["height"] = round(left_table_rect["h"] * scale_y, 2)
+            if right_table_rect and len(tables) > 1:
+                tables[1]["position"]["x"] = round(right_table_rect["x"] * scale_x, 2)
+                tables[1]["position"]["y"] = round(right_table_rect["y"] * scale_y, 2)
+                tables[1]["position"]["width"] = round(right_table_rect["w"] * scale_x, 2)
+                tables[1]["position"]["height"] = round(right_table_rect["h"] * scale_y, 2)
+
+            if svg_layout.get("top_labels") and cards:
+                cards.sort(key=lambda v: v["position"]["x"])
+                for idx, visual in enumerate(cards):
+                    if idx >= len(svg_layout["top_labels"]):
+                        break
+                    label = svg_layout["top_labels"][idx]
+                    visual["position"]["x"] = round(label["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(label["y"] * scale_y + 6, 2)
+                    visual["position"]["width"] = 260
+                    visual["position"]["height"] = 46
+
+            for item in svg_layout.get("top_labels", []):
+                label_name = f"commission_label_{item['text'].lower().replace(' ', '_')}"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 180, 16
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+            for item in svg_layout.get("top_values", []):
+                label_name = f"commission_value_{item['text'].lower().replace(' ', '_')}"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 120, 16
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+            for key in ["left_table_label", "right_table_label"]:
+                item = svg_layout.get(key)
+                if not item:
+                    continue
+                label_name = f"commission_{key}"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 18, 520, 18
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+        return
+
+    if profile == "shipping":
+        if svg_layout:
+            scale_x = page_width / svg_layout["svg_width"]
+            scale_y = page_height / svg_layout["svg_height"]
+            top_rect = svg_layout.get("top_chart_rect")
+            mid_rect = svg_layout.get("mid_chart_rect")
+            bottom_rect = svg_layout.get("bottom_table_rect")
+
+            for label_dir in visuals_dir.glob("shipping_*"):
+                shutil.rmtree(label_dir)
+
+            for visual in visuals:
+                if visual["visual_type"] == "textbox":
+                    if svg_layout.get("page_title"):
+                        item = svg_layout["page_title"]
+                        visual["position"]["x"] = round(item["x"] * scale_x, 2)
+                        visual["position"]["y"] = round(item["y"] * scale_y - 22, 2)
+                        visual["position"]["width"] = 600
+                        visual["position"]["height"] = 30
+                    continue
+                if visual["visual_type"] == "stackedAreaChart" and top_rect:
+                    visual["position"]["x"] = round(top_rect["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(top_rect["y"] * scale_y, 2)
+                    visual["position"]["width"] = round(top_rect["w"] * scale_x, 2)
+                    visual["position"]["height"] = round(top_rect["h"] * scale_y, 2)
+                if visual["visual_type"] == "lineChart" and mid_rect:
+                    visual["position"]["x"] = round(mid_rect["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(mid_rect["y"] * scale_y, 2)
+                    visual["position"]["width"] = round(mid_rect["w"] * scale_x, 2)
+                    visual["position"]["height"] = round(mid_rect["h"] * scale_y, 2)
+                if visual["visual_type"] == "tableEx" and bottom_rect:
+                    visual["position"]["x"] = round(bottom_rect["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(bottom_rect["y"] * scale_y, 2)
+                    visual["position"]["width"] = round(bottom_rect["w"] * scale_x, 2)
+                    visual["position"]["height"] = round(bottom_rect["h"] * scale_y, 2)
+
+            label_by_name = {item["text"]: item for item in svg_layout.get("filter_labels", [])}
+            for visual in visuals:
+                if visual["visual_type"] != "slicer":
+                    continue
+                prop = get_slicer_property(visual["visual"])
+                if not prop:
+                    continue
+                label = label_by_name.get(prop)
+                if label:
+                    visual["position"]["x"] = round(label["x"] * scale_x, 2)
+                    visual["position"]["y"] = round(label["y"] * scale_y + 6, 2)
+                    visual["position"]["width"] = 160
+                    visual["position"]["height"] = 36
+
+            for item in svg_layout.get("filter_labels", []):
+                label_name = f"shipping_filter_label_{item['text'].lower().replace(' ', '_')}"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 160, 16
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+            for item in svg_layout.get("filter_values", []):
+                label_name = f"shipping_filter_value_{item['text'].lower()}_{int(item['x'])}"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 60, 16
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
+            for key in ["mid_chart_label", "bottom_table_label"]:
+                item = svg_layout.get(key)
+                if not item:
+                    continue
+                label_name = f"shipping_title_{key}"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 18, 520, 18
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
         return
 
 
@@ -1775,6 +2243,10 @@ def process_report(
     dry_run: bool,
     overview_svg_path: Optional[Path],
     product_svg_path: Optional[Path],
+    customers_svg_path: Optional[Path],
+    order_details_svg_path: Optional[Path],
+    commission_svg_path: Optional[Path],
+    shipping_svg_path: Optional[Path],
 ) -> Dict:
     pages_path = report_dir / "definition" / "pages" / "pages.json"
     pages_meta = load_json(pages_path)
@@ -1939,13 +2411,26 @@ def process_report(
             svg_layout = parse_overview_svg(overview_svg_path)
         if profile == "product" and product_svg_path:
             svg_layout = parse_product_svg(product_svg_path)
-        if profile == "product" and product_svg_path:
-            svg_layout = parse_product_svg(product_svg_path)
+        if profile == "customers" and customers_svg_path:
+            svg_layout = parse_customers_svg(customers_svg_path)
+        if profile == "order_details" and order_details_svg_path:
+            svg_layout = parse_order_details_svg(order_details_svg_path)
+        if profile == "commission" and commission_svg_path:
+            svg_layout = parse_commission_svg(commission_svg_path)
+        if profile == "shipping" and shipping_svg_path:
+            svg_layout = parse_shipping_svg(shipping_svg_path)
         if profile:
             apply_layout_overrides(
                 profile, visuals, page_height, svg_layout, page_width, visuals_dir
             )
-            if profile in {"overview", "product", "order_details"}:
+            if profile in {
+                "overview",
+                "product",
+                "order_details",
+                "customers",
+                "commission",
+                "shipping",
+            }:
                 for visual in visuals:
                     if visual["visual_type"] in {"textbox", "slicer", "card"}:
                         continue
@@ -1999,6 +2484,26 @@ def main():
         help="Product SVG exported from Tableau.",
     )
     parser.add_argument(
+        "--customers-svg",
+        default="tableau snapshots/CustomersSVG.svg",
+        help="Customers SVG exported from Tableau.",
+    )
+    parser.add_argument(
+        "--order-details-svg",
+        default="tableau snapshots/Order DetailsSVG.svg",
+        help="Order Details SVG exported from Tableau.",
+    )
+    parser.add_argument(
+        "--commission-svg",
+        default="tableau snapshots/Commission Modelsvg.svg",
+        help="Commission Model SVG exported from Tableau.",
+    )
+    parser.add_argument(
+        "--shipping-svg",
+        default="tableau snapshots/ShippingSVG.svg",
+        help="Shipping SVG exported from Tableau.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Do not modify visual.json files.",
@@ -2010,8 +2515,22 @@ def main():
 
     overview_svg_path = Path(args.overview_svg) if args.overview_svg else None
     product_svg_path = Path(args.product_svg) if args.product_svg else None
+    customers_svg_path = Path(args.customers_svg) if args.customers_svg else None
+    order_details_svg_path = (
+        Path(args.order_details_svg) if args.order_details_svg else None
+    )
+    commission_svg_path = Path(args.commission_svg) if args.commission_svg else None
+    shipping_svg_path = Path(args.shipping_svg) if args.shipping_svg else None
     report = process_report(
-        report_dir, snapshots_dir, args.dry_run, overview_svg_path, product_svg_path
+        report_dir,
+        snapshots_dir,
+        args.dry_run,
+        overview_svg_path,
+        product_svg_path,
+        customers_svg_path,
+        order_details_svg_path,
+        commission_svg_path,
+        shipping_svg_path,
     )
     out_path = Path(args.out_report)
     out_path.parent.mkdir(parents=True, exist_ok=True)

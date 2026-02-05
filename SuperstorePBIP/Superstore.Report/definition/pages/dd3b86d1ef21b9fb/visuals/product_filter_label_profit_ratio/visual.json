@@ -3,9 +3,9 @@
   "name": "product_filter_label_profit_ratio",
   "position": {
     "x": 1140.03,
-    "y": 204.17,
+    "y": 0,
     "z": 10,
-    "height": 16,
+    "height": 40,
     "width": 100,
     "tabOrder": 0
   },

@@ -3,9 +3,9 @@
   "name": "product_filter_label_region",
   "position": {
     "x": 1140.03,
-    "y": 47.06,
+    "y": 0,
     "z": 10,
-    "height": 16,
+    "height": 40,
     "width": 100,
     "tabOrder": 0
   },
