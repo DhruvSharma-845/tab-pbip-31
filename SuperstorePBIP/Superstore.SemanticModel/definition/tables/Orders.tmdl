@@ -45,12 +45,14 @@ table Orders
 
 	column Calculation_9321103144526191
 		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
 		summarizeBy: sum
 		sourceColumn: Calculation_9321103144526191
 		lineageTag: 97f4da37-2de6-45ac-bcfe-8b2b78a9be06
 
 	column Calculation_9921103144103743
 		dataType: double
+		formatString: 0.0%;-0.0%;0.0%
 		summarizeBy: sum
 		sourceColumn: Calculation_9921103144103743
 		lineageTag: 2e7cad04-6c21-4ed3-9e8c-f552fc1091be
@@ -63,6 +65,7 @@ table Orders
 
 	column Profit
 		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
 		summarizeBy: sum
 		sourceColumn: Profit
 		lineageTag: d9ac71b9-6c98-4b74-bd32-d98f59691c1c
@@ -75,6 +78,7 @@ table Orders
 
 	column Sales
 		dataType: double
+		formatString: \$#,0;(\$#,0);\$#,0
 		summarizeBy: sum
 		sourceColumn: Sales
 		lineageTag: f3a2fb40-3986-4a55-9c03-f08ea8908911
@@ -135,6 +139,7 @@ table Orders
 
 	column Discount
 		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
 		summarizeBy: sum
 		sourceColumn: Discount
 		lineageTag: c1a3543a-0be0-4b23-948b-3a16c601c8db

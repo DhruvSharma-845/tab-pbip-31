@@ -107,35 +107,31 @@ table 'Retail Sales Data'
 		mode: import
 		source =
 			let
-				// Replace this with your actual data source path
-				// Option 1: Excel file
-				// Source = Excel.Workbook(File.Contents("C:\Path\To\RetailSalesData.xlsx"), null, true),
-				// Data = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+				// Data source path - update this to your local path
+				// Windows example: "C:\Users\YourName\tab-pbip-31\OutputRetailSales\RetailSalesData.csv"
+				// Mac example: "/Users/dhrsharm/tab-pbip-31/OutputRetailSales/RetailSalesData.csv"
+				FilePath = "/Users/dhrsharm/tab-pbip-31/OutputRetailSales/RetailSalesData.csv",
 				
-				// Option 2: CSV file
-				// Source = Csv.Document(File.Contents("C:\Path\To\RetailSalesData.csv"), [Delimiter=",", Encoding=1252, QuoteStyle=QuoteStyle.None]),
-				
-				// Placeholder empty table with correct schema
-				Source = #table(
-					type table [
-						Date = datetime,
-						#"Store Type" = text,
-						Product = text,
-						Store = text,
-						Country = text,
-						#"Product Line" = text,
-						City = text,
-						State = text,
-						#"Store Latitude" = number,
-						#"Store Longitude" = number,
-						#"Sales Amount" = number,
-						Year = Int64.Type,
-						Month = Int64.Type
-					],
-					{}
-				)
+				// Load CSV data extracted from Tableau TWBX (661,076 rows)
+				Source = Csv.Document(File.Contents(FilePath), [Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				ChangedTypes = Table.TransformColumnTypes(PromotedHeaders,{
+					{"Date", type datetime}, 
+					{"Store Type", type text}, 
+					{"Product", type text}, 
+					{"Store", type text}, 
+					{"Country", type text}, 
+					{"Product Line", type text}, 
+					{"City", type text}, 
+					{"State", type text}, 
+					{"Store Latitude", type number}, 
+					{"Store Longitude", type number}, 
+					{"Sales Amount", type number}
+				}),
+				AddYear = Table.AddColumn(ChangedTypes, "Year", each Date.Year([Date]), Int64.Type),
+				AddMonth = Table.AddColumn(AddYear, "Month", each Date.Month([Date]), Int64.Type)
 			in
-				Source
+				AddMonth
 
 	annotation PBI_ResultType = Table
 

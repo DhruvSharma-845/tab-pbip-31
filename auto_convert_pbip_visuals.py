@@ -917,6 +917,15 @@ def apply_tableau_like_area_formatting(visual: dict):
             "properties": {
                 "showAxisTitle": {"expr": {"Literal": {"Value": "false"}}},
                 "show": {"expr": {"Literal": {"Value": "true"}}},
+                "labelDisplayUnits": {"expr": {"Literal": {"Value": "1000L"}}},
+            }
+        }
+    ]
+    # Add labels formatting with display units
+    visual["objects"]["labels"] = [
+        {
+            "properties": {
+                "show": {"expr": {"Literal": {"Value": "false"}}},
             }
         }
     ]

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "shipping_slicer_ship_mode",
   "position": {
-    "x": 1150.0,
-    "y": 35,
+    "x": 1126.53,
+    "y": 307.0,
     "z": 5,
-    "height": 50,
-    "width": 110,
+    "height": 36,
+    "width": 160,
     "tabOrder": 0
   },
   "visual": {

@@ -57,6 +57,7 @@ table 'Sales Commission'
 
 	column Sales
 		dataType: int64
+		formatString: \$#,0;(\$#,0);\$#,0
 		summarizeBy: sum
 		sourceColumn: Sales
 		lineageTag: 3450764a-166d-4191-bc80-9605431b4534

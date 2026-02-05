@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "home_nav_deepdive",
+  "position": {
+    "x": 650,
+    "y": 440,
+    "z": 13,
+    "height": 40,
+    "width": 400,
+    "tabOrder": 13
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Deep-dive   |   Store   |   Product Line   |   Product",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#555555"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

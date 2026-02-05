@@ -3,30 +3,35 @@ table Parameters
 
 	column 'Parameter 1'
 		dataType: double
+		formatString: 0%;-0%;0%
 		summarizeBy: sum
 		sourceColumn: Parameter 1
 		lineageTag: 6201b486-190e-4317-86f4-cb528047315f
 
 	column 'Parameter 2'
 		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
 		summarizeBy: sum
 		sourceColumn: Parameter 2
 		lineageTag: 894d4997-78f5-450f-b7d4-2fa6e284d120
 
 	column 'Base Salary'
 		dataType: int64
+		formatString: \$#,0;(\$#,0);\$#,0
 		summarizeBy: sum
 		sourceColumn: Base Salary
 		lineageTag: 03c10a07-3694-436c-bfcb-6984a0defc24
 
 	column 'Commission Rate'
 		dataType: double
+		formatString: #,0.0%;-#,0.0%;#,0.0%
 		summarizeBy: sum
 		sourceColumn: Commission Rate
 		lineageTag: 80d58696-bba2-4751-ac7c-c1e3aa89b9ba
 
 	column 'New Quota'
 		dataType: int64
+		formatString: \$#,0,K;(\$#,0,K);\$#,0,K
 		summarizeBy: sum
 		sourceColumn: New Quota
 		lineageTag: ec66382a-1a3d-4f76-8426-5571c3ebd6ec

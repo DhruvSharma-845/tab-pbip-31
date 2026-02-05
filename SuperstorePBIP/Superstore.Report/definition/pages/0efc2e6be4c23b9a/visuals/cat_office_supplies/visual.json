@@ -92,6 +92,13 @@
                   "Value": "true"
                 }
               }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1000L"
+                }
+              }
             }
           }
         }
@@ -174,6 +181,19 @@
                       "Value": "'#f28e2b'"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

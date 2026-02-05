@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "drivers_explanation",
+  "position": {
+    "x": 10,
+    "y": 155,
+    "z": 11,
+    "height": 50,
+    "width": 700,
+    "tabOrder": 11
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Shows how much each Product contributed to Total Sales. The color of a circle indicates whether the sales of the Product have increased (blue) or decreased (orange), its size indicating the magnitude of the change.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "fontStyle": "italic",
+                      "color": "#666666"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

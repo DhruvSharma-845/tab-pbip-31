@@ -63,6 +63,7 @@ table 'Sample - Superstore'
 
 	column Profit
 		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
 		summarizeBy: sum
 		sourceColumn: Profit
 		lineageTag: d64c42ab-4645-45c7-9bda-51f8e82246ab
@@ -75,6 +76,7 @@ table 'Sample - Superstore'
 
 	column Sales
 		dataType: double
+		formatString: \$#,0;(\$#,0);\$#,0
 		summarizeBy: sum
 		sourceColumn: Sales
 		lineageTag: edbbe669-febc-4226-b1c1-7c0306228fd1
@@ -135,6 +137,7 @@ table 'Sample - Superstore'
 
 	column Discount
 		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
 		summarizeBy: sum
 		sourceColumn: Discount
 		lineageTag: cada27db-b584-41b9-803d-00b5a3438125

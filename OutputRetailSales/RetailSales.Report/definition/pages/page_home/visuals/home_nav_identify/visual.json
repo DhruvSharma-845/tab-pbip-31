@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "home_nav_identify",
+  "position": {
+    "x": 650,
+    "y": 490,
+    "z": 14,
+    "height": 40,
+    "width": 400,
+    "tabOrder": 14
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Identify   |   Sales Drivers",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#555555"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
