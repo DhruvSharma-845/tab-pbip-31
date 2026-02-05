@@ -2,33 +2,37 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "337eac681ab5e90b",
   "position": {
-    "x": 24,
-    "y": 528,
+    "x": 20,
+    "y": 200,
     "z": 1,
-    "height": 200,
-    "width": 1232,
+    "height": 511.0,
+    "width": 600,
     "tabOrder": 1
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "scatterChart",
     "query": {
       "queryState": {
-        "Category": {
+        "X": {
           "projections": [
             {
               "field": {
-                "Column": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Sample - Superstore"
+                        }
+                      },
+                      "Property": "Sales"
                     }
                   },
-                  "Property": "Category"
+                  "Function": 0
                 }
               },
-              "queryRef": "Orders.Category",
-              "nativeQueryRef": "Category",
-              "active": true
+              "queryRef": "Sum(Sample - Superstore.Sales)",
+              "nativeQueryRef": "Sum of Sales"
             }
           ]
         },
@@ -41,7 +45,7 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Orders"
+                          "Entity": "Sample - Superstore"
                         }
                       },
                       "Property": "Profit"
@@ -50,15 +54,51 @@
                   "Function": 0
                 }
               },
-              "queryRef": "Sum(Orders.Profit)",
+              "queryRef": "Sum(Sample - Superstore.Profit)",
               "nativeQueryRef": "Sum of Profit"
+            }
+          ]
+        },
+        "Details": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Customer Name"
+                }
+              },
+              "queryRef": "Sample - Superstore.Customer Name",
+              "nativeQueryRef": "Customer Name"
+            }
+          ]
+        },
+        "Legend": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sample - Superstore"
+                    }
+                  },
+                  "Property": "Segment"
+                }
+              },
+              "queryRef": "Sample - Superstore.Segment",
+              "nativeQueryRef": "Segment"
             }
           ]
         }
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
+    "autoSelectVisualType": false,
     "objects": {
       "title": [
         {

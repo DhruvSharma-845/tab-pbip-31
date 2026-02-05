@@ -3,14 +3,14 @@
   "name": "profit_ratio_city",
   "position": {
     "x": 20,
-    "y": 130,
+    "y": 140,
     "z": 1,
-    "height": 260,
+    "height": 240,
     "width": 1240,
     "tabOrder": 10
   },
   "visual": {
-    "visualType": "map",
+    "visualType": "filledMap",
     "query": {
       "queryState": {
         "Location": {
@@ -53,6 +53,6 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true
+    "autoSelectVisualType": false
   }
 }

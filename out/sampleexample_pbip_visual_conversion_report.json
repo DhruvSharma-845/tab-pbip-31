@@ -1,0 +1,130 @@
+{
+  "pages": [
+    {
+      "page_id": "e52378b1968736ce",
+      "page_name": "Commission Model",
+      "snapshot_match": "commission model",
+      "visual_changes": [
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/e52378b1968736ce/visuals/b5e5f9009cd0de83/visual.json",
+          "old_type": "tableEx",
+          "new_type": "card",
+          "reason": "Single measure -> card"
+        },
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/e52378b1968736ce/visuals/8cc53e80311b1bc9/visual.json",
+          "old_type": "tableEx",
+          "new_type": "card",
+          "reason": "Single measure -> card"
+        }
+      ]
+    },
+    {
+      "page_id": "035eae60290f92e6",
+      "page_name": "Customers",
+      "snapshot_match": "customers",
+      "visual_changes": [
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/035eae60290f92e6/visuals/f03da5c335de8c92/visual.json",
+          "old_type": "tableEx",
+          "new_type": "barChart",
+          "reason": "Customer rank -> bar chart"
+        },
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/035eae60290f92e6/visuals/337eac681ab5e90b/visual.json",
+          "old_type": "tableEx",
+          "new_type": "scatterChart",
+          "reason": "Customer scatter -> scatter plot"
+        },
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/035eae60290f92e6/visuals/383f503322c647a5/visual.json",
+          "old_type": "tableEx",
+          "new_type": "matrix",
+          "reason": "Customer overview -> matrix"
+        }
+      ]
+    },
+    {
+      "page_id": "abb713a37cc9ba75",
+      "page_name": "Order Details",
+      "snapshot_match": "order details",
+      "visual_changes": [
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/abb713a37cc9ba75/visuals/b3b51b161d8222d9/visual.json",
+          "old_type": "tableEx",
+          "new_type": "matrix",
+          "reason": "Date-based table -> matrix with heatmap"
+        }
+      ]
+    },
+    {
+      "page_id": "0efc2e6be4c23b9a",
+      "page_name": "Overview",
+      "snapshot_match": "overview",
+      "visual_changes": [
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/monthly_segment/visual.json",
+          "old_type": "areaChart",
+          "new_type": "stackedAreaChart",
+          "reason": "Stacked area with segment/category"
+        },
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/9c3a1b2d4e5f6078/visual.json",
+          "old_type": "areaChart",
+          "new_type": "stackedAreaChart",
+          "reason": "Stacked area with segment/category"
+        },
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/cd34ef56ab7890cd/visual.json",
+          "old_type": "map",
+          "new_type": "filledMap",
+          "reason": "Map with filled regions"
+        },
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/profit_ratio_city/visual.json",
+          "old_type": "map",
+          "new_type": "filledMap",
+          "reason": "Map with filled regions"
+        },
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/ab12cd34ef56ab78/visual.json",
+          "old_type": "areaChart",
+          "new_type": "stackedAreaChart",
+          "reason": "Stacked area with segment/category"
+        },
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/monthly_category/visual.json",
+          "old_type": "areaChart",
+          "new_type": "stackedAreaChart",
+          "reason": "Stacked area with segment/category"
+        }
+      ]
+    },
+    {
+      "page_id": "694e6062a66864cd",
+      "page_name": "Shipping",
+      "snapshot_match": "shipping",
+      "visual_changes": [
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/694e6062a66864cd/visuals/398c84457fe70058/visual.json",
+          "old_type": "areaChart",
+          "new_type": "stackedAreaChart",
+          "reason": "Stacked area with segment/category"
+        }
+      ]
+    },
+    {
+      "page_id": "63c904559993935c",
+      "page_name": "Performance",
+      "snapshot_match": "performance",
+      "visual_changes": [
+        {
+          "visual_path": "SampleExample/SuperstorePBIP/Superstore.Report/definition/pages/63c904559993935c/visuals/63c904559993935c/visual.json",
+          "old_type": "columnChart",
+          "new_type": "clusteredBarChart",
+          "reason": "Performance vs target -> clustered bar"
+        }
+      ]
+    }
+  ]
+}

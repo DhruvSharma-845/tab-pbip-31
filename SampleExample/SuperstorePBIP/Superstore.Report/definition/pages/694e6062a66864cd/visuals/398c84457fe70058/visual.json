@@ -10,7 +10,7 @@
     "tabOrder": 2
   },
   "visual": {
-    "visualType": "areaChart",
+    "visualType": "stackedAreaChart",
     "query": {
       "queryState": {
         "Category": {
@@ -58,7 +58,7 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
+    "autoSelectVisualType": false,
     "objects": {
       "title": [
         {

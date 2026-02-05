@@ -3,9 +3,9 @@
   "name": "card_profit",
   "position": {
     "x": 230,
-    "y": 45,
+    "y": 40,
     "z": 0,
-    "height": 80,
+    "height": 90,
     "width": 200,
     "tabOrder": 1
   },

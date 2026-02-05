@@ -3,14 +3,14 @@
   "name": "9c3a1b2d4e5f6078",
   "position": {
     "x": 20,
-    "y": 400,
+    "y": 390,
     "z": 2,
     "width": 610,
-    "height": 300,
+    "height": 321.0,
     "tabOrder": 20
   },
   "visual": {
-    "visualType": "areaChart",
+    "visualType": "stackedAreaChart",
     "query": {
       "queryState": {
         "Category": {
@@ -29,24 +29,6 @@
               "queryRef": "Orders.Order Month",
               "nativeQueryRef": "Order Month",
               "active": true
-            }
-          ]
-        },
-        "Series": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Segment"
-                }
-              },
-              "queryRef": "Orders.Segment",
-              "nativeQueryRef": "Segment"
             }
           ]
         },
@@ -90,6 +72,24 @@
               "nativeQueryRef": "Profitability"
             }
           ]
+        },
+        "SmallMultiples": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Segment"
+                }
+              },
+              "queryRef": "Orders.Segment",
+              "nativeQueryRef": "Segment"
+            }
+          ]
         }
       },
       "sortDefinition": {
@@ -112,7 +112,7 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
+    "autoSelectVisualType": false,
     "objects": {
       "title": [
         {

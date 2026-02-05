@@ -3,14 +3,14 @@
   "name": "383f503322c647a5",
   "position": {
     "x": 9,
-    "y": 528,
+    "y": 40,
     "z": 3,
-    "height": 200,
+    "height": 120,
     "width": 1262,
     "tabOrder": 3
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "matrix",
     "query": {
       "queryState": {
         "Values": {
@@ -76,7 +76,7 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
+    "autoSelectVisualType": false,
     "objects": {
       "title": [
         {

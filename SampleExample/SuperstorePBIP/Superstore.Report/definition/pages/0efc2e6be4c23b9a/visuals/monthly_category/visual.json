@@ -3,14 +3,14 @@
   "name": "monthly_category",
   "position": {
     "x": 650,
-    "y": 400,
+    "y": 390,
     "z": 3,
-    "height": 300,
+    "height": 321.0,
     "width": 610,
     "tabOrder": 21
   },
   "visual": {
-    "visualType": "areaChart",
+    "visualType": "stackedAreaChart",
     "query": {
       "queryState": {
         "Category": {
@@ -29,24 +29,6 @@
               "queryRef": "Orders.Order Month",
               "nativeQueryRef": "Order Month",
               "active": true
-            }
-          ]
-        },
-        "Series": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Category"
-                }
-              },
-              "queryRef": "Orders.Category",
-              "nativeQueryRef": "Category"
             }
           ]
         },
@@ -90,10 +72,28 @@
               "nativeQueryRef": "Sum of Sales"
             }
           ]
+        },
+        "SmallMultiples": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Category"
+                }
+              },
+              "queryRef": "Orders.Category",
+              "nativeQueryRef": "Category"
+            }
+          ]
         }
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true
+    "autoSelectVisualType": false
   }
 }

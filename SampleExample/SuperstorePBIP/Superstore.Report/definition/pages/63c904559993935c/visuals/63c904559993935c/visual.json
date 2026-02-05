@@ -10,7 +10,7 @@
     "tabOrder": 1
   },
   "visual": {
-    "visualType": "columnChart",
+    "visualType": "clusteredBarChart",
     "query": {
       "queryState": {
         "Category": {
@@ -58,7 +58,7 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
+    "autoSelectVisualType": false,
     "objects": {
       "title": [
         {

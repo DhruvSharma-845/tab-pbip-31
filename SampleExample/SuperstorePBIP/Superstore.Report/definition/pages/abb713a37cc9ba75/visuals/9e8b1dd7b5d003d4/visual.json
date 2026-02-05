@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "9e8b1dd7b5d003d4",
   "position": {
-    "x": 1004,
-    "y": 36,
+    "x": 900,
+    "y": 40,
     "z": 11,
-    "height": 51,
-    "width": 135,
+    "height": 40,
+    "width": 180,
     "tabOrder": 11
   },
   "visual": {
@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sales Target"
+                      "Entity": "Sample - Superstore"
                     }
                   },
                   "Property": "Category"
                 }
               },
-              "queryRef": "Sales Target.Category",
+              "queryRef": "Sample - Superstore.Category",
               "nativeQueryRef": "Category",
               "active": true
             }

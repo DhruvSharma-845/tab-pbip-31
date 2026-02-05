@@ -1,16 +1,16 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "ab12cd34ef56ab78",
+  "name": "cat_furniture",
   "position": {
-    "x": 650,
-    "y": 400,
+    "x": 640.0,
+    "y": 414.29,
     "z": 3,
-    "width": 610,
-    "height": 300,
+    "width": 629.04,
+    "height": 97.99,
     "tabOrder": 21
   },
   "visual": {
-    "visualType": "areaChart",
+    "visualType": "stackedAreaChart",
     "query": {
       "queryState": {
         "Category": {
@@ -29,24 +29,6 @@
               "queryRef": "Orders.Order Month",
               "nativeQueryRef": "Order Month",
               "active": true
-            }
-          ]
-        },
-        "Series": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Category"
-                }
-              },
-              "queryRef": "Orders.Category",
-              "nativeQueryRef": "Category"
             }
           ]
         },
@@ -73,7 +55,7 @@
             }
           ]
         },
-        "Legend": {
+        "Series": {
           "projections": [
             {
               "field": {
@@ -112,15 +94,61 @@
       }
     },
     "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
+    "autoSelectVisualType": false,
     "objects": {
       "title": [
         {
           "properties": {
-            "text": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "'Monthly Sales by Product Category - States/Provinces: All'"
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "legend": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             },
@@ -134,31 +162,41 @@
           }
         }
       ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   },
   "filterConfig": {
     "filters": [
       {
-        "name": "cat_sales_filter",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Orders"
-                  }
-                },
-                "Property": "Sales"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "cat_category_filter",
+        "name": "cat_value_furniture",
+        "displayName": "Category",
         "field": {
           "Column": {
             "Expression": {
@@ -169,21 +207,40 @@
             "Property": "Category"
           }
         },
-        "type": "Categorical"
-      },
-      {
-        "name": "cat_date_filter",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Orders"
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "Orders",
+              "Entity": "Orders"
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Category"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "Furniture"
+                    }
+                  }
+                }
               }
-            },
-            "Property": "Order Date"
-          }
-        },
-        "type": "Categorical"
+            }
+          ]
+        }
       }
     ]
   }
