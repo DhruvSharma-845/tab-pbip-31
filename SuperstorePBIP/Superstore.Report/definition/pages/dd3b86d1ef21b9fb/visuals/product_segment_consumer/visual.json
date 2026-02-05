@@ -3,9 +3,9 @@
   "name": "product_segment_consumer",
   "position": {
     "x": 336.25,
-    "y": 444.81,
+    "y": 0,
     "z": 10,
-    "height": 16,
+    "height": 40,
     "width": 100,
     "tabOrder": 0
   },

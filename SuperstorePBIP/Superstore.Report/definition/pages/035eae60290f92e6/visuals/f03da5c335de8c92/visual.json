@@ -79,6 +79,23 @@
             }
           }
         }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#e15759'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       ]
     }
   }

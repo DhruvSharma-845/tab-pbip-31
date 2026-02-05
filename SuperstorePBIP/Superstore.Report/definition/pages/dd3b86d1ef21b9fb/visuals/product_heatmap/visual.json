@@ -103,6 +103,59 @@
             }
           }
         }
+      ],
+      "values": [
+        {
+          "properties": {
+            "fontColorPrimary": {
+              "expr": {
+                "Literal": {
+                  "Value": "'#000000'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontColor": {
+              "expr": {
+                "Literal": {
+                  "Value": "'#000000'"
+                }
+              }
+            },
+            "backColor": {
+              "expr": {
+                "Literal": {
+                  "Value": "'#f2f2f2'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "rowHeaders": [
+        {
+          "properties": {
+            "fontColor": {
+              "expr": {
+                "Literal": {
+                  "Value": "'#000000'"
+                }
+              }
+            },
+            "backColor": {
+              "expr": {
+                "Literal": {
+                  "Value": "'#f2f2f2'"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "visualContainerObjects": {

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "exec_title",
   "position": {
-    "x": 20,
-    "y": 10,
+    "x": 10,
+    "y": 5,
     "z": 0,
-    "height": 40,
-    "width": 300,
+    "height": 35,
+    "width": 200,
     "tabOrder": 0
   },
   "visual": {
@@ -19,10 +19,10 @@
               {
                 "textRuns": [
                   {
-                    "value": "Executive Summary",
+                    "value": "Retail Sales",
                     "textStyle": {
                       "fontWeight": "bold",
-                      "fontSize": "20pt"
+                      "fontSize": "18pt"
                     }
                   }
                 ]

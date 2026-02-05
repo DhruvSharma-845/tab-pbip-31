@@ -107,10 +107,35 @@ table 'Retail Sales Data'
 		mode: import
 		source =
 			let
-				Source = Hyper.Contents("Data/Retail Sales Data.hyper"),
-				Extract = Source{[Schema="Extract",Item="Extract"]}[Data]
+				// Replace this with your actual data source path
+				// Option 1: Excel file
+				// Source = Excel.Workbook(File.Contents("C:\Path\To\RetailSalesData.xlsx"), null, true),
+				// Data = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+				
+				// Option 2: CSV file
+				// Source = Csv.Document(File.Contents("C:\Path\To\RetailSalesData.csv"), [Delimiter=",", Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				
+				// Placeholder empty table with correct schema
+				Source = #table(
+					type table [
+						Date = datetime,
+						#"Store Type" = text,
+						Product = text,
+						Store = text,
+						Country = text,
+						#"Product Line" = text,
+						City = text,
+						State = text,
+						#"Store Latitude" = number,
+						#"Store Longitude" = number,
+						#"Sales Amount" = number,
+						Year = Int64.Type,
+						Month = Int64.Type
+					],
+					{}
+				)
 			in
-				Extract
+				Source
 
 	annotation PBI_ResultType = Table
 

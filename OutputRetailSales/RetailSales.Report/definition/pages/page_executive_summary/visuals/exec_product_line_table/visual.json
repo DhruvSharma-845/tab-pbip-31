@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "exec_product_line_table",
   "position": {
-    "x": 20,
-    "y": 400,
+    "x": 10,
+    "y": 240,
     "z": 6,
-    "height": 300,
-    "width": 600,
+    "height": 250,
+    "width": 450,
     "tabOrder": 6
   },
   "visual": {

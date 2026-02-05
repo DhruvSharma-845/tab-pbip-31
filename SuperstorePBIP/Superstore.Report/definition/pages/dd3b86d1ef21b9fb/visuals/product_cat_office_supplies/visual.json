@@ -3,9 +3,9 @@
   "name": "product_cat_office_supplies",
   "position": {
     "x": 2.65,
-    "y": 186.81,
+    "y": 0,
     "z": 10,
-    "height": 18,
+    "height": 40,
     "width": 120,
     "tabOrder": 0
   },

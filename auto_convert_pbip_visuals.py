@@ -542,6 +542,337 @@ def make_textbox_visual(name: str, text: str, x: float, y: float, width: float, 
     }
 
 
+def make_slicer_visual(
+    name: str,
+    entity: str,
+    property: str,
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+    slicer_type: str = "dropdown",
+    title: str = None,
+) -> dict:
+    """Create a slicer visual for filtering."""
+    slicer = {
+        "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+        "name": name,
+        "position": {
+            "x": round(x, 2),
+            "y": round(y, 2),
+            "z": 5,
+            "height": round(height, 2),
+            "width": round(width, 2),
+            "tabOrder": 0,
+        },
+        "visual": {
+            "visualType": "slicer",
+            "query": {
+                "queryState": {
+                    "Values": {
+                        "projections": [
+                            {
+                                "field": {
+                                    "Column": {
+                                        "Expression": {"SourceRef": {"Entity": entity}},
+                                        "Property": property,
+                                    }
+                                },
+                                "queryRef": f"{entity}.{property}",
+                                "nativeQueryRef": property,
+                            }
+                        ]
+                    }
+                }
+            },
+            "objects": {
+                "data": [
+                    {
+                        "properties": {
+                            "mode": {
+                                "expr": {
+                                    "Literal": {
+                                        "Value": "'Dropdown'" if slicer_type == "dropdown" else "'List'"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "general": [
+                    {
+                        "properties": {
+                            "orientation": {
+                                "expr": {"Literal": {"Value": "0"}}
+                            }
+                        }
+                    }
+                ],
+            },
+            "drillFilterOtherVisuals": True,
+        },
+    }
+    if title:
+        slicer["visual"]["objects"]["header"] = [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "titleText": {"expr": {"Literal": {"Value": f"'{title}'"}}},
+                }
+            }
+        ]
+    return slicer
+
+
+def make_date_slicer(
+    name: str,
+    entity: str,
+    property: str,
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+    title: str = None,
+) -> dict:
+    """Create a date range slicer."""
+    slicer = {
+        "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+        "name": name,
+        "position": {
+            "x": round(x, 2),
+            "y": round(y, 2),
+            "z": 5,
+            "height": round(height, 2),
+            "width": round(width, 2),
+            "tabOrder": 0,
+        },
+        "visual": {
+            "visualType": "slicer",
+            "query": {
+                "queryState": {
+                    "Values": {
+                        "projections": [
+                            {
+                                "field": {
+                                    "Column": {
+                                        "Expression": {"SourceRef": {"Entity": entity}},
+                                        "Property": property,
+                                    }
+                                },
+                                "queryRef": f"{entity}.{property}",
+                                "nativeQueryRef": property,
+                            }
+                        ]
+                    }
+                }
+            },
+            "objects": {
+                "data": [
+                    {
+                        "properties": {
+                            "mode": {"expr": {"Literal": {"Value": "'Between'"}}}
+                        }
+                    }
+                ],
+                "general": [
+                    {
+                        "properties": {
+                            "orientation": {"expr": {"Literal": {"Value": "0"}}}
+                        }
+                    }
+                ],
+            },
+            "drillFilterOtherVisuals": True,
+        },
+    }
+    if title:
+        slicer["visual"]["objects"]["header"] = [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "titleText": {"expr": {"Literal": {"Value": f"'{title}'"}}},
+                }
+            }
+        ]
+    return slicer
+
+
+# Tableau color constants
+TABLEAU_BLUE = "#4e79a7"  # Profitable
+TABLEAU_ORANGE = "#f28e2b"  # Unprofitable
+TABLEAU_GREEN = "#59a14f"
+TABLEAU_RED = "#e15759"
+TABLEAU_GRAY = "#bab0ac"
+TABLEAU_BROWN = "#9c755f"
+
+
+def make_color_selector(entity: str, property: str, value: str) -> dict:
+    """Create a selector for data point color assignment."""
+    return {
+        "selector": {
+            "data": [
+                {
+                    "scopeId": {
+                        "Comparison": {
+                            "ComparisonKind": 0,
+                            "Left": {
+                                "Column": {
+                                    "Expression": {"SourceRef": {"Entity": entity}},
+                                    "Property": property,
+                                }
+                            },
+                            "Right": {"Literal": {"Value": f"'{value}'"}},
+                        }
+                    }
+                }
+            ]
+        },
+        "properties": {
+            "fill": {
+                "solid": {"color": {"expr": {"Literal": {"Value": f"'{TABLEAU_BLUE if value == 'Profitable' else TABLEAU_ORANGE}'"}}}}
+            }
+        },
+    }
+
+
+def apply_profitability_colors(visual: dict) -> dict:
+    """Apply Tableau-like colors for Profitability series (blue for Profitable, orange for Unprofitable)."""
+    visual.setdefault("objects", {})
+    # Add dataPoint color assignments
+    visual["objects"]["dataPoint"] = [
+        make_color_selector("Orders", "Profitability", "Profitable"),
+        make_color_selector("Orders", "Profitability", "Unprofitable"),
+    ]
+    return visual
+
+
+def apply_segment_colors(visual: dict) -> dict:
+    """Apply colors for Customer Segment series."""
+    visual.setdefault("objects", {})
+    colors = {
+        "Consumer": TABLEAU_BLUE,
+        "Corporate": TABLEAU_ORANGE,
+        "Home Office": TABLEAU_GREEN,
+    }
+    visual["objects"]["dataPoint"] = [
+        {
+            "selector": {
+                "data": [
+                    {
+                        "scopeId": {
+                            "Comparison": {
+                                "ComparisonKind": 0,
+                                "Left": {
+                                    "Column": {
+                                        "Expression": {"SourceRef": {"Entity": "Orders"}},
+                                        "Property": "Segment",
+                                    }
+                                },
+                                "Right": {"Literal": {"Value": f"'{seg}'"}},
+                            }
+                        }
+                    }
+                ]
+            },
+            "properties": {
+                "fill": {
+                    "solid": {"color": {"expr": {"Literal": {"Value": f"'{color}'"}}}}
+                }
+            },
+        }
+        for seg, color in colors.items()
+    ]
+    return visual
+
+
+def apply_ship_status_colors(visual: dict) -> dict:
+    """Apply colors for Ship Status series (Early=blue, OnTime=gray, Late=brown)."""
+    visual.setdefault("objects", {})
+    colors = {
+        "Shipped Early": TABLEAU_BLUE,
+        "Shipped On Time": TABLEAU_GRAY,
+        "Shipped Late": TABLEAU_BROWN,
+    }
+    visual["objects"]["dataPoint"] = [
+        {
+            "selector": {
+                "data": [
+                    {
+                        "scopeId": {
+                            "Comparison": {
+                                "ComparisonKind": 0,
+                                "Left": {
+                                    "Column": {
+                                        "Expression": {"SourceRef": {"Entity": "Orders"}},
+                                        "Property": "Ship Status",
+                                    }
+                                },
+                                "Right": {"Literal": {"Value": f"'{status}'"}},
+                            }
+                        }
+                    }
+                ]
+            },
+            "properties": {
+                "fill": {
+                    "solid": {"color": {"expr": {"Literal": {"Value": f"'{color}'"}}}}
+                }
+            },
+        }
+        for status, color in colors.items()
+    ]
+    return visual
+
+
+def apply_heatmap_colors(visual: dict) -> dict:
+    """Apply conditional formatting colors for heatmap (diverging red-gray-blue)."""
+    visual.setdefault("objects", {})
+    # Apply diverging color scale for values
+    visual["objects"]["values"] = [
+        {
+            "properties": {
+                "fontColorPrimary": {
+                    "expr": {"Literal": {"Value": "'#000000'"}}
+                }
+            }
+        }
+    ]
+    # Set background color formatting (conditional formatting would require rules)
+    visual["objects"]["columnHeaders"] = [
+        {
+            "properties": {
+                "fontColor": {"expr": {"Literal": {"Value": "'#000000'"}}},
+                "backColor": {"expr": {"Literal": {"Value": "'#f2f2f2'"}}}
+            }
+        }
+    ]
+    visual["objects"]["rowHeaders"] = [
+        {
+            "properties": {
+                "fontColor": {"expr": {"Literal": {"Value": "'#000000'"}}},
+                "backColor": {"expr": {"Literal": {"Value": "'#f2f2f2'"}}}
+            }
+        }
+    ]
+    return visual
+
+
+def apply_customer_ranking_colors(visual: dict) -> dict:
+    """Apply gradient colors for customer ranking bar chart (red to gray based on profit)."""
+    visual.setdefault("objects", {})
+    # For bar charts, we can use a single color or gradient
+    visual["objects"]["dataPoint"] = [
+        {
+            "properties": {
+                "fill": {
+                    "solid": {"color": {"expr": {"Literal": {"Value": f"'{TABLEAU_RED}'"}}}}
+                }
+            }
+        }
+    ]
+    return visual
+
+
 def apply_tableau_like_area_formatting(visual: dict):
     visual.setdefault("objects", {})
     visual.setdefault("visualContainerObjects", {})
@@ -589,6 +920,8 @@ def apply_tableau_like_area_formatting(visual: dict):
             }
         }
     ]
+    # Apply profitability colors
+    apply_profitability_colors(visual)
     return visual
 
 
@@ -1791,33 +2124,46 @@ def apply_layout_overrides(
                     (label_dir / "visual.json").write_text(
                         json.dumps(textbox, indent=2), encoding="utf-8"
                     )
-            # Add filter labels and values from SVG positions
-            if svg_layout.get("filter_labels"):
-                for item in svg_layout["filter_labels"]:
-                    label_x = item["x"] * scale_x
-                    label_y = item["y"] * scale_y
-                    label_name = f"filter_label_{item['text'].lower().replace(' ', '_')}"
-                    textbox = make_textbox_visual(
-                        label_name, item["text"], label_x, label_y - 10, 120, 16
+            # Create actual slicers for filters instead of just labels
+            # Remove old filter labels and values
+            for label_dir in visuals_dir.glob("filter_label_*"):
+                shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("filter_value_*"):
+                shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("slicer_*"):
+                shutil.rmtree(label_dir)
+            # Create slicers based on filter labels from SVG
+            filter_mapping = {
+                "region": ("Orders", "Region", "dropdown"),
+                "order_date": ("Orders", "Order Date", "date"),
+                "profit_ratio": ("Orders", "Profit Ratio", "dropdown"),
+            }
+            slicer_x = 20  # Starting x position for slicers
+            slicer_y = 35  # Y position (below title)
+            slicer_width = 120
+            slicer_height = 50
+            slicer_gap = 10
+            for filter_key, (entity, property, stype) in filter_mapping.items():
+                slicer_name = f"slicer_{filter_key}"
+                if stype == "date":
+                    slicer = make_date_slicer(
+                        slicer_name, entity, property,
+                        slicer_x, slicer_y, slicer_width + 80, slicer_height,
+                        title=property
                     )
-                    label_dir = visuals_dir / label_name
-                    label_dir.mkdir(parents=True, exist_ok=True)
-                    (label_dir / "visual.json").write_text(
-                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    slicer_x += slicer_width + 80 + slicer_gap
+                else:
+                    slicer = make_slicer_visual(
+                        slicer_name, entity, property,
+                        slicer_x, slicer_y, slicer_width, slicer_height,
+                        slicer_type=stype, title=property
                     )
-            if svg_layout.get("filter_values"):
-                for item in svg_layout["filter_values"]:
-                    label_x = item["x"] * scale_x
-                    label_y = item["y"] * scale_y
-                    label_name = f"filter_value_{item['text'].lower()}_{int(label_x)}"
-                    textbox = make_textbox_visual(
-                        label_name, item["text"], label_x, label_y - 10, 60, 16
-                    )
-                    label_dir = visuals_dir / label_name
-                    label_dir.mkdir(parents=True, exist_ok=True)
-                    (label_dir / "visual.json").write_text(
-                        json.dumps(textbox, indent=2), encoding="utf-8"
-                    )
+                    slicer_x += slicer_width + slicer_gap
+                slicer_dir = visuals_dir / slicer_name
+                slicer_dir.mkdir(parents=True, exist_ok=True)
+                (slicer_dir / "visual.json").write_text(
+                    json.dumps(slicer, indent=2), encoding="utf-8"
+                )
         elif category_split:
             total_height = max(page_height - 410, 300)
             gap = 6
@@ -1954,34 +2300,36 @@ def apply_layout_overrides(
                     (label_dir / "visual.json").write_text(
                         json.dumps(textbox, indent=2), encoding="utf-8"
                     )
-            if svg_layout.get("filter_labels"):
-                for item in svg_layout["filter_labels"]:
-                    label_x = item["x"] * scale_x
-                    label_y = item["y"] * scale_y
-                    label_name = (
-                        f"product_filter_label_{item['text'].lower().replace(' ', '_')}"
-                    )
-                    textbox = make_textbox_visual(
-                        label_name, item["text"], label_x, label_y - 10, 100, 16
-                    )
-                    label_dir = visuals_dir / label_name
-                    label_dir.mkdir(parents=True, exist_ok=True)
-                    (label_dir / "visual.json").write_text(
-                        json.dumps(textbox, indent=2), encoding="utf-8"
-                    )
-            if svg_layout.get("filter_values"):
-                for item in svg_layout["filter_values"]:
-                    label_x = item["x"] * scale_x
-                    label_y = item["y"] * scale_y
-                    label_name = f"product_filter_value_{item['text'].lower()}_{int(label_x)}"
-                    textbox = make_textbox_visual(
-                        label_name, item["text"], label_x, label_y - 10, 60, 16
-                    )
-                    label_dir = visuals_dir / label_name
-                    label_dir.mkdir(parents=True, exist_ok=True)
-                    (label_dir / "visual.json").write_text(
-                        json.dumps(textbox, indent=2), encoding="utf-8"
-                    )
+            # Create slicers for Product page filters
+            for label_dir in visuals_dir.glob("product_filter_label_*"):
+                shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("product_filter_value_*"):
+                shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("product_slicer_*"):
+                shutil.rmtree(label_dir)
+            product_filter_mapping = {
+                "region": ("Orders", "Region", "dropdown"),
+                "profit_ratio": ("Orders", "Profit Ratio", "dropdown"),
+                "sales": ("Orders", "Sales", "dropdown"),
+            }
+            slicer_x = page_width - 380  # Position slicers on right side
+            slicer_y = 35
+            slicer_width = 110
+            slicer_height = 50
+            slicer_gap = 10
+            for filter_key, (entity, property, stype) in product_filter_mapping.items():
+                slicer_name = f"product_slicer_{filter_key}"
+                slicer = make_slicer_visual(
+                    slicer_name, entity, property,
+                    slicer_x, slicer_y, slicer_width, slicer_height,
+                    slicer_type=stype, title=property
+                )
+                slicer_x += slicer_width + slicer_gap
+                slicer_dir = visuals_dir / slicer_name
+                slicer_dir.mkdir(parents=True, exist_ok=True)
+                (slicer_dir / "visual.json").write_text(
+                    json.dumps(slicer, indent=2), encoding="utf-8"
+                )
             # Add category labels (Furniture, Office Supplies, Technology) on left of heatmap
             if svg_layout.get("category_labels"):
                 for label_dir in visuals_dir.glob("product_cat_*"):
@@ -2113,6 +2461,31 @@ def apply_layout_overrides(
                 (label_dir / "visual.json").write_text(
                     json.dumps(textbox, indent=2), encoding="utf-8"
                 )
+            # Add slicers for Customers page filters
+            for slicer_dir in visuals_dir.glob("customer_slicer_*"):
+                shutil.rmtree(slicer_dir)
+            customer_filters = {
+                "region": ("Orders", "Region", "dropdown"),
+                "segment": ("Orders", "Segment", "dropdown"),
+            }
+            slicer_x = page_width - 280
+            slicer_y = 35
+            slicer_width = 120
+            slicer_height = 50
+            slicer_gap = 10
+            for filter_key, (entity, property, stype) in customer_filters.items():
+                slicer_name = f"customer_slicer_{filter_key}"
+                slicer = make_slicer_visual(
+                    slicer_name, entity, property,
+                    slicer_x, slicer_y, slicer_width, slicer_height,
+                    slicer_type=stype, title=property
+                )
+                slicer_x += slicer_width + slicer_gap
+                slicer_dir = visuals_dir / slicer_name
+                slicer_dir.mkdir(parents=True, exist_ok=True)
+                (slicer_dir / "visual.json").write_text(
+                    json.dumps(slicer, indent=2), encoding="utf-8"
+                )
         else:
             for visual in visuals:
                 title = visual.get("title", "").lower()
@@ -2172,26 +2545,41 @@ def apply_layout_overrides(
                     visual["position"]["width"] = 160
                     visual["position"]["height"] = 36
 
-            for item in svg_layout.get("filter_labels", []):
-                label_name = f"order_filter_label_{item['text'].lower().replace(' ', '_')}"
-                textbox = make_textbox_visual(
-                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 160, 16
+            # Create slicers for Order Details filters
+            for slicer_dir in visuals_dir.glob("order_slicer_*"):
+                shutil.rmtree(slicer_dir)
+            order_filters = {
+                "region": ("Orders", "Region", "dropdown", 580),
+                "state_province": ("Orders", "State/Province", "dropdown", 720),
+                "city": ("Orders", "City", "dropdown", 860),
+                "category": ("Orders", "Category", "dropdown", 1000),
+            }
+            slicer_y = 35
+            slicer_width = 120
+            slicer_height = 50
+            for filter_key, (entity, property, stype, slicer_x) in order_filters.items():
+                slicer_name = f"order_slicer_{filter_key}"
+                slicer = make_slicer_visual(
+                    slicer_name, entity, property,
+                    slicer_x, slicer_y, slicer_width, slicer_height,
+                    slicer_type=stype, title=property
                 )
-                label_dir = visuals_dir / label_name
-                label_dir.mkdir(parents=True, exist_ok=True)
-                (label_dir / "visual.json").write_text(
-                    json.dumps(textbox, indent=2), encoding="utf-8"
+                slicer_dir = visuals_dir / slicer_name
+                slicer_dir.mkdir(parents=True, exist_ok=True)
+                (slicer_dir / "visual.json").write_text(
+                    json.dumps(slicer, indent=2), encoding="utf-8"
                 )
-            for item in svg_layout.get("filter_values", []):
-                label_name = f"order_filter_value_{item['text'].lower().replace(' ', '_')}_{int(item['x'])}"
-                textbox = make_textbox_visual(
-                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 220, 16
-                )
-                label_dir = visuals_dir / label_name
-                label_dir.mkdir(parents=True, exist_ok=True)
-                (label_dir / "visual.json").write_text(
-                    json.dumps(textbox, indent=2), encoding="utf-8"
-                )
+            # Add date range slicer
+            date_slicer_name = "order_slicer_date"
+            date_slicer = make_date_slicer(
+                date_slicer_name, "Orders", "Order Date",
+                20, 35, 500, 50, title="Order Date"
+            )
+            date_slicer_dir = visuals_dir / date_slicer_name
+            date_slicer_dir.mkdir(parents=True, exist_ok=True)
+            (date_slicer_dir / "visual.json").write_text(
+                json.dumps(date_slicer, indent=2), encoding="utf-8"
+            )
             if svg_layout.get("table_label"):
                 item = svg_layout["table_label"]
                 label_name = "order_table_title"
@@ -2302,6 +2690,30 @@ def apply_layout_overrides(
                 (label_dir / "visual.json").write_text(
                     json.dumps(textbox, indent=2), encoding="utf-8"
                 )
+            # Add parameter slicers for Commission Model
+            for slicer_dir in visuals_dir.glob("commission_slicer_*"):
+                shutil.rmtree(slicer_dir)
+            commission_slicers = {
+                "new_quota": ("Parameters", "New Quota", "dropdown", 20, "New Quota"),
+                "base_salary": ("Parameters", "Base Salary", "dropdown", 180, "Base Salary"),
+                "sort_by": ("Parameters", "Sort By", "dropdown", 340, "Sort By"),
+                "commission_rate": ("Parameters", "Commission Rate", "dropdown", 500, "Commission Rate"),
+            }
+            slicer_y = 60
+            slicer_width = 140
+            slicer_height = 50
+            for filter_key, (entity, property, stype, slicer_x, title) in commission_slicers.items():
+                slicer_name = f"commission_slicer_{filter_key}"
+                slicer = make_slicer_visual(
+                    slicer_name, entity, property,
+                    slicer_x, slicer_y, slicer_width, slicer_height,
+                    slicer_type=stype, title=title
+                )
+                slicer_dir = visuals_dir / slicer_name
+                slicer_dir.mkdir(parents=True, exist_ok=True)
+                (slicer_dir / "visual.json").write_text(
+                    json.dumps(slicer, indent=2), encoding="utf-8"
+                )
         return
 
     if profile == "shipping":
@@ -2354,25 +2766,33 @@ def apply_layout_overrides(
                     visual["position"]["width"] = 160
                     visual["position"]["height"] = 36
 
-            for item in svg_layout.get("filter_labels", []):
-                label_name = f"shipping_filter_label_{item['text'].lower().replace(' ', '_')}"
-                textbox = make_textbox_visual(
-                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 160, 16
+            # Create slicers for Shipping page
+            for slicer_dir in visuals_dir.glob("shipping_slicer_*"):
+                shutil.rmtree(slicer_dir)
+            for filter_label_dir in visuals_dir.glob("shipping_filter_label_*"):
+                shutil.rmtree(filter_label_dir)
+            for filter_value_dir in visuals_dir.glob("shipping_filter_value_*"):
+                shutil.rmtree(filter_value_dir)
+            shipping_slicers = {
+                "order_year": ("Orders", "Order Year", "dropdown", page_width - 380, "Order Year"),
+                "order_quarter": ("Orders", "Order Quarter", "dropdown", page_width - 260, "Order Quarter"),
+                "region": ("Orders", "Region", "dropdown", page_width - 140, "Region"),
+                "ship_mode": ("Orders", "Ship Mode", "dropdown", page_width - 20, "Ship Mode"),
+            }
+            slicer_y = 35
+            slicer_width = 110
+            slicer_height = 50
+            for filter_key, (entity, property, stype, slicer_x, title) in shipping_slicers.items():
+                slicer_name = f"shipping_slicer_{filter_key}"
+                slicer = make_slicer_visual(
+                    slicer_name, entity, property,
+                    slicer_x - slicer_width, slicer_y, slicer_width, slicer_height,
+                    slicer_type=stype, title=title
                 )
-                label_dir = visuals_dir / label_name
-                label_dir.mkdir(parents=True, exist_ok=True)
-                (label_dir / "visual.json").write_text(
-                    json.dumps(textbox, indent=2), encoding="utf-8"
-                )
-            for item in svg_layout.get("filter_values", []):
-                label_name = f"shipping_filter_value_{item['text'].lower()}_{int(item['x'])}"
-                textbox = make_textbox_visual(
-                    label_name, item["text"], item["x"] * scale_x, item["y"] * scale_y - 12, 60, 16
-                )
-                label_dir = visuals_dir / label_name
-                label_dir.mkdir(parents=True, exist_ok=True)
-                (label_dir / "visual.json").write_text(
-                    json.dumps(textbox, indent=2), encoding="utf-8"
+                slicer_dir = visuals_dir / slicer_name
+                slicer_dir.mkdir(parents=True, exist_ok=True)
+                (slicer_dir / "visual.json").write_text(
+                    json.dumps(slicer, indent=2), encoding="utf-8"
                 )
             for key in ["mid_chart_label", "bottom_table_label"]:
                 item = svg_layout.get(key)
@@ -2493,6 +2913,8 @@ def process_report(
                     visual["visual"]["visualType"] = "matrix"
                     visual["visual"]["autoSelectVisualType"] = False
                     visual["recommended_type"] = "matrix"
+                    # Add conditional formatting for heatmap colors
+                    apply_heatmap_colors(visual["visual"])
                 if (
                     "sales and profit" in title
                     or name == "product_sales_profit"
@@ -2505,6 +2927,10 @@ def process_report(
                     visual["visual"]["visualType"] = "scatterChart"
                     visual["visual"]["autoSelectVisualType"] = False
                     visual["recommended_type"] = "scatterChart"
+                    # Apply profitability colors to scatter chart
+                    apply_profitability_colors(visual["visual"])
+                    # Apply segment colors for legend
+                    apply_segment_colors(visual["visual"])
                     filter_config = visual["json"].get("filterConfig", {})
                     filter_config["filters"] = [
                         build_date_range_filter(
@@ -2521,16 +2947,27 @@ def process_report(
         if page_name.lower() == "customers":
             for visual in visuals:
                 title = visual.get("title", "").lower()
-                if "scatter" in title:
+                if "scatter" in title or visual["recommended_type"] == "scatterChart":
                     to_scatter_query(visual["visual"], "Sample - Superstore", "Customer Name")
                     visual["visual"]["visualType"] = "scatterChart"
                     visual["visual"]["autoSelectVisualType"] = False
                     visual["recommended_type"] = "scatterChart"
-                if "rank" in title:
+                    # Apply profitability colors for scatter dots
+                    apply_profitability_colors(visual["visual"])
+                if "rank" in title or visual["recommended_type"] == "barChart":
                     to_customer_rank_query(visual["visual"], "Sample - Superstore")
                     visual["visual"]["visualType"] = "barChart"
                     visual["visual"]["autoSelectVisualType"] = False
                     visual["recommended_type"] = "barChart"
+                    # Apply customer ranking colors (red gradient)
+                    apply_customer_ranking_colors(visual["visual"])
+
+        if page_name.lower() == "shipping":
+            for visual in visuals:
+                if visual["recommended_type"] in {"areaChart", "stackedAreaChart"}:
+                    # Apply ship status colors (Early=blue, OnTime=gray, Late=brown)
+                    apply_ship_status_colors(visual["visual"])
+                    visual["visual"]["autoSelectVisualType"] = False
 
         if page_name.lower() == "overview":
             for visual in visuals:
@@ -2544,8 +2981,14 @@ def process_report(
                     ensure_small_multiples(query_state, "Category")
                 visual["visual"]["query"]["queryState"] = query_state
                 lock_visual_type(visual["visual"])
+                # Apply Tableau-like formatting and colors
+                apply_tableau_like_area_formatting(visual["visual"])
             visuals = split_segment_visuals(visuals_dir, visuals, page_height)
             visuals = split_category_visuals(visuals_dir, visuals, page_height)
+            # Apply colors to all area charts after splitting
+            for visual in visuals:
+                if visual["recommended_type"] in {"areaChart", "stackedAreaChart"}:
+                    apply_profitability_colors(visual["visual"])
 
         top, middle, bottom = [], [], []
         for visual in visuals:
@@ -2599,7 +3042,10 @@ def process_report(
             position = visual["position"]
             visual["json"]["position"] = position
             if not dry_run:
-                write_json(visual["path"], visual["json"])
+                # Check if the visual's parent directory still exists
+                # (might have been deleted during slicer cleanup)
+                if visual["path"].parent.exists():
+                    write_json(visual["path"], visual["json"])
 
         if page_changes["visual_changes"]:
             report_changes["pages"].append(page_changes)

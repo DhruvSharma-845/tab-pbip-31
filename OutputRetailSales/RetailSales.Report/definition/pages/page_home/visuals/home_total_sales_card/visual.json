@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "home_total_sales_card",
   "position": {
-    "x": 20,
-    "y": 100,
-    "z": 1,
+    "x": 50,
+    "y": 350,
+    "z": 10,
     "height": 120,
-    "width": 280,
-    "tabOrder": 1
+    "width": 200,
+    "tabOrder": 10
   },
   "visual": {
     "visualType": "card",

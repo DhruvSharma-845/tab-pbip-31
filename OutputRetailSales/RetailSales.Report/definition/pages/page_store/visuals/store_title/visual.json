@@ -19,10 +19,10 @@
               {
                 "textRuns": [
                   {
-                    "value": "Store Details",
+                    "value": "Retail Sales",
                     "textStyle": {
                       "fontWeight": "bold",
-                      "fontSize": "20pt"
+                      "fontSize": "18pt"
                     }
                   }
                 ]

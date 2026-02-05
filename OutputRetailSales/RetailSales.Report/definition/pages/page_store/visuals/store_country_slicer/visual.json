@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "store_country_slicer",
+  "position": {
+    "x": 930,
+    "y": 10,
+    "z": 12,
+    "height": 50,
+    "width": 120,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "slicer",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "Country"
+                }
+              },
+              "queryRef": "Retail Sales Data.Country",
+              "nativeQueryRef": "Country"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -3,9 +3,9 @@
   "name": "product_year_2023",
   "position": {
     "x": 90.28,
-    "y": 301.27,
+    "y": 0,
     "z": 10,
-    "height": 16,
+    "height": 40,
     "width": 40,
     "tabOrder": 0
   },
