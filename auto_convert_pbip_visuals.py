@@ -169,6 +169,9 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
     rects = svg_data["rects"]
     texts = svg_data["texts"]
 
+    # Page title
+    page_title = find_label(texts, "Executive Overview")
+
     segment_label = find_label(texts, "Monthly Sales by Segment")
     category_label = find_label(texts, "Monthly Sales by Product Category")
     if not segment_label or not category_label:
@@ -185,7 +188,8 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
             segment_names.append(item)
     category_names = []
     for item in texts:
-        if item["text"] in {"Furniture", "Office Supplies", "Technology"}:
+        # Handle split "Office" + "Supplies" as well as "Office Supplies"
+        if item["text"] in {"Furniture", "Office Supplies", "Technology", "Office", "Supplies"}:
             category_names.append(item)
     legend_names = []
     for item in texts:
@@ -210,6 +214,7 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
         "category_rect": category_rect,
         "svg_width": svg_data["svg_width"],
         "svg_height": svg_data["svg_height"],
+        "page_title": page_title,
         "segment_labels": segment_names,
         "category_labels": category_names,
         "legend_labels": legend_names,
@@ -288,7 +293,7 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
             legend_labels.append(item)
     filter_labels = []
     for item in texts:
-        if item["text"] in {"Region", "Profit Ratio"}:
+        if item["text"] in {"Region", "Profit Ratio", "Sales"}:
             filter_labels.append(item)
     filter_values = []
     for item in texts:
@@ -299,6 +304,29 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
         if any(key in item["text"] for key in {"Year:", "Month:", "Product Category"}):
             scatter_subtitle = item
             break
+    # Category labels for heatmap rows (Furniture, Office Supplies, Technology)
+    category_labels = []
+    for item in texts:
+        if item["text"] in {"Furniture", "Office Supplies", "Technology"}:
+            category_labels.append(item)
+    # Year labels on left side of heatmap
+    year_labels = []
+    for item in texts:
+        if item["text"].isdigit() and len(item["text"]) == 4:
+            year = int(item["text"])
+            if 2020 <= year <= 2030:
+                year_labels.append(item)
+    # Month labels on top of heatmap
+    month_labels = []
+    month_names = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"}
+    for item in texts:
+        if item["text"] in month_names:
+            month_labels.append(item)
+    # Segment labels for scatter (Consumer, Corporate, Home Office)
+    segment_labels = []
+    for item in texts:
+        if item["text"] in {"Consumer", "Corporate", "Home Office"}:
+            segment_labels.append(item)
     if not heatmap_label or not scatter_label:
         return None
 
@@ -321,6 +349,10 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
         "filter_labels": filter_labels,
         "filter_values": filter_values,
         "scatter_subtitle": scatter_subtitle,
+        "category_labels": category_labels,
+        "year_labels": year_labels,
+        "month_labels": month_labels,
+        "segment_labels": segment_labels,
     }
 
 
@@ -1578,6 +1610,24 @@ def apply_layout_overrides(
                 "w": cat["w"] * scale_x,
                 "h": cat["h"] * scale_y,
             }
+            # Remove old page title if exists
+            page_title_dir = visuals_dir / "overview_page_title"
+            if page_title_dir.exists():
+                shutil.rmtree(page_title_dir)
+            # Add page title textbox from SVG
+            if svg_layout.get("page_title"):
+                item = svg_layout["page_title"]
+                label_x = item["x"] * scale_x
+                label_y = item["y"] * scale_y
+                label_name = "overview_page_title"
+                textbox = make_textbox_visual(
+                    label_name, "Executive Overview - Profitability", 10, 5, 460, 30
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
             # Remove old label visuals
             for label_name in [
                 "seg_label_consumer",
@@ -1691,8 +1741,31 @@ def apply_layout_overrides(
                         json.dumps(textbox, indent=2), encoding="utf-8"
                     )
             # Add category labels from SVG positions
+            # Handle merged "Office" + "Supplies" for "Office Supplies"
             if svg_layout.get("category_labels"):
-                for item in svg_layout["category_labels"]:
+                category_labels = svg_layout["category_labels"]
+                # Check if we have split "Office" and "Supplies"
+                office_item = None
+                supplies_item = None
+                for item in category_labels:
+                    if item["text"] == "Office":
+                        office_item = item
+                    elif item["text"] == "Supplies":
+                        supplies_item = item
+                # Merge them into "Office Supplies" if both exist
+                merged_labels = []
+                for item in category_labels:
+                    if item["text"] in {"Office", "Supplies"}:
+                        continue  # skip individual items
+                    merged_labels.append(item)
+                if office_item and supplies_item:
+                    # Use position of "Office" as start
+                    merged_labels.append({
+                        "text": "Office Supplies",
+                        "x": office_item["x"],
+                        "y": office_item["y"],
+                    })
+                for item in merged_labels:
                     label_x = item["x"] * scale_x
                     label_y = item["y"] * scale_y
                     label_name = f"cat_label_{item['text'].lower().replace(' ', '_')}"
@@ -1909,6 +1982,86 @@ def apply_layout_overrides(
                     (label_dir / "visual.json").write_text(
                         json.dumps(textbox, indent=2), encoding="utf-8"
                     )
+            # Add category labels (Furniture, Office Supplies, Technology) on left of heatmap
+            if svg_layout.get("category_labels"):
+                for label_dir in visuals_dir.glob("product_cat_*"):
+                    shutil.rmtree(label_dir)
+                for item in svg_layout["category_labels"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"product_cat_{item['text'].lower().replace(' ', '_')}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x - 10, label_y - 10, 120, 18
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
+            # Add year labels on left side of heatmap
+            if svg_layout.get("year_labels"):
+                for label_dir in visuals_dir.glob("product_year_*"):
+                    shutil.rmtree(label_dir)
+                for item in svg_layout["year_labels"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"product_year_{item['text']}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x - 5, label_y - 8, 40, 16
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
+            # Add month labels on top of heatmap
+            if svg_layout.get("month_labels"):
+                for label_dir in visuals_dir.glob("product_month_*"):
+                    shutil.rmtree(label_dir)
+                for item in svg_layout["month_labels"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"product_month_{item['text'].lower()}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x - 10, label_y - 8, 35, 14
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
+            # Add segment labels for scatter chart
+            if svg_layout.get("segment_labels"):
+                for label_dir in visuals_dir.glob("product_segment_*"):
+                    shutil.rmtree(label_dir)
+                for item in svg_layout["segment_labels"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"product_segment_{item['text'].lower().replace(' ', '_')}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x, label_y - 10, 100, 16
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
+            # Add page title for Product page
+            if svg_layout.get("page_title"):
+                page_title_dir = visuals_dir / "product_page_title"
+                if page_title_dir.exists():
+                    shutil.rmtree(page_title_dir)
+                item = svg_layout["page_title"]
+                label_x = item["x"] * scale_x
+                label_y = item["y"] * scale_y
+                textbox = make_textbox_visual(
+                    "product_page_title", "Product Drilldown - Profitability", 10, 5, 400, 30
+                )
+                label_dir = visuals_dir / "product_page_title"
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
         return
 
     if profile == "customers":

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "commission_value_names",
   "position": {
-    "x": 529.54,
-    "y": 66.56,
+    "x": 8.13,
+    "y": 3.63,
     "z": 10,
-    "height": 16,
-    "width": 120,
+    "height": 30,
+    "width": 520,
     "tabOrder": 0
   },
   "visual": {

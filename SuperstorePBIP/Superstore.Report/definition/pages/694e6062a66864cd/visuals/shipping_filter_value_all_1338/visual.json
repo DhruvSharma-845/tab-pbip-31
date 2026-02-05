@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "shipping_filter_value_all_1338",
   "position": {
-    "x": 1128.22,
-    "y": 300.58,
+    "x": 8.13,
+    "y": 17.69,
     "z": 10,
-    "height": 16,
-    "width": 60,
+    "height": 30,
+    "width": 600,
     "tabOrder": 0
   },
   "visual": {
