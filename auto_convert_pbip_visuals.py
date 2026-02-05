@@ -171,6 +171,14 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
     for item in texts:
         if item["text"] in {"Profitable", "Unprofitable"}:
             legend_names.append(item)
+    filter_labels = []
+    for item in texts:
+        if item["text"] in {"Region", "Order Date", "Profit Ratio"}:
+            filter_labels.append(item)
+    filter_values = []
+    for item in texts:
+        if item["text"] in {"All"}:
+            filter_values.append(item)
     year_labels = []
     for item in texts:
         if item["text"].isdigit() and len(item["text"]) == 4:
@@ -188,6 +196,8 @@ def parse_overview_svg(svg_path: Path) -> Optional[dict]:
         "year_labels": year_labels,
         "segment_title": segment_label,
         "category_title": category_label,
+        "filter_labels": filter_labels,
+        "filter_values": filter_values,
     }
 
 
@@ -1249,6 +1259,10 @@ def apply_layout_overrides(
                 shutil.rmtree(label_dir)
             for label_dir in visuals_dir.glob("legend_label_*"):
                 shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("filter_label_*"):
+                shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("filter_value_*"):
+                shutil.rmtree(label_dir)
             segment_split = [
                 v
                 for v in areas
@@ -1364,6 +1378,33 @@ def apply_layout_overrides(
                     label_name = f"legend_label_{item['text'].lower()}"
                     textbox = make_textbox_visual(
                         label_name, item["text"], label_x, label_y - 10, 120, 16
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
+            # Add filter labels and values from SVG positions
+            if svg_layout.get("filter_labels"):
+                for item in svg_layout["filter_labels"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"filter_label_{item['text'].lower().replace(' ', '_')}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x, label_y - 10, 120, 16
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
+            if svg_layout.get("filter_values"):
+                for item in svg_layout["filter_values"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"filter_value_{item['text'].lower()}_{int(label_x)}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x, label_y - 10, 60, 16
                     )
                     label_dir = visuals_dir / label_name
                     label_dir.mkdir(parents=True, exist_ok=True)

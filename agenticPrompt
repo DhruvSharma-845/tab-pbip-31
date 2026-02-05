@@ -154,6 +154,7 @@ Use TWB `mark class`, worksheet shelves (Rows/Columns), and snapshots to select 
   - Small multiples/panes (facet by dimension)
   - Stacked vs grouped bars (segment within category)
 - Identify filter affordances (dropdowns, listboxes, range sliders) and map them to slicers/filters.
+- Parse visible dashboard filters in SVG/PNG (e.g., Region, Order Date, Profit Ratio) and ensure they exist as report/page filters or slicers.
 - Identify relationships shown in the chart:
   - Dual‑axis overlays
   - Reference lines/bands
