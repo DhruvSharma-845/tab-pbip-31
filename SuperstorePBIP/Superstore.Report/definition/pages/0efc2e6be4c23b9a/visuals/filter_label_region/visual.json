@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "filter_label_region",
   "position": {
-    "x": 1134.12,
-    "y": 112.38,
+    "x": 0,
+    "y": 0,
     "z": 10,
-    "height": 16,
-    "width": 120,
+    "height": 40,
+    "width": 1280,
     "tabOrder": 0
   },
   "visual": {

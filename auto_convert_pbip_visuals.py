@@ -262,6 +262,10 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
     page_title = find_label("Product Drilldown")
     heatmap_label = find_label("Sales by Product Category")
     scatter_label = find_label("Sales and Profit by Product Names")
+    legend_labels = []
+    for item in texts:
+        if item["text"] in {"Profitable", "Unprofitable"}:
+            legend_labels.append(item)
     if not heatmap_label or not scatter_label:
         return None
 
@@ -280,6 +284,7 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
         "page_title": page_title,
         "heatmap_title": heatmap_label,
         "scatter_title": scatter_label,
+        "legend_labels": legend_labels,
     }
 
 
@@ -1448,6 +1453,8 @@ def apply_layout_overrides(
             # Remove old product labels if present
             for label_dir in visuals_dir.glob("product_*_title"):
                 shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("product_legend_*"):
+                shutil.rmtree(label_dir)
         else:
             heatmap_box = {"x": 20, "y": 50, "w": 1240, "h": 280}
             scatter_box = {
@@ -1513,6 +1520,19 @@ def apply_layout_overrides(
                 (label_dir / "visual.json").write_text(
                     json.dumps(textbox, indent=2), encoding="utf-8"
                 )
+            if svg_layout.get("legend_labels"):
+                for item in svg_layout["legend_labels"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"product_legend_{item['text'].lower()}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x, label_y - 10, 120, 16
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
         return
 
     if profile == "customers":
