@@ -94,6 +94,24 @@
               "nativeQueryRef": "Segment"
             }
           ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Profit Ratio"
+                }
+              },
+              "queryRef": "Orders.Profit Ratio",
+              "nativeQueryRef": "Profit Ratio"
+            }
+          ]
         }
       }
     },
@@ -142,5 +160,61 @@
         }
       ]
     }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "product_order_date_range",
+        "displayName": "Order Date",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Order Date"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "Orders",
+              "Entity": "Orders"
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Between": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Order Date"
+                    }
+                  },
+                  "LowerBound": {
+                    "Literal": {
+                      "Value": "datetime'2022-01-03T00:00:00'"
+                    }
+                  },
+                  "UpperBound": {
+                    "Literal": {
+                      "Value": "datetime'2025-12-30T00:00:00'"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
   }
 }

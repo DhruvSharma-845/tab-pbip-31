@@ -266,6 +266,19 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
     for item in texts:
         if item["text"] in {"Profitable", "Unprofitable"}:
             legend_labels.append(item)
+    filter_labels = []
+    for item in texts:
+        if item["text"] in {"Region", "Profit Ratio"}:
+            filter_labels.append(item)
+    filter_values = []
+    for item in texts:
+        if item["text"] in {"All"}:
+            filter_values.append(item)
+    scatter_subtitle = None
+    for item in texts:
+        if any(key in item["text"] for key in {"Year:", "Month:", "Product Category"}):
+            scatter_subtitle = item
+            break
     if not heatmap_label or not scatter_label:
         return None
 
@@ -285,6 +298,9 @@ def parse_product_svg(svg_path: Path) -> Optional[dict]:
         "heatmap_title": heatmap_label,
         "scatter_title": scatter_label,
         "legend_labels": legend_labels,
+        "filter_labels": filter_labels,
+        "filter_values": filter_values,
+        "scatter_subtitle": scatter_subtitle,
     }
 
 
@@ -737,6 +753,137 @@ def build_segment_value_filter(entity: str, value: str, name_suffix: str) -> dic
         },
     }
 
+
+def build_date_range_filter(
+    entity: str,
+    property_name: str,
+    start_date: str,
+    end_date: str,
+    name_suffix: str,
+    display_name: str,
+) -> dict:
+    return {
+        "name": name_suffix,
+        "displayName": display_name,
+        "field": {
+            "Column": {
+                "Expression": {"SourceRef": {"Entity": entity}},
+                "Property": property_name,
+            }
+        },
+        "type": "Advanced",
+        "filter": {
+            "Version": 2,
+            "From": [{"Name": entity, "Entity": entity}],
+            "Where": [
+                {
+                    "Condition": {
+                        "Between": {
+                            "Expression": {
+                                "Column": {
+                                    "Expression": {"SourceRef": {"Entity": entity}},
+                                    "Property": property_name,
+                                }
+                            },
+                            "LowerBound": {
+                                "Literal": {
+                                    "Value": f"datetime'{start_date}T00:00:00'"
+                                }
+                            },
+                            "UpperBound": {
+                                "Literal": {
+                                    "Value": f"datetime'{end_date}T00:00:00'"
+                                }
+                            },
+                        }
+                    }
+                }
+            ],
+        },
+    }
+
+
+def add_tooltip_measure(query_state: dict, entity: str, measure_name: str):
+    tooltip_field = {
+        "field": {
+            "Measure": {
+                "Expression": {"SourceRef": {"Entity": entity}},
+                "Property": measure_name,
+            }
+        },
+        "queryRef": f"{entity}.{measure_name}",
+        "nativeQueryRef": measure_name,
+    }
+    query_state["Tooltips"] = {"projections": [tooltip_field]}
+
+
+def ensure_product_heatmap_query(visual: dict, entity: str):
+    query = visual.get("query", {})
+    query_state = query.get("queryState", {})
+    query_state.clear()
+    query_state.update(
+        {
+            "Rows": {
+                "projections": [
+                    {
+                        "field": {
+                            "Column": {
+                                "Expression": {"SourceRef": {"Entity": entity}},
+                                "Property": "Category",
+                            }
+                        },
+                        "queryRef": f"{entity}.Category",
+                        "nativeQueryRef": "Category",
+                    },
+                    {
+                        "field": {
+                            "Column": {
+                                "Expression": {"SourceRef": {"Entity": entity}},
+                                "Property": "Order Year",
+                            }
+                        },
+                        "queryRef": f"{entity}.Order Year",
+                        "nativeQueryRef": "Order Year",
+                    },
+                ]
+            },
+            "Columns": {
+                "projections": [
+                    {
+                        "field": {
+                            "Column": {
+                                "Expression": {"SourceRef": {"Entity": entity}},
+                                "Property": "Order Month",
+                            }
+                        },
+                        "queryRef": f"{entity}.Order Month",
+                        "nativeQueryRef": "Order Month",
+                    }
+                ]
+            },
+            "Values": {
+                "projections": [
+                    {
+                        "field": {
+                            "Aggregation": {
+                                "Expression": {
+                                    "Column": {
+                                        "Expression": {"SourceRef": {"Entity": entity}},
+                                        "Property": "Sales",
+                                    }
+                                },
+                                "Function": 0,
+                            }
+                        },
+                        "queryRef": f"Sum({entity}.Sales)",
+                        "nativeQueryRef": "Sum of Sales",
+                    }
+                ]
+            },
+        }
+    )
+    query["queryState"] = query_state
+    visual["query"] = query
 
 def split_segment_visuals(
     visuals_dir: Path,
@@ -1453,6 +1600,12 @@ def apply_layout_overrides(
                 shutil.rmtree(label_dir)
             for label_dir in visuals_dir.glob("product_legend_*"):
                 shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("product_filter_label_*"):
+                shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("product_filter_value_*"):
+                shutil.rmtree(label_dir)
+            for label_dir in visuals_dir.glob("product_scatter_subtitle"):
+                shutil.rmtree(label_dir)
         else:
             heatmap_box = {"x": 20, "y": 50, "w": 1240, "h": 280}
             scatter_box = {
@@ -1518,6 +1671,19 @@ def apply_layout_overrides(
                 (label_dir / "visual.json").write_text(
                     json.dumps(textbox, indent=2), encoding="utf-8"
                 )
+            if svg_layout.get("scatter_subtitle"):
+                item = svg_layout["scatter_subtitle"]
+                label_x = item["x"] * scale_x
+                label_y = item["y"] * scale_y
+                label_name = "product_scatter_subtitle"
+                textbox = make_textbox_visual(
+                    label_name, item["text"], label_x, label_y - 14, 820, 18
+                )
+                label_dir = visuals_dir / label_name
+                label_dir.mkdir(parents=True, exist_ok=True)
+                (label_dir / "visual.json").write_text(
+                    json.dumps(textbox, indent=2), encoding="utf-8"
+                )
             if svg_layout.get("legend_labels"):
                 for item in svg_layout["legend_labels"]:
                     label_x = item["x"] * scale_x
@@ -1525,6 +1691,34 @@ def apply_layout_overrides(
                     label_name = f"product_legend_{item['text'].lower()}"
                     textbox = make_textbox_visual(
                         label_name, item["text"], label_x, label_y - 10, 120, 16
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
+            if svg_layout.get("filter_labels"):
+                for item in svg_layout["filter_labels"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = (
+                        f"product_filter_label_{item['text'].lower().replace(' ', '_')}"
+                    )
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x, label_y - 10, 100, 16
+                    )
+                    label_dir = visuals_dir / label_name
+                    label_dir.mkdir(parents=True, exist_ok=True)
+                    (label_dir / "visual.json").write_text(
+                        json.dumps(textbox, indent=2), encoding="utf-8"
+                    )
+            if svg_layout.get("filter_values"):
+                for item in svg_layout["filter_values"]:
+                    label_x = item["x"] * scale_x
+                    label_y = item["y"] * scale_y
+                    label_name = f"product_filter_value_{item['text'].lower()}_{int(label_x)}"
+                    textbox = make_textbox_visual(
+                        label_name, item["text"], label_x, label_y - 10, 60, 16
                     )
                     label_dir = visuals_dir / label_name
                     label_dir.mkdir(parents=True, exist_ok=True)
@@ -1657,15 +1851,47 @@ def process_report(
 
         if page_name.lower() == "product":
             for visual in visuals:
-                if "sales and profit" in visual.get("title", "").lower():
-                    to_scatter_query(visual["visual"], "Orders", "Product Name")
-                    visual["visual"]["visualType"] = "scatterChart"
-                    visual["visual"]["autoSelectVisualType"] = False
-                    visual["recommended_type"] = "scatterChart"
-                if "sales by product category" in visual.get("title", "").lower():
+                title = visual.get("title", "").lower()
+                name = str(visual.get("json", {}).get("name", "")).lower()
+                fields_text = " ".join(visual.get("fields", [])).lower()
+                if (
+                    "sales by product category" in title
+                    or name == "product_heatmap"
+                    or (
+                        visual["recommended_type"] == "matrix"
+                        and "order month" in fields_text
+                        and "order year" in fields_text
+                        and "category" in fields_text
+                    )
+                ):
+                    ensure_product_heatmap_query(visual["visual"], "Orders")
                     visual["visual"]["visualType"] = "matrix"
                     visual["visual"]["autoSelectVisualType"] = False
                     visual["recommended_type"] = "matrix"
+                if (
+                    "sales and profit" in title
+                    or name == "product_sales_profit"
+                    or visual["recommended_type"] == "scatterChart"
+                ):
+                    to_scatter_query(visual["visual"], "Orders", "Product Name")
+                    add_tooltip_measure(
+                        visual["visual"]["query"]["queryState"], "Orders", "Profit Ratio"
+                    )
+                    visual["visual"]["visualType"] = "scatterChart"
+                    visual["visual"]["autoSelectVisualType"] = False
+                    visual["recommended_type"] = "scatterChart"
+                    filter_config = visual["json"].get("filterConfig", {})
+                    filter_config["filters"] = [
+                        build_date_range_filter(
+                            "Orders",
+                            "Order Date",
+                            "2022-01-03",
+                            "2025-12-30",
+                            "product_order_date_range",
+                            "Order Date",
+                        )
+                    ]
+                    visual["json"]["filterConfig"] = filter_config
 
         if page_name.lower() == "customers":
             for visual in visuals:
