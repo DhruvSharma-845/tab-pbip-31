@@ -563,3 +563,809 @@ Before delivering the PBIP, verify:
 - [ ] Page order in `pages.json` matches created page folders
 - [ ] All files are valid JSON/TMDL with no trailing commas
 - [ ] `.pbip` file has correct relative path to Report folder
+
+---
+
+## A7. SVG Parsing for Pixel-Perfect Layout (CRITICAL)
+
+Tableau SVG snapshots contain precise positioning information that must be extracted for accurate layout recreation.
+
+### SVG Dimension Conversion
+```python
+import re
+
+def mm_to_px(val):
+    """Convert SVG mm dimensions to pixels (96 DPI = 3.7795 px/mm)"""
+    m = re.match(r'([0-9.]+)mm', val)
+    if m:
+        return float(m.group(1)) * 3.7795
+    m = re.match(r'([0-9.]+)', val)
+    if m:
+        return float(m.group(1))
+    return 0
+
+# Example: SVG width="401.637mm" → 1518 px
+```
+
+### Position Scaling Formula
+```python
+# Calculate scale factors
+svg_width_px = mm_to_px(svg_root.get('width'))
+svg_height_px = mm_to_px(svg_root.get('height'))
+
+pbip_width = 1280   # Standard PBIP page width
+pbip_height = 731   # Standard PBIP page height
+
+scale_x = pbip_width / svg_width_px
+scale_y = pbip_height / svg_height_px
+
+# Convert SVG position to PBIP position
+pbip_x = svg_x * scale_x
+pbip_y = svg_y * scale_y
+```
+
+### SVG Transform Parsing
+SVG elements often have transform attributes that must be applied to get true coordinates:
+
+```python
+import re
+
+def parse_transform(transform_str):
+    """Parse SVG transform attribute to get translation/matrix values"""
+    if not transform_str:
+        return (0, 0)
+    
+    # Handle matrix(a,b,c,d,e,f) - e,f are translation
+    matrix_match = re.search(r'matrix\(([^)]+)\)', transform_str)
+    if matrix_match:
+        vals = [float(v) for v in matrix_match.group(1).split(',')]
+        return (vals[4], vals[5])  # e, f are x, y translation
+    
+    # Handle translate(x,y)
+    translate_match = re.search(r'translate\(([^,]+),([^)]+)\)', transform_str)
+    if translate_match:
+        return (float(translate_match.group(1)), float(translate_match.group(2)))
+    
+    return (0, 0)
+
+# Apply transform to element position
+transform = parse_transform(element.get('transform', ''))
+true_x = element_x + transform[0]
+true_y = element_y + transform[1]
+```
+
+### Extracting Key Elements from SVG
+
+**Text Elements (for titles, labels, axis values):**
+```python
+import xml.etree.ElementTree as ET
+
+def extract_text_elements(svg_path):
+    tree = ET.parse(svg_path)
+    root = tree.getroot()
+    ns = {'svg': 'http://www.w3.org/2000/svg'}
+    
+    texts = []
+    for text_elem in root.iter('{http://www.w3.org/2000/svg}text'):
+        # Get position from element
+        x = float(text_elem.get('x', 0))
+        y = float(text_elem.get('y', 0))
+        
+        # Get parent group transform
+        parent = text_elem.find('..')
+        if parent is not None:
+            tx, ty = parse_transform(parent.get('transform', ''))
+            x += tx
+            y += ty
+        
+        content = text_elem.text or ''
+        texts.append({'x': x, 'y': y, 'text': content.strip()})
+    
+    return texts
+```
+
+**Rect Elements (for chart containers, filter boxes):**
+```python
+def extract_rect_elements(svg_path):
+    tree = ET.parse(svg_path)
+    root = tree.getroot()
+    
+    rects = []
+    for rect in root.iter('{http://www.w3.org/2000/svg}rect'):
+        x = float(rect.get('x', 0))
+        y = float(rect.get('y', 0))
+        w = float(rect.get('width', 0))
+        h = float(rect.get('height', 0))
+        
+        # Apply parent transform
+        parent = rect.find('..')
+        if parent is not None:
+            tx, ty = parse_transform(parent.get('transform', ''))
+            x += tx
+            y += ty
+        
+        rects.append({'x': x, 'y': y, 'w': w, 'h': h})
+    
+    return rects
+```
+
+---
+
+## A8. Layout Zone Management
+
+Organize visuals into logical vertical zones for consistent, non-overlapping layouts.
+
+### Standard Page Layout Zones
+```
+Zone Name           | Y Range    | Content
+--------------------|------------|------------------------------------------
+Title Zone          | 0-40       | Page title textbox
+KPI Cards Zone      | 40-110     | KPI card visuals (horizontal row)
+Main Visual Zone    | 110-380    | Maps, large charts, primary visuals
+Filters Zone        | 110-320    | Slicers (right side, x > 1100)
+Chart Section Titles| 380-415    | Section headings for chart groups
+Charts Row 1        | 415-520    | First row of charts
+Charts Row 2        | 520-620    | Second row of charts
+Charts Row 3        | 620-710    | Third row of charts
+Footer/Labels Zone  | 710-731    | Year labels, axis labels, legends
+```
+
+### Zone Assignment Logic
+```python
+def assign_zone(y_position):
+    if y_position < 40:
+        return 'title'
+    elif y_position < 110:
+        return 'kpi_cards'
+    elif y_position < 380:
+        return 'main_visual'
+    elif y_position < 415:
+        return 'section_titles'
+    elif y_position < 520:
+        return 'charts_row_1'
+    elif y_position < 620:
+        return 'charts_row_2'
+    elif y_position < 710:
+        return 'charts_row_3'
+    else:
+        return 'footer'
+```
+
+### Filter/Slicer Positioning Rules
+- Place slicers on the **right side** of the page (x > 1100)
+- Stack vertically with 45-60px spacing
+- Typical slicer dimensions: width=140, height=35-50
+- Position next to (not overlapping) main visual content
+
+```python
+# Example: Position slicers next to a map
+slicer_positions = [
+    {'name': 'Region', 'x': 1134, 'y': 145, 'w': 140, 'h': 35},
+    {'name': 'Order Date', 'x': 1134, 'y': 190, 'w': 140, 'h': 50},
+    {'name': 'Profit Ratio', 'x': 1134, 'y': 250, 'w': 140, 'h': 50},
+]
+```
+
+---
+
+## A9. Overlap Prevention and Validation
+
+### Overlap Detection Algorithm
+```python
+def check_overlap(v1, v2):
+    """Check if two visuals overlap"""
+    return (v1['x'] < v2['x'] + v2['w'] and 
+            v1['x'] + v1['w'] > v2['x'] and
+            v1['y'] < v2['y'] + v2['h'] and 
+            v1['y'] + v1['h'] > v2['y'])
+
+def find_all_overlaps(visuals):
+    """Find all overlapping visual pairs"""
+    overlaps = []
+    for i, v1 in enumerate(visuals):
+        for v2 in visuals[i+1:]:
+            if check_overlap(v1, v2):
+                overlaps.append((v1['name'], v2['name']))
+    return overlaps
+```
+
+### Acceptable Overlaps (do not flag as errors)
+- Textbox over background banner (intentional layering)
+- Title textbox over header container
+- Label textbox positioned within chart area
+
+### Critical Overlaps (must fix)
+- Chart overlapping another chart
+- Slicer overlapping chart content area
+- KPI cards overlapping each other
+
+### Bounds Validation
+```python
+def validate_bounds(visuals, page_width=1280, page_height=731):
+    """Check all visuals are within page bounds"""
+    issues = []
+    for v in visuals:
+        if v['x'] < 0 or v['y'] < 0:
+            issues.append(f"{v['name']} has negative position")
+        if v['x'] + v['w'] > page_width + 5:
+            issues.append(f"{v['name']} extends beyond page width")
+        if v['y'] + v['h'] > page_height + 5:
+            issues.append(f"{v['name']} extends beyond page height")
+    return issues
+```
+
+---
+
+## A10. Textbox Visual Creation
+
+Use textboxes for titles, labels, legends, and year markers.
+
+### Page Title Textbox Template
+```json
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "page_title",
+  "position": {
+    "x": 10,
+    "y": 5,
+    "z": 10,
+    "height": 30,
+    "width": 600,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Page Title Text",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "16pt"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
+```
+
+### Label Textbox Template (for segment/category labels)
+```json
+{
+  "name": "segment_label",
+  "position": {
+    "x": 15,
+    "y": 450,
+    "z": 5,
+    "height": 20,
+    "width": 120,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Consumer",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
+```
+
+### Year Label Generation (for axis labels)
+```python
+def create_year_labels(years, base_y, start_x, spacing):
+    """Generate year label textboxes for chart axis"""
+    labels = []
+    for i, year in enumerate(years):
+        labels.append({
+            'name': f'year_label_{year}_{i}',
+            'x': start_x + (i * spacing),
+            'y': base_y,
+            'width': 40,
+            'height': 16,
+            'text': str(year)
+        })
+    return labels
+```
+
+---
+
+## A11. Color Coding from Tableau
+
+Extract and apply Tableau color palettes to PBIP visuals.
+
+### Common Tableau Color Mappings
+```python
+TABLEAU_COLORS = {
+    # Tableau 10 palette
+    'blue': '#4e79a7',
+    'orange': '#f28e2b',
+    'red': '#e15759',
+    'teal': '#76b7b2',
+    'green': '#59a14f',
+    'yellow': '#edc949',
+    'purple': '#af7aa1',
+    'pink': '#ff9da7',
+    'brown': '#9c755f',
+    'gray': '#bab0ab',
+    
+    # Profitability colors (common pattern)
+    'profitable': '#4e79a7',      # Blue
+    'unprofitable': '#f28e2b',    # Orange
+    
+    # Ship status colors
+    'shipped_early': '#59a14f',   # Green
+    'on_time': '#f28e2b',         # Orange
+    'late': '#e15759',            # Red
+}
+```
+
+### Applying Colors to Visual DataPoints
+```json
+{
+  "visual": {
+    "visualType": "stackedAreaChart",
+    "objects": {
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": "#4e79a7"
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### Color Selector by Field Value
+```json
+{
+  "selector": {
+    "data": [
+      {
+        "scopeId": {
+          "Comparison": {
+            "Comparison": 0,
+            "Left": {
+              "Column": {
+                "Expression": { "SourceRef": { "Entity": "Orders" } },
+                "Property": "Profitability"
+              }
+            },
+            "Right": { "Literal": { "Value": "'Profitable'" } }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+## A12. Format Strings in TMDL
+
+Apply currency, percentage, and number formatting to columns and measures.
+
+### Currency Formatting
+```tmdl
+column Sales
+    dataType: double
+    formatString: \$#,0;(\$#,0);\$#,0
+    summarizeBy: sum
+    sourceColumn: Sales
+
+column Profit
+    dataType: double
+    formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+    summarizeBy: sum
+    sourceColumn: Profit
+```
+
+### Percentage Formatting
+```tmdl
+column 'Profit Ratio'
+    dataType: double
+    formatString: 0.0%;-0.0%;0.0%
+    summarizeBy: sum
+    sourceColumn: Profit Ratio
+
+column Discount
+    dataType: double
+    formatString: 0.00%;-0.00%;0.00%
+    summarizeBy: sum
+    sourceColumn: Discount
+```
+
+### Display Units in Visual Axis
+```json
+{
+  "visual": {
+    "objects": {
+      "valueAxis": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": { "Value": "1000L" }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### Display Unit Values
+| Value | Display |
+|-------|---------|
+| "0L" | Auto |
+| "1L" | None |
+| "1000L" | Thousands (K) |
+| "1000000L" | Millions (M) |
+| "1000000000L" | Billions (B) |
+
+---
+
+## A13. Slicer Visual Templates
+
+### Dropdown Slicer (for categorical fields)
+```json
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "slicer_region",
+  "position": {
+    "x": 1134,
+    "y": 145,
+    "z": 5,
+    "height": 35,
+    "width": 140,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": { "SourceRef": { "Entity": "Orders" } },
+                  "Property": "Region"
+                }
+              },
+              "queryRef": "Orders.Region",
+              "nativeQueryRef": "Region"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": { "Literal": { "Value": "'Dropdown'" } }
+            }
+          }
+        }
+      ],
+      "header": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "true" } } },
+            "titleText": { "expr": { "Literal": { "Value": "'Region'" } } }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
+```
+
+### Date Range Slicer
+```json
+{
+  "name": "slicer_date",
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": { "SourceRef": { "Entity": "Orders" } },
+                  "Property": "Order Date"
+                }
+              },
+              "queryRef": "Orders.Order Date",
+              "nativeQueryRef": "Order Date"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": { "Literal": { "Value": "'Between'" } }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### Numeric Range Slicer
+```json
+{
+  "name": "slicer_profit_ratio",
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": { "SourceRef": { "Entity": "Orders" } },
+                  "Property": "Profit_Ratio"
+                }
+              },
+              "queryRef": "Orders.Profit_Ratio",
+              "nativeQueryRef": "Profit Ratio"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": { "Literal": { "Value": "'Between'" } }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+---
+
+## A14. Positioning Accuracy Validation
+
+### Accuracy Calculation Method
+```python
+def calculate_positioning_accuracy(pbip_visuals, svg_elements, scale_x, scale_y, tolerance=50):
+    """
+    Compare PBIP visual positions against scaled SVG reference positions.
+    Returns accuracy percentage.
+    """
+    matches = 0
+    total = len(pbip_visuals)
+    
+    for visual in pbip_visuals:
+        for svg_elem in svg_elements:
+            expected_x = svg_elem['x'] * scale_x
+            expected_y = svg_elem['y'] * scale_y
+            
+            if (abs(visual['x'] - expected_x) < tolerance and 
+                abs(visual['y'] - expected_y) < tolerance):
+                matches += 1
+                break
+    
+    return (matches / total) * 100 if total > 0 else 100
+```
+
+### Recommended Tolerances
+| Element Type | Tolerance (px) |
+|--------------|----------------|
+| Charts | 100 |
+| Textboxes | 50 |
+| Slicers | 75 |
+| Cards | 50 |
+| Labels | 30 |
+
+### Accuracy Checks to Perform
+1. **Within Bounds**: All visuals within page dimensions
+2. **Charts Positioned**: Charts not at origin (0,0)
+3. **Has Title**: Page has a title textbox
+4. **Slicers Positioned**: Slicers at top/side, not overlapping content
+5. **Balanced Layout**: Charts distributed across page height
+
+### Target Accuracy Scores
+| Score | Rating |
+|-------|--------|
+| 95-100% | Excellent - Pixel-perfect match |
+| 85-94% | Good - Minor positioning differences |
+| 70-84% | Acceptable - Some layout adjustments needed |
+| <70% | Poor - Significant rework required |
+
+---
+
+## A15. Multi-Chart Layouts (Small Multiples Pattern)
+
+When Tableau shows multiple charts (e.g., 3 segment charts stacked vertically), recreate in PBIP:
+
+### Vertical Stacking Pattern
+```python
+def create_stacked_charts(segments, base_y, chart_height, gap=6):
+    """
+    Create vertically stacked charts for segment breakdown.
+    Example: Consumer, Corporate, Home Office
+    """
+    charts = []
+    for i, segment in enumerate(segments):
+        charts.append({
+            'name': f'seg_{segment.lower().replace(" ", "_")}',
+            'y': base_y + (i * (chart_height + gap)),
+            'height': chart_height,
+            'filter': {'field': 'Segment', 'value': segment}
+        })
+    return charts
+
+# Example usage:
+segments = ['Consumer', 'Corporate', 'Home Office']
+charts = create_stacked_charts(segments, base_y=414, chart_height=98, gap=6)
+# Results in charts at y=414, y=518, y=622
+```
+
+### Side-by-Side Pattern (Two Column Layout)
+```python
+def create_side_by_side_charts(left_charts, right_charts, page_width=1280):
+    """
+    Create two columns of charts (e.g., Segment vs Category)
+    """
+    mid_point = page_width // 2
+    left_width = mid_point - 15
+    right_width = page_width - mid_point - 10
+    
+    all_charts = []
+    
+    for chart in left_charts:
+        chart['x'] = 10
+        chart['width'] = left_width
+        all_charts.append(chart)
+    
+    for chart in right_charts:
+        chart['x'] = mid_point + 5
+        chart['width'] = right_width
+        all_charts.append(chart)
+    
+    return all_charts
+```
+
+---
+
+## A16. Complete Page Generation Workflow
+
+### Step 1: Parse SVG for Layout
+```python
+svg_data = parse_svg_elements(svg_path)
+scale_x = page_width / svg_data['svg_width']
+scale_y = page_height / svg_data['svg_height']
+```
+
+### Step 2: Extract Key Positions
+```python
+# Find title position
+title_texts = [t for t in svg_data['texts'] if 'Overview' in t['text'] or 'Analysis' in t['text']]
+
+# Find filter positions (usually right side)
+filter_texts = [t for t in svg_data['texts'] if t['x'] > svg_data['svg_width'] * 0.85]
+
+# Find chart containers (large rects)
+chart_rects = [r for r in svg_data['rects'] if r['w'] > 200 and r['h'] > 80]
+
+# Find year labels (bottom of page)
+year_texts = [t for t in svg_data['texts'] if re.match(r'^20\d{2}$', t['text'])]
+```
+
+### Step 3: Create Visual JSONs
+```python
+visuals = []
+
+# Create title
+visuals.append(create_textbox_visual(
+    name='page_title',
+    x=title_texts[0]['x'] * scale_x,
+    y=title_texts[0]['y'] * scale_y - 10,
+    text=title_texts[0]['text']
+))
+
+# Create slicers
+for i, filter_txt in enumerate(filter_texts):
+    visuals.append(create_slicer_visual(
+        name=f"slicer_{filter_txt['text'].lower().replace(' ', '_')}",
+        x=filter_txt['x'] * scale_x,
+        y=filter_txt['y'] * scale_y,
+        field=filter_txt['text']
+    ))
+
+# Create charts
+for rect in chart_rects:
+    visuals.append(create_chart_visual(
+        x=rect['x'] * scale_x,
+        y=rect['y'] * scale_y,
+        width=rect['w'] * scale_x,
+        height=rect['h'] * scale_y
+    ))
+```
+
+### Step 4: Write Visual JSONs
+```python
+for visual in visuals:
+    visual_dir = page_dir / 'visuals' / visual['name']
+    visual_dir.mkdir(parents=True, exist_ok=True)
+    (visual_dir / 'visual.json').write_text(json.dumps(visual['json'], indent=2))
+```
+
+### Step 5: Validate Layout
+```python
+accuracy = calculate_positioning_accuracy(visuals, svg_data, scale_x, scale_y)
+overlaps = find_all_overlaps(visuals)
+bounds_issues = validate_bounds(visuals)
+
+print(f"Accuracy: {accuracy:.1f}%")
+print(f"Overlaps: {len(overlaps)}")
+print(f"Bounds issues: {len(bounds_issues)}")
+```
