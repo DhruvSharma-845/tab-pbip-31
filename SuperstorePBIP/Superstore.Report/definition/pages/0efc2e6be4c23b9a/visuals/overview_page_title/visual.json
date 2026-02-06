@@ -5,8 +5,8 @@
     "x": 10,
     "y": 5,
     "z": 10,
-    "height": 30,
-    "width": 460,
+    "height": 28,
+    "width": 600,
     "tabOrder": 0
   },
   "visual": {
@@ -21,7 +21,8 @@
                   {
                     "value": "Executive Overview - Profitability",
                     "textStyle": {
-                      "fontSize": "10pt"
+                      "fontWeight": "bold",
+                      "fontSize": "16pt"
                     }
                   }
                 ]

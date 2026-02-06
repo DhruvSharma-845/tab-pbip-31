@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "slicer_region",
+  "name": "slicer_profit_ratio",
   "position": {
     "x": 1134,
-    "y": 145,
+    "y": 250,
     "z": 5,
-    "height": 35,
+    "height": 50,
     "width": 140,
-    "tabOrder": 0
+    "tabOrder": 2
   },
   "visual": {
     "visualType": "slicer",
@@ -23,11 +23,11 @@
                       "Entity": "Orders"
                     }
                   },
-                  "Property": "Region"
+                  "Property": "Calculation_9921103144103743"
                 }
               },
-              "queryRef": "Orders.Region",
-              "nativeQueryRef": "Region"
+              "queryRef": "Orders.Calculation_9921103144103743",
+              "nativeQueryRef": "Profit Ratio"
             }
           ]
         }
@@ -40,20 +40,7 @@
             "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "'Dropdown'"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "general": [
-        {
-          "properties": {
-            "orientation": {
-              "expr": {
-                "Literal": {
-                  "Value": "0"
+                  "Value": "'Between'"
                 }
               }
             }
@@ -73,7 +60,7 @@
             "titleText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Region'"
+                  "Value": "'Profit Ratio'"
                 }
               }
             }
