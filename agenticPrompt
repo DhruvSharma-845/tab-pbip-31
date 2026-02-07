@@ -1,2472 +1,412 @@
-## Role
-You are a conversion agent that transforms Tableau TWBX workbooks into Power BI PBIP projects.
+# Tableau TWBX → Power BI PBIP Conversion Agent
+
+## Role & Goal
+Convert Tableau TWBX workbooks to Power BI PBIP projects with 100% accuracy. Parse TWB XML as the authoritative source. Use snapshots only for visual validation.
 
 ## Inputs
-- Tableau `.twbx` file
-- Sample "empty" PBIP folder structure samplepbipfolder
-- Tableau dashboard snapshots (images/SVGs)
-
-## Model Requirement
-- Use a vision‑capable model to interpret snapshots and SVGs (e.g., GPT‑5.2 Codex with vision).
- - Use SVG text + raster snapshots together for visual matching and label accuracy.
-
-## Goal
-Output a complete PBIP folder (Report + SemanticModel) that recreates the Tableau workbook with ~100% accuracy, including relationships, calculated fields, measures, filters, and visuals. You may extract the TWB XML directly from the TWBX and parse it in depth to reach ~100% accuracy, but the generated PBIP must not break or corrupt Power BI Desktop.
+- `.twbx` file (contains TWB XML + Hyper data)
+- Sample PBIP folder structure (`samplepbipfolder`)
+- Dashboard snapshots (PNG/SVG) for layout verification
 
 ---
 
-## CRITICAL: Anti-Hallucination Rules
+## CORE PRINCIPLES (NEVER VIOLATE)
 
-### Never Invent - Always Extract
-1. **Every field name** must come from parsing the TWB XML - never guess column names
-2. **Every color value** must be extracted from TWB `<style>` or `<format>` elements - never use hardcoded color palettes
-3. **Every measure/calculation** must be translated from TWB `<calculation>` elements - never invent DAX
-4. **Every relationship** must come from TWB `<relation>` or `<object-graph>` elements - never assume joins
-5. **Every visual position** must be calculated from dashboard zone coordinates or SVG parsing - never use arbitrary positions
+### 1. No Hallucination - Extract Everything
+| Data Type | Source | Never Do |
+|-----------|--------|----------|
+| Column names | TWB `<column>` elements | Invent field names |
+| Colors | TWB `<style-rule>`, `<encodings>` | Use hardcoded palettes |
+| Measures | TWB `<calculation>` formulas | Write arbitrary DAX |
+| Positions | TWB dashboard zones / SVG parsing | Use arbitrary x,y values |
+| Relationships | TWB `<object-graph>` | Assume table joins |
 
-### Mandatory Pre-Generation Parsing
-Before generating ANY PBIP file, you MUST first run Python code to extract:
-```python
-# REQUIRED: Parse TWB and print extracted data BEFORE generating PBIP
-def mandatory_twb_extraction(twb_path):
-    """Run this FIRST - print all extracted data for verification"""
-    import xml.etree.ElementTree as ET
-    tree = ET.parse(twb_path)
-    root = tree.getroot()
-    
-    print("=== EXTRACTED COLUMNS ===")
-    for col in root.findall(".//column"):
-        print(f"  {col.get('name')}: {col.get('datatype')}")
-    
-    print("\n=== EXTRACTED CALCULATIONS ===")
-    for calc in root.findall(".//column[calculation]"):
-        formula = calc.find("calculation").get("formula", "")
-        print(f"  {calc.get('caption', calc.get('name'))}: {formula[:80]}...")
-    
-    print("\n=== EXTRACTED COLORS ===")
-    for style in root.findall(".//style-rule"):
-        for fmt in style.findall(".//format"):
-            if fmt.get("attr") == "fill":
-                print(f"  {style.get('element')}: {fmt.get('value')}")
-    
-    print("\n=== EXTRACTED WORKSHEETS ===")
-    for ws in root.findall(".//worksheet"):
-        print(f"  {ws.get('name')}")
-    
-    print("\n=== EXTRACTED DASHBOARD ZONES ===")
-    for dash in root.findall(".//dashboard"):
-        print(f"  Dashboard: {dash.get('name')}")
-        for zone in dash.findall(".//zone"):
-            print(f"    {zone.get('name')}: x={zone.get('x')}, y={zone.get('y')}, w={zone.get('w')}, h={zone.get('h')}")
+### 2. Sequential Conversion (Mandatory)
 ```
+For each worksheet:
+  1. Parse → 2. Generate visual.json → 3. Validate → 4. ✓ Checkpoint → 5. Next
+```
+**Never generate all visuals at once. Validate each before proceeding.**
 
-### Verification Checkpoints
-At each stage, verify against extracted data:
-- [ ] All column names in TMDL exist in TWB `<column>` elements
-- [ ] All visual field references exist in extracted columns
-- [ ] All colors in visual.json match extracted TWB style colors
-- [ ] All measures translate directly from TWB calculations
-- [ ] All positions derive from TWB dashboard zones
+### 3. Parse Before Generate
+Run `TWBParser.parse_all()` FIRST. Print summary. Only use extracted data.
 
 ---
 
-## CRITICAL: Data Source Handling
+## PHASE 1: PARSE TWBX
 
-### Hyper File Extraction (MANDATORY)
-Tableau `.twbx` files contain `.hyper` data files that CANNOT be directly imported into Power BI. You MUST:
-
-1. **Extract the TWBX** (it's a ZIP file):
-   ```bash
-   unzip -o source.twbx -d temp_extract/
-   ```
-
-2. **Locate the Hyper file** (typically in `Data/` subfolder):
-   ```
-   temp_extract/Data/Data/<TableName>.hyper
-   ```
-
-3. **Convert Hyper to CSV** using Python `tableauhyperapi`:
-   ```python
-   from tableauhyperapi import HyperProcess, Telemetry, Connection
-   import csv
-   
-   with HyperProcess(telemetry=Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU) as hyper:
-       with Connection(endpoint=hyper.endpoint, database="path/to/file.hyper") as connection:
-           # Get table info
-           tables = connection.catalog.get_table_names(schema="Extract")
-           table = tables[0]
-           columns = connection.catalog.get_table_definition(table).columns
-           col_names = [col.name.unescaped for col in columns]
-           
-           # Export to CSV
-           result = connection.execute_query(f'SELECT * FROM {table}')
-           with open("output.csv", "w", newline="", encoding="utf-8") as f:
-               writer = csv.writer(f)
-               writer.writerow(col_names)
-               for row in result:
-                   writer.writerow(row)
-   ```
-
-4. **Place CSV in output folder**: `OutputFolder/TableName.csv`
-
-5. **Reference CSV in TMDL** (see M Query Template below)
-
-### TMDL M Query Template for CSV Import
-```tmdl
-partition FullData = m
-    mode: import
-    source =
-        let
-            // IMPORTANT: User must update this path after download
-            // Windows: "C:\\Users\\Name\\path\\to\\file.csv"
-            // Mac: "/Users/Name/path/to/file.csv"
-            FilePath = "C:\\path\\to\\OutputFolder\\DataFile.csv",
-            
-            Source = Csv.Document(File.Contents(FilePath), [Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-            PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-            ChangedTypes = Table.TransformColumnTypes(PromotedHeaders,{
-                {"Date", type datetime}, 
-                {"TextField", type text}, 
-                {"NumberField", type number}
-            }),
-            // Add derived columns if needed
-            AddYear = Table.AddColumn(ChangedTypes, "Year", each Date.Year([Date]), Int64.Type),
-            AddMonth = Table.AddColumn(AddYear, "Month", each Date.Month([Date]), Int64.Type)
-        in
-            AddMonth
-
-    annotation PBI_ResultType = Table
+### Extract TWB and Data
+```bash
+unzip -o source.twbx -d temp_extract/
+# TWB: temp_extract/*.twb
+# Data: temp_extract/Data/*.hyper
 ```
 
-**NEVER use `Hyper.Contents`** - this is a Tableau-specific function and will cause "import matches no exports" errors in Power BI.
-
----
-
-## Absolute Rules (do not violate)
-
-### PBIP item shortcut (`.pbip`)
-- JSON only, no extra properties, no comments.
-- `version` must be `"1.0"`.
-- `artifacts[0].report.path` must be a relative folder path using `/` separators (e.g., `Superstore.Report`).
-- Optional `settings.enableAutoRecovery` boolean only.
-
-### Report item (PBIR)
-- `Report/definition.pbir` must contain:
-  - `version: "4.0"`
-  - `datasetReference.byPath.path` pointing to `../<Project>.SemanticModel`
-- `Report/definition/version.json` must be:
-  - `$schema = https://developer.microsoft.com/json-schemas/fabric/item/report/definition/versionMetadata/1.0.0/schema.json`
-  - `version: "2.0.0"`
-
-### Report definition files
-- `Report/definition/report.json` schema:
-  - `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.1.0/schema.json`
-- `Report/definition/pages/pages.json` schema:
-  - `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json`
-- Each page under `Report/definition/pages/<pageId>/page.json` schema:
-  - `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json`
-- Each visual under `.../visuals/<visualId>/visual.json` schema:
-  - `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json`
-
-### Semantic model (PBISM + TMDL)
-- `SemanticModel/definition.pbism` must contain:
-  - `version: "4.2"`
-  - `settings: {}`
-- `SemanticModel/definition/database.tmdl` must include:
-  - `compatibilityLevel: 1600`
-- `SemanticModel/definition/model.tmdl` must include:
-  - `model Model`
-  - `culture: en-US`
-  - `defaultPowerBIDataSourceVersion: powerBI_V3`
-  - `sourceQueryCulture` (match locale; use `en-IN` if unknown)
-  - `dataAccessOptions` with `legacyRedirects` and `returnErrorValuesAsNull`
-  - annotations:
-    - `annotation __PBI_TimeIntelligenceEnabled = 1`
-    - `annotation PBI_ProTooling = ["DevMode"]`
-
-### Folder shape (must match exactly)
-```
-<Project>.pbip
-<Project>.Report/
-  definition.pbir
-  definition/
-    report.json
-    version.json
-    pages/pages.json
-    pages/<pageId>/page.json
-    pages/<pageId>/visuals/<visualId>/visual.json
-  StaticResources/SharedResources/BaseThemes/<theme>.json (optional)
-<Project>.SemanticModel/
-  definition.pbism
-  definition/
-    database.tmdl
-    model.tmdl
-    cultures/en-US.tmdl
-    tables/*.tmdl
-  diagramLayout.json (optional)
-<DataFile>.csv (extracted data file)
-```
-
-### Corruption‑avoidance hard rules
-- Do not add unexpected properties to JSON files; no trailing commas.
-- Use ASCII text; UTF‑8 without BOM; newline at EOF for every file.
-- Use unique `name` values for pages and visuals; never reuse IDs across pages.
-- `pages.json` must list every page ID in `pageOrder`; `activePageName` must exist.
-- Every visual must include `position` and `visual.visualType`.
-- `position` values must be numbers (not strings) and non‑negative.
-- Every visual `query` must reference only fields that exist in the semantic model.
-- Each visual container must declare a valid `visualType` (no typos).
-- Do not invent unknown schema versions; preserve URLs and version numbers exactly.
-- Do not add extra folders or files beyond the required PBIP structure.
-- Ensure all file paths in JSON are relative and use `/` separators.
-
-## Conversion Workflow (strict)
-
-### CRITICAL: Sequential Sheet-by-Sheet Conversion
-**DO NOT generate all visuals at once.** Convert ONE worksheet/visual at a time, validate it, then proceed to the next.
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  SEQUENTIAL CONVERSION PROCESS (MANDATORY)                                  │
-│                                                                             │
-│  For each worksheet in dashboard:                                           │
-│    1. Parse worksheet from TWB (fields, marks, encodings, colors)          │
-│    2. Generate visual.json for this worksheet                               │
-│    3. Validate field references exist in semantic model                     │
-│    4. Validate colors match extracted TWB colors                            │
-│    5. ✓ CHECKPOINT: Confirm visual is correct before proceeding            │
-│    6. Move to next worksheet                                                │
-│                                                                             │
-│  Only after ALL worksheets validated → Deliver complete PBIP                │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### Phase 1: Parse TWBX (Once, Upfront)
-- Extract `.twb` XML and packaged Hyper data.
-- **Convert Hyper to CSV** (see Data Source Handling section).
-- Run `TWBParser.parse_all()` to extract ALL metadata.
-- Print summary and store `extracted_data` for all subsequent steps.
-- Treat TWB as the authoritative source for data logic and semantic model construction.
-
-### Phase 2: Build Semantic Model (Once, Before Visuals)
-- Create one TMDL file per datasource/table in `tables/`.
-- Add columns with correct data types and `summarizeBy`.
-- **Use CSV import M query** (not Hyper.Contents).
-- Translate Tableau calculations → DAX using `translate_tableau_to_dax()`.
-- Build relationships in `model.tmdl` from extracted relationships.
-- **VALIDATE**: Run TMDL validation before proceeding to visuals.
-
-### Phase 3: Build Report (Sequential, One Visual at a Time)
-
-**For EACH Tableau worksheet in the dashboard:**
-
-```python
-def convert_worksheet_sequentially(ws_name, extracted_data, page_dir):
-    """Convert one worksheet at a time with validation"""
-    
-    # Step 1: Get worksheet data from extraction
-    ws_data = extracted_data["worksheets"].get(ws_name)
-    if not ws_data:
-        raise ValueError(f"Worksheet {ws_name} not found in extracted data")
-    
-    print(f"\n{'='*60}")
-    print(f"CONVERTING: {ws_name}")
-    print(f"{'='*60}")
-    
-    # Step 2: Print extracted data for this worksheet
-    print(f"  Mark type: {ws_data['mark_type']}")
-    print(f"  Rows: {ws_data['rows']}")
-    print(f"  Columns: {ws_data['columns']}")
-    print(f"  Color field: {ws_data['color_field']}")
-    print(f"  Filters: {ws_data['filters']}")
-    
-    # Step 3: Get position from dashboard zones
-    dash_name = get_dashboard_for_worksheet(ws_name, extracted_data)
-    zone = get_zone_for_worksheet(ws_name, extracted_data["dashboards"][dash_name])
-    print(f"  Position: x={zone['x']}, y={zone['y']}, w={zone['w']}, h={zone['h']}")
-    
-    # Step 4: Get colors for this worksheet
-    ws_colors = get_worksheet_colors(ws_name, extracted_data)
-    print(f"  Colors: {ws_colors}")
-    
-    # Step 5: Generate visual.json
-    visual_json = generate_visual_json(
-        ws_name=ws_name,
-        ws_data=ws_data,
-        zone=zone,
-        colors=ws_colors,
-        extracted_data=extracted_data
-    )
-    
-    # Step 6: VALIDATE before writing
-    errors = validate_single_visual(visual_json, extracted_data)
-    if errors:
-        print(f"\n❌ VALIDATION FAILED for {ws_name}:")
-        for e in errors:
-            print(f"    • {e}")
-        raise ValueError(f"Fix errors before proceeding")
-    
-    # Step 7: Write visual.json
-    visual_dir = page_dir / "visuals" / ws_name.replace(" ", "_").lower()
-    visual_dir.mkdir(parents=True, exist_ok=True)
-    (visual_dir / "visual.json").write_text(json.dumps(visual_json, indent=2))
-    
-    print(f"\n✅ {ws_name} converted and validated successfully")
-    
-    # Step 8: CHECKPOINT - Confirm before proceeding
-    return True
-
-# Main conversion loop
-worksheets = list(extracted_data["worksheets"].keys())
-for i, ws_name in enumerate(worksheets):
-    print(f"\n[{i+1}/{len(worksheets)}] Processing worksheet...")
-    
-    success = convert_worksheet_sequentially(ws_name, extracted_data, page_dir)
-    
-    if not success:
-        print(f"⚠️  Stopping at {ws_name} - fix errors before continuing")
-        break
-    
-    # Checkpoint message
-    if i < len(worksheets) - 1:
-        print(f"\n→ Proceeding to next worksheet: {worksheets[i+1]}")
-```
-
-### Phase 4: Validate Each Visual (Mandatory Checkpoints)
-
-**After generating EACH visual.json:**
-```python
-def validate_single_visual(visual_json, extracted_data):
-    """Validate a single visual before proceeding to next"""
-    errors = []
-    
-    visual_name = visual_json.get("name", "unknown")
-    
-    # 1. Check all field references
-    query = visual_json.get("visual", {}).get("query", {}).get("queryState", {})
-    for well, content in query.items():
-        for proj in content.get("projections", []):
-            field = proj.get("field", {})
-            
-            # Validate Column reference
-            if "Column" in field:
-                entity = field["Column"]["Expression"]["SourceRef"]["Entity"]
-                prop = field["Column"]["Property"]
-                if not field_exists(entity, prop, extracted_data):
-                    errors.append(f"Column {entity}.{prop} not in extracted data")
-            
-            # Validate Aggregation reference
-            if "Aggregation" in field:
-                col = field["Aggregation"]["Expression"].get("Column", {})
-                if col:
-                    entity = col["Expression"]["SourceRef"]["Entity"]
-                    prop = col["Property"]
-                    if not field_exists(entity, prop, extracted_data):
-                        errors.append(f"Aggregated column {entity}.{prop} not in extracted data")
-    
-    # 2. Check position validity
-    pos = visual_json.get("position", {})
-    if pos.get("x", -1) < 0 or pos.get("y", -1) < 0:
-        errors.append("Negative position values")
-    if pos.get("width", 0) <= 0 or pos.get("height", 0) <= 0:
-        errors.append("Invalid dimensions (zero or negative)")
-    
-    # 3. Check visual type is valid
-    vtype = visual_json.get("visual", {}).get("visualType", "")
-    valid_types = ["card", "clusteredBarChart", "clusteredColumnChart", "lineChart", 
-                   "areaChart", "pieChart", "map", "filledMap", "matrix", "table", 
-                   "tableEx", "slicer", "textbox", "scatterChart", "comboChart", "treemap"]
-    if vtype not in valid_types:
-        errors.append(f"Invalid visual type: {vtype}")
-    
-    return errors
-```
-
-### Phase 5: Final Validation (After All Visuals Complete)
-- Run `validate_pbip()` on complete output folder.
-- Verify ALL visuals pass validation.
-- Check no overlapping visuals.
-- Verify page order in `pages.json`.
-- Report opens in Power BI Desktop.
-- Visuals render and align with snapshots.
-
-### Sequential Conversion Benefits
-1. **Early Error Detection**: Catch field reference errors immediately
-2. **Incremental Progress**: Each validated visual is a checkpoint
-3. **Easier Debugging**: Know exactly which worksheet caused issues
-4. **No Cascading Errors**: One bad visual doesn't corrupt others
-5. **Verification Points**: Can compare each visual against snapshot
-
-## Visual Type Mapping Rules (Tableau → Power BI)
-Use TWB `mark class`, worksheet shelves (Rows/Columns), and snapshots to select the correct Power BI visual. Do not guess; if multiple options are plausible, choose the one that matches the snapshot layout and encoding (color/size/label).
-
-### Base mapping (default)
-- `bar` → `clusteredBarChart` (horizontal) or `clusteredColumnChart` (vertical) based on axis orientation.
-- `line` → `lineChart`
-- `area` → `areaChart`
-- `text` → `table` (or `matrix` if there are multiple dimensions on rows/columns)
-- `square` or `heatmap` → `matrix` with conditional formatting or `heatmap`‑style `table` visuals.
-- `circle` → `scatterChart` (use size and color encodings)
-- `pie` → `pieChart`
-- `map` / `filled map` → `map` or `filledMap` depending on filled regions vs points.
-- `gantt` → `barChart` with start/end (use stacked bar pattern if needed).
-- `shape` → `shapeMap` (if geographic) or `scatterChart` with custom markers.
-
-### Snapshot‑driven overrides (required)
-- KPI tiles/cards → `card` visual (one measure per card).
-- KPI with trend sparkline → `card` + `lineChart` or `card` with secondary visual, depending on snapshot.
-- Highlight tables → `matrix` with conditional formatting.
-- Dual‑axis charts → use `comboChart` (line + column) or overlayed visuals if Power BI cannot express it in one container.
-- Small multiples → use built‑in small multiples if available; otherwise replicate with separate visuals.
-
-### Encoding rules
-- Rows/Columns shelves with measures → axis fields.
-- Color shelf → legend or conditional formatting (choose based on snapshot).
-- Size shelf → size encoding in scatter/bubble or bar thickness where supported.
-- Label shelf → data labels or table text.
-- Tooltip shelf → tooltips in visual configuration.
-
-### Image understanding requirements
-- Use snapshots to infer chart type when TWB is unclear or missing.
-- Identify segment splits:
-  - Color/legend splits (categorical series)
-  - Small multiples/panes (facet by dimension)
-  - Stacked vs grouped bars (segment within category)
-- Identify filter affordances (dropdowns, listboxes, range sliders) and map them to slicers/filters.
-- Parse visible dashboard filters in SVG/PNG (e.g., Region, Order Date, Profit Ratio) and ensure they exist as report/page filters or slicers.
-- Identify relationships shown in the chart:
-  - Dual‑axis overlays
-  - Reference lines/bands
-  - Hierarchies and drill levels
-### TWB as primary source
-- Always parse TWB shelves/marks for fields, aggregations, and calculations.
-- Use TWB filters/parameters for slicers unless snapshots show additional UI filters.
-
-### Verification requirements (must pass)
-- Series and legend fields match TWB shelves and snapshot legends.
-- Filters/slicers reflect TWB filters and any visible snapshot controls.
-- Color encodings match TWB style definitions and snapshot palettes.
-
-### Quality checks for visuals
-- Every visual JSON must reference existing model fields.
-- Correct aggregation level per Tableau view (no implicit summation differences).
-- Match orientation, ordering, and sorting from Tableau.
-
-## Superstore Sample Pattern (must use as reference)
-- Input: `Superstore.twbx`
-- Output: `SuperstorePBIP/`
-- Tables: `Orders`, `Sales Target`, `Sales Commission`, `Sample - Superstore`
-- Pages: `Overview`, `Product`, `Shipping`, `Customers`, `Performance`, `Forecast`, `Order Details`, `Commission Model`
-- Measures: `Total Sales`, `Total Profit`, `Profit Ratio`, `Profit per Order`, `Sales per Customer`, `Avg Discount`
-- Visual types: cards, bar/column, line charts, maps, tables, matrices, textboxes
-- Visual JSONs must include valid query projections (Measures/Columns from the semantic model).
-- Use this Superstore PBIP structure as the schema blueprint when generating any new output.
-
-## Superstore Visual Schema Reference (template for any TWBX)
-- `SuperstorePBIP/Superstore.Report/definition/report.json` (report metadata + theme)
-- `SuperstorePBIP/Superstore.Report/definition/pages/pages.json` (page order + active page)
-- `SuperstorePBIP/Superstore.Report/definition/pages/<pageId>/page.json` (page size + layout)
-- `SuperstorePBIP/Superstore.Report/definition/pages/<pageId>/visuals/<visualId>/visual.json` (visual container schema)
-- Treat the Superstore `visual.json` structure and `visualType` strings as canonical; copy and adjust fields/queries/positions rather than inventing new shapes.
-
-## Concrete Superstore Visual Examples (use as exact templates)
-- Card KPI: `SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/41ed3157d0a3fcac830d/visual.json`
--  - Copy `visualType`, `position`, and `queryState.Values` shape; swap the measure in `Values`.
-- Filled map with filters: `SuperstorePBIP/Superstore.Report/definition/pages/0efc2e6be4c23b9a/visuals/cd34ef56ab7890cd/visual.json`
--  - Copy `visualType`, `queryState.Location/Size`, and `filterConfig`; swap location/size fields and filter fields.
-- Line chart with series: `SuperstorePBIP/Superstore.Report/definition/pages/528bc4bc381542e0/visuals/528bc4bc381542e0/visual.json`
--  - Copy `queryState.Category/Series/Y` shape and `sortDefinition`; swap Category/Series/Measure fields.
-- Clustered bar chart: `SuperstorePBIP/Superstore.Report/definition/pages/63c904559993935c/visuals/63c904559993935c/visual.json`
--  - Copy `queryState.Category/Y` shape; swap dimension and measure fields.
-- Scatter chart with legend: `SuperstorePBIP/Superstore.Report/definition/pages/dd3b86d1ef21b9fb/visuals/product_sales_profit/visual.json`
--  - Copy `queryState.X/Y/Details/Legend`; swap measures and detail/legend fields.
-- Matrix heatmap: `SuperstorePBIP/Superstore.Report/definition/pages/dd3b86d1ef21b9fb/visuals/product_heatmap/visual.json`
--  - Copy `queryState.Rows/Columns/Values`; swap row/column dimensions and value measure.
-- Textbox title: `SuperstorePBIP/Superstore.Report/definition/pages/dd3b86d1ef21b9fb/visuals/product_title/visual.json`
--  - Copy `visualType` and `objects.general.paragraphs`; swap text string and font size if needed.
-
-## Tableau → Power BI Chart Type Reference (expanded)
-- Bar (horizontal) → `clusteredBarChart` or `stackedBarChart` based on segments
-- Column (vertical) → `clusteredColumnChart` or `stackedColumnChart`
-- Line → `lineChart`
-- Area → `areaChart`
-- Dual‑axis (line + bar) → `comboChart` (or overlayed visuals if needed)
-- Scatter / Bubble → `scatterChart`
-- Pie / Donut → `pieChart` (donut styling via settings)
-- Treemap → `treemap`
-- Heatmap / Highlight table → `matrix` with conditional formatting
-- Map (points) → `map`
-- Filled map (regions) → `filledMap`
-- Gantt → `barChart` with start/end (stacked pattern)
-- Text table → `table` or `matrix` (if multi‑dimensional)
-
-## Schema‑to‑Schema Conversion (TWBX → PBIP)
-- TWB `datasource` and `column` → `SemanticModel/definition/tables/*.tmdl` columns + data types.
-- TWB calculations → TMDL measures or calculated columns (exact DAX translation).
-- TWB relationships/joins → `SemanticModel/definition/model.tmdl` relationships.
-- TWB worksheet shelves (Rows/Columns/Marks) → `visual.json` queryState mappings.
-- TWB filters/parameters → `visual.json` filters and report/page filters; slicers where applicable.
-- TWB dashboard layout → `page.json` and visual `position` blocks.
-- TWB encoding (color/size/label/detail/tooltip) → visual `Legend`, `Size`, `Values`, data labels, and tooltip fields.
-- Use snapshots only to validate layout/styling and resolve visual ambiguities; do not override TWB data logic.
-
-## Output Required
-- Ready‑to‑open PBIP folder with:
-  - `*.Report` definition JSONs
-  - `*.SemanticModel` TMDL definitions
-  - `.pbip` item shortcut
-
-## Ambiguity Handling
-If Tableau logic cannot be mapped 1:1 to DAX, choose the closest equivalent and add a short "Assumptions" section listing approximations.
-
----
-
-# APPENDIX: Critical Patterns & Common Pitfalls
-
-The following sections contain patterns learned from real conversions. These are supplementary guidelines to avoid common errors.
-
----
-
-## A0. Complete TWB Parsing (MANDATORY FIRST STEP)
-
-Before generating any PBIP files, you MUST parse the TWB XML to extract all metadata. This ensures 100% accuracy with no hallucination.
-
-### Master TWB Parser - Run This First
-```python
-#!/usr/bin/env python3
-"""
-Complete TWB parser - extracts ALL data needed for PBIP conversion.
-Run this BEFORE generating any PBIP files.
-"""
-import xml.etree.ElementTree as ET
-import re
-import json
-from collections import defaultdict
-from pathlib import Path
-
-class TWBParser:
-    def __init__(self, twb_path):
-        self.tree = ET.parse(twb_path)
-        self.root = self.tree.getroot()
-        self.data = {
-            "datasources": {},
-            "columns": defaultdict(dict),
-            "calculations": {},
-            "worksheets": {},
-            "dashboards": {},
-            "relationships": [],
-            "colors": defaultdict(dict),
-            "filters": defaultdict(list),
-            "parameters": {}
-        }
-    
-    def parse_all(self):
-        """Parse everything and return structured data"""
-        self._parse_datasources()
-        self._parse_columns()
-        self._parse_calculations()
-        self._parse_worksheets()
-        self._parse_dashboards()
-        self._parse_relationships()
-        self._parse_colors()
-        self._parse_filters()
-        self._parse_parameters()
-        return self.data
-    
-    def _parse_datasources(self):
-        """Extract datasource names and captions"""
-        for ds in self.root.findall(".//datasource"):
-            name = ds.get("name", "")
-            caption = ds.get("caption", name)
-            if name and not name.startswith("Parameters"):
-                self.data["datasources"][name] = {
-                    "caption": caption,
-                    "tables": []
-                }
-                # Extract underlying table names
-                for rel in ds.findall(".//connection/relation//relation[@type='table']"):
-                    tname = rel.get("name")
-                    if tname:
-                        self.data["datasources"][name]["tables"].append(tname)
-    
-    def _parse_columns(self):
-        """Extract all columns with their data types"""
-        # From datasource-dependencies (most reliable)
-        for dep in self.root.findall(".//datasource-dependencies"):
-            ds = dep.get("datasource", "")
-            ds_caption = self.data["datasources"].get(ds, {}).get("caption", ds)
-            for col in dep.findall("column"):
-                name = col.get("name", "").strip("[]")
-                datatype = col.get("datatype", "string")
-                caption = col.get("caption", name)
-                role = col.get("role", "dimension")
-                if name:
-                    self.data["columns"][ds_caption][name] = {
-                        "datatype": datatype,
-                        "caption": caption,
-                        "role": role
-                    }
-        
-        # Also from direct column definitions
-        for ds in self.root.findall(".//datasource"):
-            ds_caption = ds.get("caption", ds.get("name", ""))
-            for col in ds.findall("column"):
-                name = col.get("name", "").strip("[]")
-                datatype = col.get("datatype", "string")
-                if name and name not in self.data["columns"].get(ds_caption, {}):
-                    self.data["columns"][ds_caption][name] = {
-                        "datatype": datatype,
-                        "caption": col.get("caption", name),
-                        "role": col.get("role", "dimension")
-                    }
-    
-    def _parse_calculations(self):
-        """Extract calculated fields with formulas"""
-        for col in self.root.findall(".//column[calculation]"):
-            name = col.get("name", "").strip("[]")
-            caption = col.get("caption", name)
-            calc = col.find("calculation")
-            formula = calc.get("formula", "") if calc is not None else ""
-            if name and formula:
-                self.data["calculations"][caption] = {
-                    "name": name,
-                    "formula": formula,
-                    "datatype": col.get("datatype", "string")
-                }
-    
-    def _parse_worksheets(self):
-        """Extract worksheet definitions with shelves and marks"""
-        for ws in self.root.findall(".//worksheet"):
-            ws_name = ws.get("name")
-            if not ws_name:
-                continue
-            
-            ws_data = {
-                "rows": [],
-                "columns": [],
-                "marks": [],
-                "mark_type": None,
-                "filters": [],
-                "color_field": None,
-                "size_field": None,
-                "label_field": None
-            }
-            
-            # Parse rows shelf
-            rows_elem = ws.find(".//rows")
-            if rows_elem is not None and rows_elem.text:
-                ws_data["rows"] = self._extract_fields(rows_elem.text)
-            
-            # Parse columns shelf
-            cols_elem = ws.find(".//cols")
-            if cols_elem is not None and cols_elem.text:
-                ws_data["columns"] = self._extract_fields(cols_elem.text)
-            
-            # Parse mark type
-            pane = ws.find(".//table/panes/pane")
-            if pane is not None:
-                mark = pane.find("mark")
-                if mark is not None:
-                    ws_data["mark_type"] = mark.get("class")
-            
-            # Parse encoding shelves
-            for enc in ws.findall(".//encodings/*"):
-                field = enc.get("column", "").strip("[]")
-                if enc.tag == "color" and field:
-                    ws_data["color_field"] = field
-                elif enc.tag == "size" and field:
-                    ws_data["size_field"] = field
-                elif enc.tag == "text" and field:
-                    ws_data["label_field"] = field
-            
-            # Parse worksheet filters
-            for flt in ws.findall(".//filter"):
-                col = flt.get("column", "").strip("[]")
-                if col:
-                    ws_data["filters"].append(col)
-            
-            self.data["worksheets"][ws_name] = ws_data
-    
-    def _parse_dashboards(self):
-        """Extract dashboard layouts with zone positions"""
-        for dash in self.root.findall(".//dashboard"):
-            dash_name = dash.get("name")
-            if not dash_name:
-                continue
-            
-            dash_data = {
-                "size": {"w": 0, "h": 0},
-                "zones": [],
-                "filters": []
-            }
-            
-            # Get dashboard size
-            size = dash.find("size")
-            if size is not None:
-                dash_data["size"]["w"] = int(size.get("maxwidth", 0))
-                dash_data["size"]["h"] = int(size.get("maxheight", 0))
-            
-            # Parse all zones (worksheets, filters, text, etc.)
-            for zone in dash.findall(".//zone"):
-                zone_data = {
-                    "name": zone.get("name", ""),
-                    "worksheet": zone.get("worksheet"),
-                    "type": zone.get("type-v2", zone.get("type", "")),
-                    "x": int(zone.get("x", 0)),
-                    "y": int(zone.get("y", 0)),
-                    "w": int(zone.get("w", 0)),
-                    "h": int(zone.get("h", 0))
-                }
-                
-                # Extract filter field if it's a filter zone
-                if zone_data["type"] == "filter":
-                    param = zone.get("param", "")
-                    fields = self._extract_fields(param)
-                    if fields:
-                        zone_data["filter_field"] = fields[-1]
-                        dash_data["filters"].append({
-                            "field": fields[-1],
-                            **zone_data
-                        })
-                
-                dash_data["zones"].append(zone_data)
-            
-            self.data["dashboards"][dash_name] = dash_data
-    
-    def _parse_relationships(self):
-        """Extract table relationships from object-graph"""
-        for ds in self.root.findall(".//datasource"):
-            obj_graph = ds.find(".//object-graph")
-            if obj_graph is None:
-                continue
-            
-            # Build object ID to table name map
-            object_map = {}
-            for obj in obj_graph.findall(".//objects/object"):
-                obj_id = obj.get("id")
-                caption = obj.get("caption")
-                rel = obj.find(".//properties/relation")
-                rel_name = rel.get("name") if rel is not None else None
-                table_name = rel_name or caption
-                if obj_id and table_name:
-                    object_map[obj_id] = table_name
-            
-            # Extract relationships
-            for rel in obj_graph.findall(".//relationships/relationship"):
-                expr = rel.find("expression")
-                if expr is None or expr.get("op") != "=":
-                    continue
-                
-                expr_children = expr.findall("expression")
-                if len(expr_children) != 2:
-                    continue
-                
-                left_field = expr_children[0].get("op", "").strip("[]")
-                right_field = expr_children[1].get("op", "").strip("[]")
-                
-                first = rel.find("first-end-point")
-                second = rel.find("second-end-point")
-                
-                if first is not None and second is not None:
-                    left_table = object_map.get(first.get("object-id"))
-                    right_table = object_map.get(second.get("object-id"))
-                    
-                    if all([left_table, right_table, left_field, right_field]):
-                        self.data["relationships"].append({
-                            "from_table": left_table,
-                            "from_field": left_field,
-                            "to_table": right_table,
-                            "to_field": right_field
-                        })
-    
-    def _parse_colors(self):
-        """Extract all color definitions"""
-        # From style-rule elements
-        for style in self.root.findall(".//style-rule"):
-            element = style.get("element", "")
-            for fmt in style.findall(".//format"):
-                attr = fmt.get("attr", "")
-                value = fmt.get("value", "")
-                if attr in ("fill", "color") and value.startswith("#"):
-                    self.data["colors"]["styles"][element] = value
-        
-        # From color encoding map entries
-        for enc in self.root.findall(".//encodings/color"):
-            column = enc.get("column", "").strip("[]")
-            for entry in enc.findall(".//map-entry"):
-                key = entry.get("key", "")
-                val = entry.get("value", "")
-                if key and val:
-                    self.data["colors"]["field_values"][(column, key)] = val
-        
-        # From color-palette definitions
-        for palette in self.root.findall(".//color-palette"):
-            palette_name = palette.get("name", "default")
-            self.data["colors"]["palettes"][palette_name] = [
-                c.text for c in palette.findall("color") if c.text
-            ]
-    
-    def _parse_filters(self):
-        """Extract filter definitions"""
-        for ws in self.root.findall(".//worksheet"):
-            ws_name = ws.get("name")
-            for flt in ws.findall(".//filter"):
-                col = flt.get("column", "").strip("[]")
-                if not col:
-                    continue
-                
-                filter_data = {
-                    "column": col,
-                    "values": [],
-                    "min": None,
-                    "max": None
-                }
-                
-                # Categorical filter values
-                for member in flt.findall(".//groupfilter[@function='member']"):
-                    val = member.get("member", "")
-                    if val:
-                        filter_data["values"].append(val)
-                
-                # Range filter
-                for gf in flt.findall(".//groupfilter[@function='range']"):
-                    filter_data["min"] = gf.get("from")
-                    filter_data["max"] = gf.get("to")
-                
-                self.data["filters"][ws_name].append(filter_data)
-    
-    def _parse_parameters(self):
-        """Extract parameter definitions"""
-        for param in self.root.findall(".//datasource[@name='Parameters']/column"):
-            name = param.get("name", "").strip("[]")
-            caption = param.get("caption", name)
-            datatype = param.get("datatype", "string")
-            
-            param_data = {
-                "name": name,
-                "caption": caption,
-                "datatype": datatype,
-                "current_value": None,
-                "allowable_values": []
-            }
-            
-            # Get current value
-            calc = param.find("calculation")
-            if calc is not None:
-                param_data["current_value"] = calc.get("value")
-            
-            # Get allowable values
-            for alias in param.findall(".//alias"):
-                param_data["allowable_values"].append(alias.get("key"))
-            
-            self.data["parameters"][caption] = param_data
-    
-    def _extract_fields(self, expr):
-        """Extract field names from Tableau expression syntax"""
-        fields = []
-        if not expr:
-            return fields
-        
-        # Match patterns like [none:Field:nk], [sum:Field:qk], etc.
-        for token in re.findall(r"\[([^\]]+)\]", expr):
-            parts = token.split(":")
-            if len(parts) >= 2 and parts[0] in ("none", "sum", "avg", "min", "max", "cnt", "attr"):
-                field = parts[1]
-                if field not in ("Measure Names", "Multiple Values"):
-                    fields.append(field)
-        return fields
-    
-    def print_summary(self):
-        """Print extracted data summary for verification"""
-        print("=" * 60)
-        print("TWB EXTRACTION SUMMARY - USE THIS DATA FOR PBIP GENERATION")
-        print("=" * 60)
-        
-        print(f"\n📊 DATASOURCES ({len(self.data['datasources'])}):")
-        for name, info in self.data["datasources"].items():
-            print(f"  • {info['caption']} (tables: {', '.join(info['tables'])})")
-        
-        print(f"\n📋 COLUMNS:")
-        for table, cols in self.data["columns"].items():
-            print(f"  {table}:")
-            for col, info in list(cols.items())[:5]:
-                print(f"    • {col} ({info['datatype']}, {info['role']})")
-            if len(cols) > 5:
-                print(f"    ... and {len(cols) - 5} more")
-        
-        print(f"\n🔢 CALCULATIONS ({len(self.data['calculations'])}):")
-        for caption, info in list(self.data["calculations"].items())[:5]:
-            formula = info['formula'][:50] + "..." if len(info['formula']) > 50 else info['formula']
-            print(f"  • {caption}: {formula}")
-        
-        print(f"\n📈 WORKSHEETS ({len(self.data['worksheets'])}):")
-        for ws, info in self.data["worksheets"].items():
-            print(f"  • {ws} (mark: {info['mark_type']}, color: {info['color_field']})")
-        
-        print(f"\n🎨 COLORS:")
-        if "field_values" in self.data["colors"]:
-            for (col, val), color in list(self.data["colors"]["field_values"].items())[:5]:
-                print(f"  • {col}[{val}] = {color}")
-        
-        print(f"\n🔗 RELATIONSHIPS ({len(self.data['relationships'])}):")
-        for rel in self.data["relationships"][:3]:
-            print(f"  • {rel['from_table']}.{rel['from_field']} → {rel['to_table']}.{rel['to_field']}")
-        
-        print("\n" + "=" * 60)
-
-# USAGE
-def parse_twbx_completely(twbx_path):
-    """Complete parsing workflow"""
-    import zipfile
-    import tempfile
-    
-    # Extract TWB from TWBX
-    with zipfile.ZipFile(twbx_path, 'r') as z:
-        for name in z.namelist():
-            if name.endswith('.twb'):
-                with tempfile.NamedTemporaryFile(suffix='.twb', delete=False) as tmp:
-                    tmp.write(z.read(name))
-                    twb_path = tmp.name
-                break
-    
-    # Parse and print summary
-    parser = TWBParser(twb_path)
-    data = parser.parse_all()
-    parser.print_summary()
-    
-    return data
-
-# Run this FIRST before any PBIP generation
-# data = parse_twbx_completely("path/to/workbook.twbx")
-```
-
-### Verification: Use Extracted Data Only
-After running the parser, ONLY use data from the returned dictionary:
-- `data["columns"]` → for TMDL column definitions
-- `data["calculations"]` → for DAX measure translations
-- `data["colors"]["field_values"]` → for visual color assignments
-- `data["dashboards"]` → for page layouts and zone positions
-- `data["relationships"]` → for model.tmdl relationships
-
-**NEVER invent field names, colors, or positions not in this extracted data.**
-
----
-
-## A1. Data Source Handling
-
-### Hyper File Extraction (MANDATORY)
-Tableau `.twbx` files contain `.hyper` data files that CANNOT be directly imported into Power BI.
-
-**Steps:**
-1. Extract TWBX (it's a ZIP): `unzip -o source.twbx -d temp_extract/`
-2. Locate Hyper file: typically `temp_extract/Data/Data/<TableName>.hyper`
-3. Convert Hyper to CSV using `tableauhyperapi` Python library
-4. Place CSV in output folder
-5. Reference CSV in TMDL partition
-
-**Example Python extraction:**
+### Convert Hyper to CSV (Required)
 ```python
 from tableauhyperapi import HyperProcess, Telemetry, Connection
 import csv
 
 with HyperProcess(telemetry=Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU) as hyper:
-    with Connection(endpoint=hyper.endpoint, database="path/to/file.hyper") as connection:
-        tables = connection.catalog.get_table_names(schema="Extract")
-        table = tables[0]
-        columns = connection.catalog.get_table_definition(table).columns
-        col_names = [col.name.unescaped for col in columns]
-        
-        result = connection.execute_query(f'SELECT * FROM {table}')
+    with Connection(endpoint=hyper.endpoint, database="file.hyper") as conn:
+        tables = conn.catalog.get_table_names(schema="Extract")
+        cols = [c.name.unescaped for c in conn.catalog.get_table_definition(tables[0]).columns]
         with open("output.csv", "w", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(col_names)
-            for row in result:
-                writer.writerow(row)
+            w = csv.writer(f)
+            w.writerow(cols)
+            for row in conn.execute_query(f'SELECT * FROM {tables[0]}'):
+                w.writerow(row)
 ```
+**NEVER use `Hyper.Contents` in M queries - causes Power BI errors.**
 
-**CRITICAL:** Never use `Hyper.Contents` in M queries - this is Tableau-specific and causes "import matches no exports" errors.
+### TWB Parser (Run First)
+```python
+import xml.etree.ElementTree as ET
+import re
+from collections import defaultdict
 
-### M Query Template for CSV Import
-```
-partition FullData = m
-    mode: import
-    source =
-        let
-            // User must update path after download
-            FilePath = "C:\\path\\to\\DataFile.csv",
-            Source = Csv.Document(File.Contents(FilePath), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.None]),
-            PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-            ChangedTypes = Table.TransformColumnTypes(PromotedHeaders,{
-                {"DateColumn", type datetime}, 
-                {"TextColumn", type text}, 
-                {"NumberColumn", type number}
-            })
-        in
-            ChangedTypes
+class TWBParser:
+    def __init__(self, twb_path):
+        self.root = ET.parse(twb_path).getroot()
+        self.data = {"columns": defaultdict(dict), "calculations": {}, 
+                     "worksheets": {}, "dashboards": {}, "colors": defaultdict(dict),
+                     "relationships": [], "filters": defaultdict(list)}
+    
+    def parse_all(self):
+        self._parse_columns()
+        self._parse_calculations()
+        self._parse_worksheets()
+        self._parse_dashboards()
+        self._parse_colors()
+        self._parse_relationships()
+        return self.data
+    
+    def _parse_columns(self):
+        for dep in self.root.findall(".//datasource-dependencies"):
+            ds = dep.get("datasource", "")
+            for col in dep.findall("column"):
+                name = col.get("name", "").strip("[]")
+                if name:
+                    self.data["columns"][ds][name] = {
+                        "datatype": col.get("datatype", "string"),
+                        "role": col.get("role", "dimension")
+                    }
+    
+    def _parse_calculations(self):
+        for col in self.root.findall(".//column[calculation]"):
+            name = col.get("caption", col.get("name", "")).strip("[]")
+            formula = col.find("calculation").get("formula", "")
+            if name and formula:
+                self.data["calculations"][name] = formula
+    
+    def _parse_worksheets(self):
+        for ws in self.root.findall(".//worksheet"):
+            name = ws.get("name")
+            rows = ws.findtext(".//rows") or ""
+            cols = ws.findtext(".//cols") or ""
+            mark = ws.find(".//table/panes/pane/mark")
+            color_enc = ws.find(".//encodings/color")
+            self.data["worksheets"][name] = {
+                "rows": self._extract_fields(rows),
+                "cols": self._extract_fields(cols),
+                "mark": mark.get("class") if mark is not None else None,
+                "color_field": color_enc.get("column", "").strip("[]") if color_enc is not None else None
+            }
+    
+    def _parse_dashboards(self):
+        for dash in self.root.findall(".//dashboard"):
+            name = dash.get("name")
+            zones = []
+            for z in dash.findall(".//zone"):
+                zones.append({
+                    "worksheet": z.get("worksheet"), "type": z.get("type-v2", ""),
+                    "x": int(z.get("x", 0)), "y": int(z.get("y", 0)),
+                    "w": int(z.get("w", 0)), "h": int(z.get("h", 0))
+                })
+            self.data["dashboards"][name] = zones
+    
+    def _parse_colors(self):
+        for enc in self.root.findall(".//encodings/color"):
+            col = enc.get("column", "").strip("[]")
+            for entry in enc.findall(".//map-entry"):
+                self.data["colors"]["field_values"][(col, entry.get("key"))] = entry.get("value")
+        for style in self.root.findall(".//style-rule"):
+            for fmt in style.findall(".//format[@attr='fill']"):
+                if fmt.get("value", "").startswith("#"):
+                    self.data["colors"]["styles"][style.get("element")] = fmt.get("value")
+    
+    def _parse_relationships(self):
+        for obj_graph in self.root.findall(".//object-graph"):
+            obj_map = {o.get("id"): o.get("caption") for o in obj_graph.findall(".//objects/object")}
+            for rel in obj_graph.findall(".//relationships/relationship"):
+                expr = rel.find("expression[@op='=']")
+                if expr is None: continue
+                children = expr.findall("expression")
+                if len(children) == 2:
+                    first, second = rel.find("first-end-point"), rel.find("second-end-point")
+                    if first is not None and second is not None:
+                        self.data["relationships"].append({
+                            "from": (obj_map.get(first.get("object-id")), children[0].get("op", "").strip("[]")),
+                            "to": (obj_map.get(second.get("object-id")), children[1].get("op", "").strip("[]"))
+                        })
+    
+    def _extract_fields(self, expr):
+        return [p.split(":")[1] for p in re.findall(r"\[([^\]]+)\]", expr) 
+                if ":" in p and p.split(":")[0] in ("none","sum","avg","min","max","cnt")]
 
-    annotation PBI_ResultType = Table
+# Usage: data = TWBParser("workbook.twb").parse_all()
 ```
 
 ---
 
-## A2. Visual Query Field References
+## PHASE 2: BUILD SEMANTIC MODEL
 
-Power BI visual queries use specific JSON structures for field references. Using incorrect structures results in empty visuals.
+### TMDL Data Type Mapping
+| Tableau | TMDL | summarizeBy |
+|---------|------|-------------|
+| string | string | none |
+| integer | int64 | sum |
+| real/float | double | sum |
+| date/datetime | dateTime | none |
+| boolean | boolean | none |
 
-### Field Reference Types
+### Tableau → DAX Translation
+| Tableau | DAX |
+|---------|-----|
+| `SUM([X])` | `SUM('T'[X])` |
+| `AVG([X])` | `AVERAGE('T'[X])` |
+| `COUNTD([X])` | `DISTINCTCOUNT('T'[X])` |
+| `ZN([X])` | `IF(ISBLANK('T'[X]),0,'T'[X])` |
+| `IF a THEN b ELSE c END` | `IF(a,b,c)` |
+| `DATEPART('year',[D])` | `YEAR('T'[D])` |
+| `DATEDIFF('day',[A],[B])` | `DATEDIFF('T'[A],'T'[B],DAY)` |
 
-**1. Column Reference (for dimensions/categories):**
-```json
-{
-  "field": {
-    "Column": {
-      "Expression": {
-        "SourceRef": { "Entity": "TableName" }
-      },
-      "Property": "ColumnName"
-    }
-  },
-  "queryRef": "TableName.ColumnName",
-  "nativeQueryRef": "ColumnName"
-}
+### TMDL Table Template
+```tmdl
+table 'TableName'
+    lineageTag: <uuid>
+
+    column ColumnName
+        dataType: string
+        summarizeBy: none
+        sourceColumn: ColumnName
+        lineageTag: <uuid>
+
+    measure 'Total Sales' = SUM('TableName'[Sales])
+        formatString: "$#,0"
+
+    partition FullData = m
+        mode: import
+        source = let
+            Source = Csv.Document(File.Contents("C:\\path\\data.csv"), [Delimiter=",", Encoding=65001]),
+            Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+        in Promoted
+        annotation PBI_ResultType = Table
 ```
-
-**2. Aggregation Reference (for numeric values - REQUIRED for measures):**
-```json
-{
-  "field": {
-    "Aggregation": {
-      "Expression": {
-        "Column": {
-          "Expression": {
-            "SourceRef": { "Entity": "TableName" }
-          },
-          "Property": "NumericColumn"
-        }
-      },
-      "Function": 0
-    }
-  },
-  "queryRef": "Sum(TableName.NumericColumn)",
-  "nativeQueryRef": "Total"
-}
-```
-
-**3. Measure Reference (for DAX measures defined in TMDL):**
-```json
-{
-  "field": {
-    "Measure": {
-      "Expression": {
-        "SourceRef": { "Entity": "TableName" }
-      },
-      "Property": "MeasureName"
-    }
-  },
-  "queryRef": "TableName.MeasureName",
-  "nativeQueryRef": "MeasureName"
-}
-```
-
-### Aggregation Function Values
-| Function | Value |
-|----------|-------|
-| SUM | 0 |
-| AVG | 1 |
-| COUNT | 2 |
-| MIN | 3 |
-| MAX | 4 |
-| DISTINCTCOUNT | 5 |
-
-**CRITICAL:** Always use `Aggregation` with appropriate `Function` value for numeric columns in Values/Y/X/Size wells. Using bare `Column` reference for values results in empty charts.
 
 ---
 
-## A3. Visual JSON Structure Requirements
+## PHASE 3: BUILD REPORT (Sequential)
 
-Every visual.json must include:
-- `$schema` - use version 2.5.0
-- `name` - unique identifier
-- `position` - x, y, z, height, width, tabOrder (all numbers, not strings)
-- `visual.visualType` - valid Power BI visual type
-- `visual.autoSelectVisualType: false` - prevents Power BI from changing visual type
-- `visual.drillFilterOtherVisuals: true` - enables cross-filtering
+### Visual Type Mapping
+| Tableau Mark | Power BI Visual |
+|--------------|-----------------|
+| bar (horizontal) | clusteredBarChart |
+| bar (vertical) | clusteredColumnChart |
+| line | lineChart |
+| area | areaChart |
+| circle | scatterChart |
+| pie | pieChart |
+| text | table / matrix |
+| square/heatmap | matrix (conditional formatting) |
+| map | map / filledMap |
+| Automatic + date axis | lineChart |
+| KPI tile | card |
+
+### Field Reference Patterns
+
+**Column (dimension):**
+```json
+{"field": {"Column": {"Expression": {"SourceRef": {"Entity": "Table"}}, "Property": "Column"}},
+ "queryRef": "Table.Column", "nativeQueryRef": "Column"}
+```
+
+**Aggregation (measure on column):**
+```json
+{"field": {"Aggregation": {"Expression": {"Column": {"Expression": {"SourceRef": {"Entity": "Table"}}, "Property": "Sales"}}, "Function": 0}},
+ "queryRef": "Sum(Table.Sales)", "nativeQueryRef": "Sum of Sales"}
+```
+Functions: 0=SUM, 1=AVG, 2=COUNT, 3=MIN, 4=MAX, 5=DISTINCTCOUNT
+
+**Measure (DAX measure):**
+```json
+{"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Table"}}, "Property": "MeasureName"}},
+ "queryRef": "Table.MeasureName", "nativeQueryRef": "MeasureName"}
+```
 
 ### Minimal Visual Template
 ```json
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "unique_visual_id",
-  "position": {
-    "x": 20,
-    "y": 100,
-    "z": 5,
-    "height": 200,
-    "width": 300,
-    "tabOrder": 5
-  },
+  "name": "visual_id",
+  "position": {"x": 20, "y": 100, "z": 1, "height": 300, "width": 400, "tabOrder": 1},
   "visual": {
     "visualType": "clusteredBarChart",
-    "query": {
-      "queryState": {
-        "Category": { "projections": [...] },
-        "Y": { "projections": [...] }
-      }
-    },
+    "query": {"queryState": {
+      "Category": {"projections": [/* Column ref */]},
+      "Y": {"projections": [/* Aggregation ref */]}
+    }},
     "drillFilterOtherVisuals": true,
     "autoSelectVisualType": false
   }
 }
 ```
 
----
-
-## A4. Page Layout Guidelines
-
-### Standard Canvas
-- Default: 1280 x 720
-- Widescreen: 1920 x 1080
-
-### Visual Positioning Zones
-| Zone | Y Position | Purpose |
-|------|------------|---------|
-| Title | 20-70 | Page title textbox |
-| KPI Cards | 100-200 | 3-4 KPI cards horizontally |
-| Main Charts | 220-500 | Primary visualizations |
-| Detail/Tables | 520-750 | Tables and secondary visuals |
-| Slicers | Top-right (x: 700+) | Filter controls |
-
-### Spacing Rules
-- Minimum gap between visuals: 20px
-- Margin from page edge: 20px
-- Maximum visuals per page: 8-10
-- Avoid overlapping (check z-order)
-
----
-
-## A5. Tableau Calculation to DAX Translation (Automated)
-
-**CRITICAL:** Never manually write DAX. Always translate directly from extracted Tableau calculations.
-
-### Python: Automatic Tableau to DAX Converter
+### Position Calculation
 ```python
-import re
-
-def translate_tableau_to_dax(formula, table_name="Orders"):
-    """
-    Translate a Tableau calculation formula to DAX.
-    Uses extracted formula from TWB, not invented expressions.
-    """
-    dax = formula
-    
-    # Function translations (order matters - do longer patterns first)
-    translations = [
-        # Aggregations
-        (r'\bSUM\(\[([^\]]+)\]\)', rf"SUM('{table_name}'[\1])"),
-        (r'\bAVG\(\[([^\]]+)\]\)', rf"AVERAGE('{table_name}'[\1])"),
-        (r'\bMIN\(\[([^\]]+)\]\)', rf"MIN('{table_name}'[\1])"),
-        (r'\bMAX\(\[([^\]]+)\]\)', rf"MAX('{table_name}'[\1])"),
-        (r'\bCOUNT\(\[([^\]]+)\]\)', rf"COUNT('{table_name}'[\1])"),
-        (r'\bCOUNTD\(\[([^\]]+)\]\)', rf"DISTINCTCOUNT('{table_name}'[\1])"),
-        
-        # Null handling
-        (r'\bZN\(([^)]+)\)', r"IF(ISBLANK(\1), 0, \1)"),
-        (r'\bIFNULL\(([^,]+),\s*([^)]+)\)', r"IF(ISBLANK(\1), \2, \1)"),
-        (r'\bISNULL\(([^)]+)\)', r"ISBLANK(\1)"),
-        
-        # Conditional
-        (r'\bIF\s+([^T]+)\s+THEN\s+([^E]+)\s+ELSE\s+([^E]+)\s+END', r"IF(\1, \2, \3)"),
-        (r'\bCASE\s+\[([^\]]+)\]', r"SWITCH('{table_name}'[\1]"),
-        (r'\bWHEN\s+"([^"]+)"\s+THEN\s+"([^"]+)"', r', "\1", "\2"'),
-        (r'\bEND\b', ")"),
-        
-        # Date functions
-        (r'DATEPART\([\'"]year[\'"]\s*,\s*\[([^\]]+)\]\)', rf"YEAR('{table_name}'[\1])"),
-        (r'DATEPART\([\'"]month[\'"]\s*,\s*\[([^\]]+)\]\)', rf"MONTH('{table_name}'[\1])"),
-        (r'DATEPART\([\'"]quarter[\'"]\s*,\s*\[([^\]]+)\]\)', rf"QUARTER('{table_name}'[\1])"),
-        (r'DATEPART\([\'"]day[\'"]\s*,\s*\[([^\]]+)\]\)', rf"DAY('{table_name}'[\1])"),
-        (r'DATETRUNC\([\'"]month[\'"]\s*,\s*\[([^\]]+)\]\)', rf"DATE(YEAR('{table_name}'[\1]), MONTH('{table_name}'[\1]), 1)"),
-        (r'DATEDIFF\([\'"]day[\'"]\s*,\s*\[([^\]]+)\]\s*,\s*\[([^\]]+)\]\)', rf"DATEDIFF('{table_name}'[\1], '{table_name}'[\2], DAY)"),
-        
-        # String functions
-        (r'\bCONTAINS\(\[([^\]]+)\],\s*"([^"]+)"\)', rf"CONTAINSSTRING('{table_name}'[\1], \"\2\")"),
-        (r'\bLEFT\(\[([^\]]+)\],\s*(\d+)\)', rf"LEFT('{table_name}'[\1], \2)"),
-        (r'\bRIGHT\(\[([^\]]+)\],\s*(\d+)\)', rf"RIGHT('{table_name}'[\1], \2)"),
-        (r'\bLEN\(\[([^\]]+)\]\)', rf"LEN('{table_name}'[\1])"),
-        (r'\bUPPER\(\[([^\]]+)\]\)', rf"UPPER('{table_name}'[\1])"),
-        (r'\bLOWER\(\[([^\]]+)\]\)', rf"LOWER('{table_name}'[\1])"),
-        (r'\bTRIM\(\[([^\]]+)\]\)', rf"TRIM('{table_name}'[\1])"),
-        
-        # Math functions
-        (r'\bROUND\(([^,]+),\s*(\d+)\)', r"ROUND(\1, \2)"),
-        (r'\bABS\(([^)]+)\)', r"ABS(\1)"),
-        (r'\bPOWER\(([^,]+),\s*(\d+)\)', r"POWER(\1, \2)"),
-        
-        # Field references (do last)
-        (r'\[([^\]]+)\]', rf"'{table_name}'[\1]"),
-    ]
-    
-    for pattern, replacement in translations:
-        dax = re.sub(pattern, replacement, dax, flags=re.IGNORECASE)
-    
-    return dax.strip()
-
-def translate_all_calculations(extracted_calculations, table_name="Orders"):
-    """
-    Translate all extracted Tableau calculations to DAX measures.
-    Returns TMDL-ready measure definitions.
-    """
-    measures = []
-    
-    for caption, info in extracted_calculations.items():
-        formula = info["formula"]
-        dax = translate_tableau_to_dax(formula, table_name)
-        
-        # Determine format string based on datatype and name
-        format_str = determine_format_string(caption, info.get("datatype", "string"))
-        
-        measure = {
-            "name": caption,
-            "dax": dax,
-            "format": format_str,
-            "original": formula  # Keep original for verification
-        }
-        measures.append(measure)
-    
-    return measures
-
-def determine_format_string(name, datatype):
-    """Determine appropriate format string"""
-    name_lower = name.lower()
-    
-    if "ratio" in name_lower or "percent" in name_lower or "%" in name_lower:
-        return "0.0%"
-    elif "sales" in name_lower or "profit" in name_lower or "revenue" in name_lower or "amount" in name_lower:
-        return "\\$#,0"
-    elif "discount" in name_lower:
-        return "0.0%"
-    elif "count" in name_lower or "quantity" in name_lower:
-        return "#,0"
-    elif datatype in ("real", "float", "double"):
-        return "#,0.00"
-    elif datatype in ("integer", "int"):
-        return "#,0"
-    else:
-        return ""
-
-def generate_tmdl_measures(measures, table_name="Orders"):
-    """Generate TMDL measure definitions"""
-    lines = []
-    for m in measures:
-        lines.append(f"\tmeasure '{m['name']}' = {m['dax']}")
-        if m.get("format"):
-            lines.append(f"\t\tformatString: \"{m['format']}\"")
-        lines.append(f"\t\t/// Original Tableau: {m['original']}")
-        lines.append("")
-    return "\n".join(lines)
-
-# USAGE: Translate extracted calculations
-# extracted = data["calculations"]  # From TWBParser
-# measures = translate_all_calculations(extracted, "Orders")
-# tmdl = generate_tmdl_measures(measures)
-# print(tmdl)
+# Scale TWB zone coords to PBIP page
+scale_x = 1280 / dashboard_width
+scale_y = 720 / dashboard_height
+pbip_x = zone["x"] * scale_x
+pbip_y = zone["y"] * scale_y
+pbip_w = zone["w"] * scale_x
+pbip_h = zone["h"] * scale_y
 ```
 
-### Common Tableau → DAX Pattern Reference
-| Tableau | DAX |
-|---------|-----|
-| `SUM([Sales])` | `SUM('Orders'[Sales])` |
-| `AVG([Profit])` | `AVERAGE('Orders'[Profit])` |
-| `COUNTD([Customer ID])` | `DISTINCTCOUNT('Orders'[Customer ID])` |
-| `ZN([Value])` | `IF(ISBLANK('T'[Value]), 0, 'T'[Value])` |
-| `IF [X] > 0 THEN "Yes" ELSE "No" END` | `IF('T'[X] > 0, "Yes", "No")` |
-| `DATEPART('year', [Date])` | `YEAR('T'[Date])` |
-| `DATEDIFF('day', [Start], [End])` | `DATEDIFF('T'[Start], 'T'[End], DAY)` |
-| `RUNNING_SUM(SUM([Sales]))` | `CALCULATE(SUM('T'[Sales]), FILTER(ALL('T'), 'T'[Date] <= MAX('T'[Date])))` |
-| `WINDOW_AVG(SUM([Sales]), -2, 0)` | Use window function with OFFSET |
-
-**IMPORTANT:** Table calculations (RUNNING_*, WINDOW_*, INDEX, SIZE) require context-aware translation - these depend on the visual's partitioning.
+### Color Application (from extracted data only)
+```json
+"objects": {"dataPoint": [{"properties": {"fill": {"solid": {"color": "#extracted_hex"}}},
+  "selector": {"data": [{"scopeId": {"Comparison": {"Left": {"Column": {...}}, "Right": {"Literal": {"Value": "'FieldValue'"}}}}}]}}]}
+```
 
 ---
 
-## A6. Pre-Delivery Validation Checklist (MANDATORY)
+## PHASE 4: VALIDATE
 
-### Python: Automated Validation Script
+### Per-Visual Validation (before proceeding to next)
 ```python
-import json
-import os
-from pathlib import Path
-
-def validate_pbip(pbip_dir, extracted_data):
-    """
-    Validate generated PBIP against extracted TWB data.
-    Run this BEFORE delivering to ensure no hallucination.
-    """
+def validate_visual(visual_json, extracted_data):
     errors = []
-    warnings = []
-    
-    # Get extracted columns and calculations
-    extracted_columns = set()
-    for table, cols in extracted_data.get("columns", {}).items():
-        for col in cols.keys():
-            extracted_columns.add((table, col))
-    
-    extracted_measures = set(extracted_data.get("calculations", {}).keys())
-    
-    # 1. Validate all visual field references
-    for visual_path in Path(pbip_dir).rglob("visual.json"):
-        with open(visual_path) as f:
-            visual = json.load(f)
-        
-        visual_name = visual.get("name", visual_path.parent.name)
-        
-        # Check queryState fields
-        query = visual.get("visual", {}).get("query", {}).get("queryState", {})
-        for well, content in query.items():
-            for proj in content.get("projections", []):
-                field = proj.get("field", {})
-                
-                # Check Column reference
-                if "Column" in field:
-                    entity = field["Column"]["Expression"]["SourceRef"]["Entity"]
-                    prop = field["Column"]["Property"]
-                    if (entity, prop) not in extracted_columns:
-                        errors.append(f"HALLUCINATION: {visual_name} references non-existent column {entity}.{prop}")
-                
-                # Check Measure reference
-                if "Measure" in field:
-                    entity = field["Measure"]["Expression"]["SourceRef"]["Entity"]
-                    prop = field["Measure"]["Property"]
-                    # Measures could be calculated or extracted
-                    if prop not in extracted_measures and (entity, prop) not in extracted_columns:
-                        warnings.append(f"CHECK: {visual_name} references measure {prop} - verify it exists")
-                
-                # Check Aggregation reference
-                if "Aggregation" in field:
-                    col_ref = field["Aggregation"]["Expression"].get("Column", {})
-                    if col_ref:
-                        entity = col_ref["Expression"]["SourceRef"]["Entity"]
-                        prop = col_ref["Property"]
-                        if (entity, prop) not in extracted_columns:
-                            errors.append(f"HALLUCINATION: {visual_name} aggregates non-existent column {entity}.{prop}")
-    
-    # 2. Validate TMDL columns match extracted data
-    for tmdl_path in Path(pbip_dir).rglob("*.tmdl"):
-        if "tables" not in str(tmdl_path):
-            continue
-        
-        table_name = tmdl_path.stem
-        with open(tmdl_path) as f:
-            content = f.read()
-        
-        # Extract column names from TMDL
-        import re
-        for match in re.finditer(r"column\s+['\"]?([^'\"\n]+)['\"]?", content):
-            col_name = match.group(1).strip("'\"")
-            # Skip derived columns (Order Month, Order Year, Profitability)
-            if col_name in ("Order Month", "Order Year", "Profitability"):
-                continue
-            if (table_name, col_name) not in extracted_columns:
-                warnings.append(f"CHECK: TMDL column {table_name}.{col_name} - verify against TWB")
-    
-    # 3. Check for position validity
-    for visual_path in Path(pbip_dir).rglob("visual.json"):
-        with open(visual_path) as f:
-            visual = json.load(f)
-        
-        pos = visual.get("position", {})
-        visual_name = visual.get("name", visual_path.parent.name)
-        
-        if pos.get("x", 0) < 0 or pos.get("y", 0) < 0:
-            errors.append(f"INVALID: {visual_name} has negative position")
-        if pos.get("x", 0) == 0 and pos.get("y", 0) == 0 and pos.get("width", 0) == 0:
-            errors.append(f"INVALID: {visual_name} has zero position/size")
-    
-    # 4. Check color values exist in extracted colors
-    extracted_colors = extracted_data.get("colors", {}).get("field_values", {})
-    for visual_path in Path(pbip_dir).rglob("visual.json"):
-        with open(visual_path) as f:
-            content = f.read()
-        
-        # Find hardcoded color values
-        for color_match in re.finditer(r'"#([0-9a-fA-F]{6})"', content):
-            color = f"#{color_match.group(1)}"
-            if color not in extracted_colors.values() and color not in ["#000000", "#ffffff", "#FFFFFF"]:
-                warnings.append(f"CHECK: Color {color} in visual - verify against TWB colors")
-    
-    # Print results
-    print("=" * 60)
-    print("VALIDATION RESULTS")
-    print("=" * 60)
-    
-    if errors:
-        print(f"\n❌ ERRORS ({len(errors)}) - MUST FIX:")
-        for e in errors:
-            print(f"  • {e}")
-    
-    if warnings:
-        print(f"\n⚠️  WARNINGS ({len(warnings)}) - VERIFY:")
-        for w in warnings[:10]:
-            print(f"  • {w}")
-        if len(warnings) > 10:
-            print(f"  ... and {len(warnings) - 10} more")
-    
-    if not errors and not warnings:
-        print("\n✅ All validations passed!")
-    
-    return len(errors) == 0
-
-# USAGE
-# validate_pbip("./OutputPBIP", extracted_data)
+    # 1. Check field references exist
+    for proj in get_all_projections(visual_json):
+        entity, prop = extract_entity_prop(proj)
+        if not field_exists(entity, prop, extracted_data["columns"]):
+            errors.append(f"Column {entity}.{prop} not in extracted data")
+    # 2. Check position valid
+    pos = visual_json.get("position", {})
+    if pos.get("x", -1) < 0 or pos.get("y", -1) < 0:
+        errors.append("Negative position")
+    # 3. Check visual type valid
+    if visual_json["visual"]["visualType"] not in VALID_TYPES:
+        errors.append("Invalid visualType")
+    return errors
 ```
 
-### Manual Validation Checklist
-Before delivering the PBIP, verify:
-- [ ] **Data Integrity**
-  - [ ] Data file (CSV) exists and is populated with extracted data
-  - [ ] M query path in TMDL points to correct file location
-  - [ ] Column count in M query matches actual CSV columns
-- [ ] **Field References (No Hallucination)**
-  - [ ] ALL column names come from TWB extraction (not invented)
-  - [ ] ALL measure names come from TWB calculations
-  - [ ] ALL visual queries reference existing model fields
-- [ ] **Visual Structure**
-  - [ ] All visual queries use `Aggregation` with `Function` for numeric values
-  - [ ] All visuals have `autoSelectVisualType: false`
-  - [ ] Position values are numbers (not strings) and non-negative
-  - [ ] No overlapping visuals (check x, y, width, height)
-- [ ] **Colors (No Hardcoding)**
-  - [ ] ALL colors extracted from TWB style/encoding elements
-  - [ ] Color-to-value mappings match TWB field_values
-- [ ] **File Integrity**
-  - [ ] Page order in `pages.json` matches created page folders
-  - [ ] All files are valid JSON/TMDL with no trailing commas
-  - [ ] `.pbip` file has correct relative path to Report folder
-  - [ ] All files end with newline
+### Final Checklist
+- [ ] All columns from TWB extraction (no invented names)
+- [ ] All colors from TWB extraction (no hardcoded hex)
+- [ ] All measures translated from TWB calculations
+- [ ] All positions from dashboard zones / SVG
+- [ ] No overlapping visuals
+- [ ] pages.json lists all page IDs
+- [ ] All files valid JSON/TMDL (no trailing commas)
 
 ---
 
-## A7. SVG Parsing for Pixel-Perfect Layout (CRITICAL)
+## PBIP STRUCTURE (Exact)
 
-Tableau SVG snapshots contain precise positioning information that must be extracted for accurate layout recreation.
-
-### SVG Dimension Conversion
-```python
-import re
-
-def mm_to_px(val):
-    """Convert SVG mm dimensions to pixels (96 DPI = 3.7795 px/mm)"""
-    m = re.match(r'([0-9.]+)mm', val)
-    if m:
-        return float(m.group(1)) * 3.7795
-    m = re.match(r'([0-9.]+)', val)
-    if m:
-        return float(m.group(1))
-    return 0
-
-# Example: SVG width="401.637mm" → 1518 px
+```
+Project.pbip                           # {"version":"1.0","artifacts":[{"report":{"path":"Project.Report"}}]}
+Project.Report/
+  definition.pbir                      # {"version":"4.0","datasetReference":{"byPath":{"path":"../Project.SemanticModel"}}}
+  definition/
+    report.json                        # schema: .../report/3.1.0/schema.json
+    version.json                       # {"$schema":"...versionMetadata/1.0.0/...","version":"2.0.0"}
+    pages/
+      pages.json                       # {"pageOrder":[...],"activePageName":"..."}
+      <pageId>/
+        page.json                      # {"name":"...","displayName":"...","height":720,"width":1280}
+        visuals/<visualId>/visual.json
+Project.SemanticModel/
+  definition.pbism                     # {"version":"4.2","settings":{}}
+  definition/
+    database.tmdl                      # compatibilityLevel: 1600
+    model.tmdl                         # model Model, culture: en-US, ...
+    cultures/en-US.tmdl
+    tables/<Table>.tmdl
 ```
 
-### Position Scaling Formula
-```python
-# Calculate scale factors
-svg_width_px = mm_to_px(svg_root.get('width'))
-svg_height_px = mm_to_px(svg_root.get('height'))
-
-pbip_width = 1280   # Standard PBIP page width
-pbip_height = 731   # Standard PBIP page height
-
-scale_x = pbip_width / svg_width_px
-scale_y = pbip_height / svg_height_px
-
-# Convert SVG position to PBIP position
-pbip_x = svg_x * scale_x
-pbip_y = svg_y * scale_y
-```
-
-### SVG Transform Parsing
-SVG elements often have transform attributes that must be applied to get true coordinates:
-
-```python
-import re
-
-def parse_transform(transform_str):
-    """Parse SVG transform attribute to get translation/matrix values"""
-    if not transform_str:
-        return (0, 0)
-    
-    # Handle matrix(a,b,c,d,e,f) - e,f are translation
-    matrix_match = re.search(r'matrix\(([^)]+)\)', transform_str)
-    if matrix_match:
-        vals = [float(v) for v in matrix_match.group(1).split(',')]
-        return (vals[4], vals[5])  # e, f are x, y translation
-    
-    # Handle translate(x,y)
-    translate_match = re.search(r'translate\(([^,]+),([^)]+)\)', transform_str)
-    if translate_match:
-        return (float(translate_match.group(1)), float(translate_match.group(2)))
-    
-    return (0, 0)
-
-# Apply transform to element position
-transform = parse_transform(element.get('transform', ''))
-true_x = element_x + transform[0]
-true_y = element_y + transform[1]
-```
-
-### Extracting Key Elements from SVG
-
-**Text Elements (for titles, labels, axis values):**
-```python
-import xml.etree.ElementTree as ET
-
-def extract_text_elements(svg_path):
-    tree = ET.parse(svg_path)
-    root = tree.getroot()
-    ns = {'svg': 'http://www.w3.org/2000/svg'}
-    
-    texts = []
-    for text_elem in root.iter('{http://www.w3.org/2000/svg}text'):
-        # Get position from element
-        x = float(text_elem.get('x', 0))
-        y = float(text_elem.get('y', 0))
-        
-        # Get parent group transform
-        parent = text_elem.find('..')
-        if parent is not None:
-            tx, ty = parse_transform(parent.get('transform', ''))
-            x += tx
-            y += ty
-        
-        content = text_elem.text or ''
-        texts.append({'x': x, 'y': y, 'text': content.strip()})
-    
-    return texts
-```
-
-**Rect Elements (for chart containers, filter boxes):**
-```python
-def extract_rect_elements(svg_path):
-    tree = ET.parse(svg_path)
-    root = tree.getroot()
-    
-    rects = []
-    for rect in root.iter('{http://www.w3.org/2000/svg}rect'):
-        x = float(rect.get('x', 0))
-        y = float(rect.get('y', 0))
-        w = float(rect.get('width', 0))
-        h = float(rect.get('height', 0))
-        
-        # Apply parent transform
-        parent = rect.find('..')
-        if parent is not None:
-            tx, ty = parse_transform(parent.get('transform', ''))
-            x += tx
-            y += ty
-        
-        rects.append({'x': x, 'y': y, 'w': w, 'h': h})
-    
-    return rects
-```
+### Schema URLs (use exactly)
+| File | Schema |
+|------|--------|
+| report.json | `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.1.0/schema.json` |
+| pages.json | `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json` |
+| page.json | `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json` |
+| visual.json | `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json` |
 
 ---
 
-## A8. Layout Zone Management
+## CORRUPTION PREVENTION
 
-Organize visuals into logical vertical zones for consistent, non-overlapping layouts.
+### Hard Rules
+- JSON: no extra properties, no trailing commas, no comments
+- UTF-8 without BOM; newline at EOF
+- Unique IDs for pages and visuals
+- `position` values: numbers (not strings), non-negative
+- Every visual query → existing semantic model fields only
+- Relative paths with `/` separators
 
-### Standard Page Layout Zones
-```
-Zone Name           | Y Range    | Content
---------------------|------------|------------------------------------------
-Title Zone          | 0-40       | Page title textbox
-KPI Cards Zone      | 40-110     | KPI card visuals (horizontal row)
-Main Visual Zone    | 110-380    | Maps, large charts, primary visuals
-Filters Zone        | 110-320    | Slicers (right side, x > 1100)
-Chart Section Titles| 380-415    | Section headings for chart groups
-Charts Row 1        | 415-520    | First row of charts
-Charts Row 2        | 520-620    | Second row of charts
-Charts Row 3        | 620-710    | Third row of charts
-Footer/Labels Zone  | 710-731    | Year labels, axis labels, legends
-```
-
-### Zone Assignment Logic
-```python
-def assign_zone(y_position):
-    if y_position < 40:
-        return 'title'
-    elif y_position < 110:
-        return 'kpi_cards'
-    elif y_position < 380:
-        return 'main_visual'
-    elif y_position < 415:
-        return 'section_titles'
-    elif y_position < 520:
-        return 'charts_row_1'
-    elif y_position < 620:
-        return 'charts_row_2'
-    elif y_position < 710:
-        return 'charts_row_3'
-    else:
-        return 'footer'
-```
-
-### Filter/Slicer Positioning Rules
-- Place slicers on the **right side** of the page (x > 1100)
-- Stack vertically with 45-60px spacing
-- Typical slicer dimensions: width=140, height=35-50
-- Position next to (not overlapping) main visual content
-
-```python
-# Example: Position slicers next to a map
-slicer_positions = [
-    {'name': 'Region', 'x': 1134, 'y': 145, 'w': 140, 'h': 35},
-    {'name': 'Order Date', 'x': 1134, 'y': 190, 'w': 140, 'h': 50},
-    {'name': 'Profit Ratio', 'x': 1134, 'y': 250, 'w': 140, 'h': 50},
-]
-```
+### Common Errors to Avoid
+| Error | Cause | Fix |
+|-------|-------|-----|
+| Empty visual | Column ref instead of Aggregation for values | Use Aggregation with Function |
+| Import error | Hyper.Contents in M query | Use Csv.Document |
+| Missing field | Invented column name | Use only extracted columns |
+| Corrupt file | Trailing comma in JSON | Validate JSON syntax |
 
 ---
 
-## A9. Overlap Prevention and Validation
+## QUICK REFERENCE
 
-### Overlap Detection Algorithm
-```python
-def check_overlap(v1, v2):
-    """Check if two visuals overlap"""
-    return (v1['x'] < v2['x'] + v2['w'] and 
-            v1['x'] + v1['w'] > v2['x'] and
-            v1['y'] < v2['y'] + v2['h'] and 
-            v1['y'] + v1['h'] > v2['y'])
-
-def find_all_overlaps(visuals):
-    """Find all overlapping visual pairs"""
-    overlaps = []
-    for i, v1 in enumerate(visuals):
-        for v2 in visuals[i+1:]:
-            if check_overlap(v1, v2):
-                overlaps.append((v1['name'], v2['name']))
-    return overlaps
+### Conversion Flow
+```
+1. Extract TWBX (unzip)
+2. Convert Hyper → CSV
+3. Parse TWB → extracted_data
+4. Generate TMDL (tables, model, relationships)
+5. For each worksheet:
+   a. Get fields, marks, colors from extracted_data
+   b. Get position from dashboard zones
+   c. Generate visual.json
+   d. VALIDATE against extracted_data
+   e. Write file
+   f. → Next worksheet
+6. Generate pages.json, report.json
+7. Final validation
+8. Deliver PBIP
 ```
 
-### Acceptable Overlaps (do not flag as errors)
-- Textbox over background banner (intentional layering)
-- Title textbox over header container
-- Label textbox positioned within chart area
+### Anti-Hallucination Checklist
+Before writing ANY field name, ask:
+- Is this in `extracted_data["columns"]`? ✓ Use it
+- Not found? → Re-check TWB parsing, check table name, check aliases
+- Still not found? → DO NOT USE IT
 
-### Critical Overlaps (must fix)
-- Chart overlapping another chart
-- Slicer overlapping chart content area
-- KPI cards overlapping each other
-
-### Bounds Validation
-```python
-def validate_bounds(visuals, page_width=1280, page_height=731):
-    """Check all visuals are within page bounds"""
-    issues = []
-    for v in visuals:
-        if v['x'] < 0 or v['y'] < 0:
-            issues.append(f"{v['name']} has negative position")
-        if v['x'] + v['w'] > page_width + 5:
-            issues.append(f"{v['name']} extends beyond page width")
-        if v['y'] + v['h'] > page_height + 5:
-            issues.append(f"{v['name']} extends beyond page height")
-    return issues
-```
+### Format Strings
+| Type | Format |
+|------|--------|
+| Currency | `$#,0` or `$#,0.00` |
+| Percentage | `0.0%` |
+| Integer | `#,0` |
+| Decimal | `#,0.00` |
 
 ---
 
-## A10. Textbox Visual Creation
+## AMBIGUITY HANDLING
 
-Use textboxes for titles, labels, legends, and year markers.
+If Tableau logic cannot map 1:1 to DAX:
+1. Choose closest DAX equivalent
+2. Document assumption in code comment
+3. Note in delivery: "Approximation: [original] → [DAX equivalent]"
 
-### Page Title Textbox Template
-```json
-{
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "page_title",
-  "position": {
-    "x": 10,
-    "y": 5,
-    "z": 10,
-    "height": 30,
-    "width": 600,
-    "tabOrder": 0
-  },
-  "visual": {
-    "visualType": "textbox",
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Page Title Text",
-                    "textStyle": {
-                      "fontWeight": "bold",
-                      "fontSize": "16pt"
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "drillFilterOtherVisuals": true
-  }
-}
-```
-
-### Label Textbox Template (for segment/category labels)
-```json
-{
-  "name": "segment_label",
-  "position": {
-    "x": 15,
-    "y": 450,
-    "z": 5,
-    "height": 20,
-    "width": 120,
-    "tabOrder": 0
-  },
-  "visual": {
-    "visualType": "textbox",
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Consumer",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "drillFilterOtherVisuals": true
-  }
-}
-```
-
-### Year Label Generation (for axis labels)
-```python
-def create_year_labels(years, base_y, start_x, spacing):
-    """Generate year label textboxes for chart axis"""
-    labels = []
-    for i, year in enumerate(years):
-        labels.append({
-            'name': f'year_label_{year}_{i}',
-            'x': start_x + (i * spacing),
-            'y': base_y,
-            'width': 40,
-            'height': 16,
-            'text': str(year)
-        })
-    return labels
-```
-
----
-
-## A11. Color Extraction from Tableau (MANDATORY - No Hardcoding)
-
-**CRITICAL:** Every dashboard has its own color scheme. You MUST extract colors from the TWB XML - never use hardcoded palettes.
-
-### Python: Extract All Colors from TWB
-```python
-import xml.etree.ElementTree as ET
-from collections import defaultdict
-
-def extract_twb_colors(twb_path):
-    """
-    Extract ALL color definitions from a Tableau workbook.
-    Returns dict mapping field values to hex colors.
-    """
-    tree = ET.parse(twb_path)
-    root = tree.getroot()
-    
-    colors = defaultdict(dict)
-    
-    # 1. Extract from color-palette definitions
-    for palette in root.findall(".//color-palette"):
-        palette_name = palette.get("name", "default")
-        for i, color in enumerate(palette.findall("color")):
-            colors["palettes"][f"{palette_name}_{i}"] = color.text
-    
-    # 2. Extract from style-rule elements (categorical colors)
-    for style in root.findall(".//style-rule"):
-        element = style.get("element", "")
-        for fmt in style.findall(".//format"):
-            attr = fmt.get("attr", "")
-            value = fmt.get("value", "")
-            if attr in ("fill", "color", "stroke") and value.startswith("#"):
-                colors["styles"][element] = value
-    
-    # 3. Extract from encoding elements (color shelf assignments)
-    for enc in root.findall(".//encodings/color"):
-        column = enc.get("column", "")
-        for map_entry in enc.findall(".//map-entry"):
-            key = map_entry.get("key", "")  # The field value (e.g., "Profitable")
-            val = map_entry.get("value", "")  # The color (e.g., "#4e79a7")
-            if key and val:
-                colors["field_values"][(column, key)] = val
-    
-    # 4. Extract from mark color definitions
-    for pane in root.findall(".//pane"):
-        for mark in pane.findall(".//mark"):
-            color_elem = mark.find("color")
-            if color_elem is not None:
-                colors["marks"][mark.get("class", "default")] = color_elem.text
-    
-    # 5. Extract from preferences (workbook-level colors)
-    for pref in root.findall(".//preferences/color-palette"):
-        name = pref.get("name", "")
-        for color in pref.findall("color"):
-            colors["preferences"][name] = color.text
-    
-    # 6. Extract from datasource column color assignments
-    for ds in root.findall(".//datasource"):
-        ds_name = ds.get("caption", ds.get("name", ""))
-        for col in ds.findall(".//column"):
-            col_name = col.get("name", "").strip("[]")
-            for alias in col.findall(".//alias"):
-                key = alias.get("key", "")
-                color = alias.get("color")
-                if key and color:
-                    colors["aliases"][(ds_name, col_name, key)] = color
-    
-    return dict(colors)
-
-def print_extracted_colors(colors):
-    """Print colors in a format ready for PBIP generation"""
-    print("=== EXTRACTED COLOR MAPPINGS ===")
-    
-    if "field_values" in colors:
-        print("\nField Value → Color:")
-        for (column, value), color in colors["field_values"].items():
-            print(f"  {column}[{value}] = {color}")
-    
-    if "styles" in colors:
-        print("\nStyle Elements:")
-        for element, color in colors["styles"].items():
-            print(f"  {element} = {color}")
-    
-    if "aliases" in colors:
-        print("\nAlias Colors:")
-        for (ds, col, key), color in colors["aliases"].items():
-            print(f"  {ds}.{col}[{key}] = {color}")
-
-# USAGE: Run this BEFORE generating any PBIP visuals
-colors = extract_twb_colors("workbook.twb")
-print_extracted_colors(colors)
-```
-
-### Python: Extract Color Encodings per Worksheet
-```python
-def extract_worksheet_colors(twb_path):
-    """Extract color encodings for each worksheet"""
-    tree = ET.parse(twb_path)
-    root = tree.getroot()
-    
-    ws_colors = {}
-    
-    for ws in root.findall(".//worksheet"):
-        ws_name = ws.get("name")
-        ws_colors[ws_name] = {"field_colors": {}, "series_colors": []}
-        
-        # Find color encoding column
-        for enc in ws.findall(".//table/panes/pane/encodings/color"):
-            column = enc.get("column", "").strip("[]")
-            ws_colors[ws_name]["color_field"] = column
-        
-        # Find style overrides
-        for style in ws.findall(".//style/style-rule"):
-            for fmt in style.findall(".//format[@attr='fill']"):
-                scope = fmt.get("scope", "")
-                color = fmt.get("value", "")
-                if color.startswith("#"):
-                    ws_colors[ws_name]["field_colors"][scope] = color
-        
-        # Find mark-specific colors
-        for pane in ws.findall(".//table/panes/pane"):
-            for mark in pane.findall("mark"):
-                color_elem = mark.find("color")
-                if color_elem is not None and color_elem.text:
-                    ws_colors[ws_name]["series_colors"].append(color_elem.text)
-    
-    return ws_colors
-```
-
-### Applying EXTRACTED Colors to Visual DataPoints
-```json
-{
-  "visual": {
-    "visualType": "stackedAreaChart",
-    "objects": {
-      "dataPoint": [
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": "#4e79a7"
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ]
-          }
-        }
-      ]
-    }
-  }
-}
-```
-
-### Color Selector by Field Value
-```json
-{
-  "selector": {
-    "data": [
-      {
-        "scopeId": {
-          "Comparison": {
-            "Comparison": 0,
-            "Left": {
-              "Column": {
-                "Expression": { "SourceRef": { "Entity": "Orders" } },
-                "Property": "Profitability"
-              }
-            },
-            "Right": { "Literal": { "Value": "'Profitable'" } }
-          }
-        }
-      }
-    ]
-  }
-}
-```
-
----
-
-## A12. Format Strings in TMDL
-
-Apply currency, percentage, and number formatting to columns and measures.
-
-### Currency Formatting
-```tmdl
-column Sales
-    dataType: double
-    formatString: \$#,0;(\$#,0);\$#,0
-    summarizeBy: sum
-    sourceColumn: Sales
-
-column Profit
-    dataType: double
-    formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-    summarizeBy: sum
-    sourceColumn: Profit
-```
-
-### Percentage Formatting
-```tmdl
-column 'Profit Ratio'
-    dataType: double
-    formatString: 0.0%;-0.0%;0.0%
-    summarizeBy: sum
-    sourceColumn: Profit Ratio
-
-column Discount
-    dataType: double
-    formatString: 0.00%;-0.00%;0.00%
-    summarizeBy: sum
-    sourceColumn: Discount
-```
-
-### Display Units in Visual Axis
-```json
-{
-  "visual": {
-    "objects": {
-      "valueAxis": [
-        {
-          "properties": {
-            "labelDisplayUnits": {
-              "expr": {
-                "Literal": { "Value": "1000L" }
-              }
-            }
-          }
-        }
-      ]
-    }
-  }
-}
-```
-
-### Display Unit Values
-| Value | Display |
-|-------|---------|
-| "0L" | Auto |
-| "1L" | None |
-| "1000L" | Thousands (K) |
-| "1000000L" | Millions (M) |
-| "1000000000L" | Billions (B) |
-
----
-
-## A13. Slicer Visual Templates
-
-### Dropdown Slicer (for categorical fields)
-```json
-{
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "slicer_region",
-  "position": {
-    "x": 1134,
-    "y": 145,
-    "z": 5,
-    "height": 35,
-    "width": 140,
-    "tabOrder": 0
-  },
-  "visual": {
-    "visualType": "slicer",
-    "query": {
-      "queryState": {
-        "Values": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": { "SourceRef": { "Entity": "Orders" } },
-                  "Property": "Region"
-                }
-              },
-              "queryRef": "Orders.Region",
-              "nativeQueryRef": "Region"
-            }
-          ]
-        }
-      }
-    },
-    "objects": {
-      "data": [
-        {
-          "properties": {
-            "mode": {
-              "expr": { "Literal": { "Value": "'Dropdown'" } }
-            }
-          }
-        }
-      ],
-      "header": [
-        {
-          "properties": {
-            "show": { "expr": { "Literal": { "Value": "true" } } },
-            "titleText": { "expr": { "Literal": { "Value": "'Region'" } } }
-          }
-        }
-      ]
-    },
-    "drillFilterOtherVisuals": true
-  }
-}
-```
-
-### Date Range Slicer
-```json
-{
-  "name": "slicer_date",
-  "visual": {
-    "visualType": "slicer",
-    "query": {
-      "queryState": {
-        "Values": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": { "SourceRef": { "Entity": "Orders" } },
-                  "Property": "Order Date"
-                }
-              },
-              "queryRef": "Orders.Order Date",
-              "nativeQueryRef": "Order Date"
-            }
-          ]
-        }
-      }
-    },
-    "objects": {
-      "data": [
-        {
-          "properties": {
-            "mode": {
-              "expr": { "Literal": { "Value": "'Between'" } }
-            }
-          }
-        }
-      ]
-    }
-  }
-}
-```
-
-### Numeric Range Slicer
-```json
-{
-  "name": "slicer_profit_ratio",
-  "visual": {
-    "visualType": "slicer",
-    "query": {
-      "queryState": {
-        "Values": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": { "SourceRef": { "Entity": "Orders" } },
-                  "Property": "Profit_Ratio"
-                }
-              },
-              "queryRef": "Orders.Profit_Ratio",
-              "nativeQueryRef": "Profit Ratio"
-            }
-          ]
-        }
-      }
-    },
-    "objects": {
-      "data": [
-        {
-          "properties": {
-            "mode": {
-              "expr": { "Literal": { "Value": "'Between'" } }
-            }
-          }
-        }
-      ]
-    }
-  }
-}
-```
-
----
-
-## A14. Positioning Accuracy Validation
-
-### Accuracy Calculation Method
-```python
-def calculate_positioning_accuracy(pbip_visuals, svg_elements, scale_x, scale_y, tolerance=50):
-    """
-    Compare PBIP visual positions against scaled SVG reference positions.
-    Returns accuracy percentage.
-    """
-    matches = 0
-    total = len(pbip_visuals)
-    
-    for visual in pbip_visuals:
-        for svg_elem in svg_elements:
-            expected_x = svg_elem['x'] * scale_x
-            expected_y = svg_elem['y'] * scale_y
-            
-            if (abs(visual['x'] - expected_x) < tolerance and 
-                abs(visual['y'] - expected_y) < tolerance):
-                matches += 1
-                break
-    
-    return (matches / total) * 100 if total > 0 else 100
-```
-
-### Recommended Tolerances
-| Element Type | Tolerance (px) |
-|--------------|----------------|
-| Charts | 100 |
-| Textboxes | 50 |
-| Slicers | 75 |
-| Cards | 50 |
-| Labels | 30 |
-
-### Accuracy Checks to Perform
-1. **Within Bounds**: All visuals within page dimensions
-2. **Charts Positioned**: Charts not at origin (0,0)
-3. **Has Title**: Page has a title textbox
-4. **Slicers Positioned**: Slicers at top/side, not overlapping content
-5. **Balanced Layout**: Charts distributed across page height
-
-### Target Accuracy Scores
-| Score | Rating |
-|-------|--------|
-| 95-100% | Excellent - Pixel-perfect match |
-| 85-94% | Good - Minor positioning differences |
-| 70-84% | Acceptable - Some layout adjustments needed |
-| <70% | Poor - Significant rework required |
-
----
-
-## A15. Multi-Chart Layouts (Small Multiples Pattern)
-
-When Tableau shows multiple charts (e.g., 3 segment charts stacked vertically), recreate in PBIP:
-
-### Vertical Stacking Pattern
-```python
-def create_stacked_charts(segments, base_y, chart_height, gap=6):
-    """
-    Create vertically stacked charts for segment breakdown.
-    Example: Consumer, Corporate, Home Office
-    """
-    charts = []
-    for i, segment in enumerate(segments):
-        charts.append({
-            'name': f'seg_{segment.lower().replace(" ", "_")}',
-            'y': base_y + (i * (chart_height + gap)),
-            'height': chart_height,
-            'filter': {'field': 'Segment', 'value': segment}
-        })
-    return charts
-
-# Example usage:
-segments = ['Consumer', 'Corporate', 'Home Office']
-charts = create_stacked_charts(segments, base_y=414, chart_height=98, gap=6)
-# Results in charts at y=414, y=518, y=622
-```
-
-### Side-by-Side Pattern (Two Column Layout)
-```python
-def create_side_by_side_charts(left_charts, right_charts, page_width=1280):
-    """
-    Create two columns of charts (e.g., Segment vs Category)
-    """
-    mid_point = page_width // 2
-    left_width = mid_point - 15
-    right_width = page_width - mid_point - 10
-    
-    all_charts = []
-    
-    for chart in left_charts:
-        chart['x'] = 10
-        chart['width'] = left_width
-        all_charts.append(chart)
-    
-    for chart in right_charts:
-        chart['x'] = mid_point + 5
-        chart['width'] = right_width
-        all_charts.append(chart)
-    
-    return all_charts
-```
-
----
-
-## A16. Complete Page Generation Workflow
-
-### Step 1: Parse SVG for Layout
-```python
-svg_data = parse_svg_elements(svg_path)
-scale_x = page_width / svg_data['svg_width']
-scale_y = page_height / svg_data['svg_height']
-```
-
-### Step 2: Extract Key Positions
-```python
-# Find title position
-title_texts = [t for t in svg_data['texts'] if 'Overview' in t['text'] or 'Analysis' in t['text']]
-
-# Find filter positions (usually right side)
-filter_texts = [t for t in svg_data['texts'] if t['x'] > svg_data['svg_width'] * 0.85]
-
-# Find chart containers (large rects)
-chart_rects = [r for r in svg_data['rects'] if r['w'] > 200 and r['h'] > 80]
-
-# Find year labels (bottom of page)
-year_texts = [t for t in svg_data['texts'] if re.match(r'^20\d{2}$', t['text'])]
-```
-
-### Step 3: Create Visual JSONs
-```python
-visuals = []
-
-# Create title
-visuals.append(create_textbox_visual(
-    name='page_title',
-    x=title_texts[0]['x'] * scale_x,
-    y=title_texts[0]['y'] * scale_y - 10,
-    text=title_texts[0]['text']
-))
-
-# Create slicers
-for i, filter_txt in enumerate(filter_texts):
-    visuals.append(create_slicer_visual(
-        name=f"slicer_{filter_txt['text'].lower().replace(' ', '_')}",
-        x=filter_txt['x'] * scale_x,
-        y=filter_txt['y'] * scale_y,
-        field=filter_txt['text']
-    ))
-
-# Create charts
-for rect in chart_rects:
-    visuals.append(create_chart_visual(
-        x=rect['x'] * scale_x,
-        y=rect['y'] * scale_y,
-        width=rect['w'] * scale_x,
-        height=rect['h'] * scale_y
-    ))
-```
-
-### Step 4: Write Visual JSONs
-```python
-for visual in visuals:
-    visual_dir = page_dir / 'visuals' / visual['name']
-    visual_dir.mkdir(parents=True, exist_ok=True)
-    (visual_dir / 'visual.json').write_text(json.dumps(visual['json'], indent=2))
-```
-
-### Step 5: Validate Layout
-```python
-accuracy = calculate_positioning_accuracy(visuals, svg_data, scale_x, scale_y)
-overlaps = find_all_overlaps(visuals)
-bounds_issues = validate_bounds(visuals)
-
-print(f"Accuracy: {accuracy:.1f}%")
-print(f"Overlaps: {len(overlaps)}")
-print(f"Bounds issues: {len(bounds_issues)}")
-```
-
----
-
-## FINAL SUMMARY: High-Accuracy Conversion Workflow
-
-### The 5-Step No-Hallucination Process
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 1: PARSE (Mandatory First Step)                                      │
-│  • Run TWBParser on the TWBX file                                          │
-│  • Extract: columns, calculations, colors, worksheets, dashboards          │
-│  • Print summary and VERIFY data before proceeding                         │
-│  • Store extracted_data dict for all subsequent steps                      │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    ↓
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 2: TRANSLATE (Data-Driven Only)                                      │
-│  • Translate Tableau calculations → DAX using translate_tableau_to_dax()   │
-│  • Map Tableau data types → TMDL data types                                │
-│  • Extract relationships from object-graph                                  │
-│  • NO INVENTING - only use extracted_data                                  │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    ↓
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 3: GENERATE (Template-Based)                                         │
-│  • Generate TMDL files using extracted column definitions                  │
-│  • Generate visual.json using extracted dashboard zones                    │
-│  • Apply colors from extracted_data["colors"]["field_values"]              │
-│  • Use SVG positions scaled to PBIP page dimensions                        │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    ↓
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 4: VALIDATE (Automated)                                              │
-│  • Run validate_pbip() against extracted_data                              │
-│  • Check ALL field references exist in extracted columns                   │
-│  • Verify ALL colors match extracted color mappings                        │
-│  • Fix any HALLUCINATION errors before delivery                            │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    ↓
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 5: DELIVER                                                           │
-│  • Complete PBIP folder with Report + SemanticModel                        │
-│  • CSV data files extracted from Hyper                                     │
-│  • All field references verified against source                            │
-│  • Ready to open in Power BI Desktop                                       │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### Key Anti-Hallucination Rules (NEVER VIOLATE)
-
-| Category | NEVER DO | ALWAYS DO |
-|----------|----------|-----------|
-| **Columns** | Invent column names | Extract from TWB `<column>` elements |
-| **Measures** | Write arbitrary DAX | Translate from TWB `<calculation>` formulas |
-| **Colors** | Use hardcoded palettes | Extract from TWB `<style-rule>` and `<encodings>` |
-| **Positions** | Use arbitrary x,y values | Calculate from TWB zone coords or SVG parsing |
-| **Relationships** | Assume table joins | Parse from TWB `<object-graph>` |
-| **Visual Types** | Guess chart types | Map from TWB `mark class` + snapshot verification |
-| **Filter Fields** | Invent filter columns | Extract from TWB `<filter>` elements |
-
-### Quick Reference: Python Functions to Use
-
-```python
-# 1. Parse TWB completely
-from twb_parser import TWBParser
-parser = TWBParser("workbook.twb")
-data = parser.parse_all()
-parser.print_summary()
-
-# 2. Get columns for a table
-columns = data["columns"]["Orders"]  # {"Sales": {"datatype": "real"}, ...}
-
-# 3. Translate calculations
-from dax_translator import translate_all_calculations
-measures = translate_all_calculations(data["calculations"], "Orders")
-
-# 4. Get colors for visual
-color_map = data["colors"]["field_values"]
-# {("Profitability", "Profitable"): "#4e79a7", ...}
-
-# 5. Get dashboard layout
-zones = data["dashboards"]["Overview"]["zones"]
-# [{"worksheet": "Sales", "x": 10, "y": 100, "w": 600, "h": 400}, ...]
-
-# 6. Validate output
-from validator import validate_pbip
-validate_pbip("./OutputPBIP", data)
-```
-
-### Conversion Accuracy Targets
-
-| Metric | Target | How to Achieve |
-|--------|--------|----------------|
-| Column accuracy | 100% | All from TWB extraction |
-| Measure accuracy | 100% | Automated translation |
-| Color accuracy | 100% | All from TWB extraction |
-| Position accuracy | 95%+ | SVG parsing + zone scaling |
-| Relationship accuracy | 100% | All from object-graph |
-| Visual type accuracy | 95%+ | Mark class + snapshot verification |
-
-### Error Recovery
-
-If validation fails:
-1. **HALLUCINATION error**: Field not in extracted data
-   - Re-check TWB parsing output
-   - Verify correct table name used
-   - Check for aliased column names
-
-2. **INVALID error**: Bad position/structure
-   - Re-calculate from dashboard zones
-   - Check SVG scaling factors
-   - Verify zone coordinates parsed correctly
-
-3. **CHECK warning**: Color not in extracted colors
-   - Re-run color extraction
-   - Check style-rule and encoding elements
-   - May be valid if color is UI element (not data)
-
----
-
-**REMEMBER:** The goal is 100% accuracy through data-driven extraction, not approximation through guessing.
+Table calculations (RUNNING_SUM, WINDOW_AVG, INDEX) require context-aware translation based on visual partitioning.
