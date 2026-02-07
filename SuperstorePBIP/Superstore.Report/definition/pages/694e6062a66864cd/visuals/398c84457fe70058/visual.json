@@ -2,15 +2,16 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "398c84457fe70058",
   "position": {
-    "x": 5.9,
-    "y": 109.98,
+    "x": 6,
+    "y": 60,
     "z": 2,
-    "height": 244.77,
-    "width": 1110.51,
+    "height": 200,
+    "width": 680,
     "tabOrder": 2
   },
   "visual": {
     "visualType": "stackedAreaChart",
+    "autoSelectVisualType": false,
     "query": {
       "queryState": {
         "Category": {
@@ -56,6 +57,28 @@
           ]
         }
       }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sum of Sales by Category'"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "objects": {
       "dataPoint": [
