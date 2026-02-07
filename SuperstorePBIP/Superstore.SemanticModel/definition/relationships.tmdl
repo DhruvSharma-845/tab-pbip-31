@@ -1,0 +1,47 @@
+relationship 76e55267-5791-449d-a661-d04a8a95a067
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Parameters.'Order Date'
+	toColumn: LocalDateTable_1f388f56-0e1a-45c3-8cbd-a0472a09ee07.Date
+
+relationship 9512a26f-dd40-4500-887e-3c32b4d27c55
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Parameters.'Ship Date'
+	toColumn: LocalDateTable_a8187772-2d67-4a77-8503-a1b7262e48b8.Date
+
+relationship 9c47fa2c-dd7d-4d2f-89ad-a2e539f6652a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Sample - Superstore'.'Order Date'
+	toColumn: LocalDateTable_ab72eb40-3a89-4103-9377-7fbc8fc87087.Date
+
+relationship 535cf86e-55e8-4eec-b190-f68799d9342e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Sample - Superstore'.'Ship Date'
+	toColumn: LocalDateTable_3804ca52-2fec-4eab-8d77-890245705bb3.Date
+
+relationship bbeeb81f-b90f-4ccf-ba4a-b252a2409c6a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Orders.'Order Date'
+	toColumn: LocalDateTable_9202b1b2-a281-4dd9-a1a7-2b4b1306e124.Date
+
+relationship 1c76f1ba-0ea7-4e69-b2c3-381a9d36dbe9
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Orders.'Ship Date'
+	toColumn: LocalDateTable_7d66fb0c-40a3-4439-8a9a-e4c5c08a1663.Date
+
+relationship b50dec0d-4eed-4670-b591-0d71f7536b89
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Orders.'Order Month'
+	toColumn: LocalDateTable_6116e850-ea7b-4d8c-b642-c69ef7fde37c.Date
+
+relationship AutoDetected_13701e11-6a3e-442c-acbb-fee108d8a4ed
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Orders.'Row ID'
+	toColumn: Parameters.'Row ID'
+
+relationship AutoDetected_c575eddd-a83f-463d-a09d-3ae4ae36f07c
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Orders.'Row ID'
+	toColumn: 'Sample - Superstore'.'Row ID'
+

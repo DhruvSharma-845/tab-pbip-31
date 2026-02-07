@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_year_2025",
   "position": {
-    "x": 90.28,
-    "y": 346.75,
+    "x": 90.556716417910451,
+    "y": 346.95223880597013,
     "z": 10,
-    "height": 16,
-    "width": 40,
-    "tabOrder": 0
+    "height": 25.094029850746267,
+    "width": 56.734328358208955
   },
   "visual": {
     "visualType": "textbox",

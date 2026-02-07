@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_year_2022",
   "position": {
     "x": 90.28,
     "y": 278.94,
     "z": 10,
     "height": 16,
-    "width": 40,
-    "tabOrder": 0
+    "width": 40
   },
   "visual": {
     "visualType": "textbox",

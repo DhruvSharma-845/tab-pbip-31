@@ -3,10 +3,10 @@
   "name": "exec_subtitle",
   "position": {
     "x": 20,
-    "y": 70,
+    "y": 50,
     "z": 1,
-    "height": 40,
-    "width": 400,
+    "height": 30,
+    "width": 200,
     "tabOrder": 1
   },
   "visual": {
@@ -21,8 +21,8 @@
                   {
                     "value": "Executive Summary",
                     "textStyle": {
-                      "fontSize": "18pt",
-                      "color": "#555555"
+                      "fontSize": "14pt",
+                      "fontWeight": "bold"
                     }
                   }
                 ]

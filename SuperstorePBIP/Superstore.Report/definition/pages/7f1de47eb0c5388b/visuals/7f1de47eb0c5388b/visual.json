@@ -3,14 +3,15 @@
   "name": "7f1de47eb0c5388b",
   "position": {
     "x": 20,
-    "y": 472.0,
+    "y": 472,
     "z": 1,
-    "height": 248.0,
+    "height": 248,
     "width": 1240,
     "tabOrder": 1
   },
   "visual": {
     "visualType": "tableEx",
+    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Category": {
@@ -57,29 +58,6 @@
         }
       }
     },
-    "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
-    "objects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Tooltip: Profit Ratio by City'"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "drillFilterOtherVisuals": true
   }
 }

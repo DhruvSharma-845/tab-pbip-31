@@ -3,11 +3,11 @@
   "name": "stores_table",
   "position": {
     "x": 20,
-    "y": 100,
-    "z": 5,
+    "y": 150,
+    "z": 10,
     "height": 350,
-    "width": 500,
-    "tabOrder": 5
+    "width": 460,
+    "tabOrder": 10
   },
   "visual": {
     "visualType": "tableEx",
@@ -45,36 +45,31 @@
             },
             {
               "field": {
-                "Column": {
+                "Measure": {
                   "Expression": {
                     "SourceRef": {
                       "Entity": "Retail Sales Data"
                     }
                   },
-                  "Property": "City"
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "Retail Sales Data.City",
-              "nativeQueryRef": "City"
+              "queryRef": "Retail Sales Data.Total Sales",
+              "nativeQueryRef": "Total Sales"
             },
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Retail Sales Data"
-                        }
-                      },
-                      "Property": "Sales Amount"
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
                     }
                   },
-                  "Function": 0
+                  "Property": "Sales Growth %"
                 }
               },
-              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
-              "nativeQueryRef": "Total Sales"
+              "queryRef": "Retail Sales Data.Sales Growth %",
+              "nativeQueryRef": "Sales Growth %"
             }
           ]
         }

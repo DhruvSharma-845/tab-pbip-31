@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "adhoc_chart_title",
   "position": {
-    "x": 500,
-    "y": 130,
-    "z": 10,
-    "height": 30,
+    "x": 20,
+    "y": 90,
+    "z": 2,
+    "height": 25,
     "width": 300,
-    "tabOrder": 10
+    "tabOrder": 2
   },
   "visual": {
     "visualType": "textbox",
@@ -21,9 +21,8 @@
                   {
                     "value": "Total Sales by Product Line",
                     "textStyle": {
-                      "fontWeight": "bold",
-                      "fontSize": "12pt",
-                      "color": "#2b5c8a"
+                      "fontSize": "11pt",
+                      "fontWeight": "bold"
                     }
                   }
                 ]

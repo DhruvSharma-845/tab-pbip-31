@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_slicer_region",
   "position": {
-    "x": 900.0,
-    "y": 35,
+    "x": 1140.141791044776,
+    "y": 85.101492537313433,
     "z": 5,
-    "height": 50,
-    "width": 110,
-    "tabOrder": 0
+    "height": 73.1,
+    "width": 110.1955223880597
   },
   "visual": {
     "visualType": "slicer",
@@ -27,7 +26,8 @@
                 }
               },
               "queryRef": "Orders.Region",
-              "nativeQueryRef": "Region"
+              "nativeQueryRef": "Region",
+              "active": true
             }
           ]
         }
@@ -49,15 +49,7 @@
       ],
       "general": [
         {
-          "properties": {
-            "orientation": {
-              "expr": {
-                "Literal": {
-                  "Value": "0"
-                }
-              }
-            }
-          }
+          "properties": {}
         }
       ],
       "header": [
@@ -69,18 +61,29 @@
                   "Value": "true"
                 }
               }
-            },
-            "titleText": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Region'"
-                }
-              }
             }
           }
         }
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "a2bb40ab638011445784",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Region"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

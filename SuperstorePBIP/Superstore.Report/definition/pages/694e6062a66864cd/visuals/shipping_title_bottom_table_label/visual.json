@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "shipping_title_bottom_table_label",
   "position": {
     "x": 9.28,
     "y": 359.08,
     "z": 10,
     "height": 18,
-    "width": 520,
-    "tabOrder": 0
+    "width": 520
   },
   "visual": {
     "visualType": "textbox",

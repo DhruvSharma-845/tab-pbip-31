@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "commission_label_sort_by",
   "position": {
     "x": 527.85,
     "y": 54.98,
     "z": 10,
     "height": 16,
-    "width": 180,
-    "tabOrder": 0
+    "width": 180
   },
   "visual": {
     "visualType": "textbox",

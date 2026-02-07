@@ -3,14 +3,15 @@
   "name": "63c904559993935c",
   "position": {
     "x": 20,
-    "y": 148.0,
+    "y": 148,
     "z": 1,
-    "height": 320.0,
+    "height": 320,
     "width": 1240,
     "tabOrder": 1
   },
   "visual": {
     "visualType": "clusteredBarChart",
+    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Category": {
@@ -57,29 +58,6 @@
         }
       }
     },
-    "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true,
-    "objects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Performance'"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "drillFilterOtherVisuals": true
   }
 }

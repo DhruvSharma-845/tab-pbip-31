@@ -3,11 +3,11 @@
   "name": "product_trend",
   "position": {
     "x": 20,
-    "y": 210,
-    "z": 5,
-    "height": 250,
-    "width": 970,
-    "tabOrder": 5
+    "y": 530,
+    "z": 12,
+    "height": 200,
+    "width": 940,
+    "tabOrder": 12
   },
   "visual": {
     "visualType": "lineChart",
@@ -35,21 +35,16 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Retail Sales Data"
-                        }
-                      },
-                      "Property": "Sales Amount"
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
                     }
                   },
-                  "Function": 0
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
+              "queryRef": "Retail Sales Data.Total Sales",
               "nativeQueryRef": "Total Sales"
             }
           ]

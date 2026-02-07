@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_cat_technology",
   "position": {
     "x": 2.65,
     "y": 276.94,
     "z": 10,
     "height": 18,
-    "width": 120,
-    "tabOrder": 0
+    "width": 120
   },
   "visual": {
     "visualType": "textbox",

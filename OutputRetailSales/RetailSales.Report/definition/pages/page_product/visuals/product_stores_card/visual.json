@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "product_stores_card",
   "position": {
-    "x": 570,
-    "y": 90,
-    "z": 3,
-    "height": 100,
+    "x": 620,
+    "y": 130,
+    "z": 7,
+    "height": 80,
     "width": 200,
-    "tabOrder": 3
+    "tabOrder": 7
   },
   "visual": {
     "visualType": "card",
@@ -17,22 +17,17 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Retail Sales Data"
-                        }
-                      },
-                      "Property": "Store"
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
                     }
                   },
-                  "Function": 5
+                  "Property": "Active Stores"
                 }
               },
-              "queryRef": "CountNonNull(Retail Sales Data.Store)",
-              "nativeQueryRef": "Stores Selling"
+              "queryRef": "Retail Sales Data.Active Stores",
+              "nativeQueryRef": "Active Stores"
             }
           ]
         }

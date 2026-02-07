@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_scatter_title",
   "position": {
-    "x": 10.12,
-    "y": 372.31,
+    "x": 9.8194029850746265,
+    "y": 372.04626865671639,
     "z": 10,
-    "height": 22,
-    "width": 620,
-    "tabOrder": 0
+    "height": 41.459701492537313,
+    "width": 640.44328358208952
   },
   "visual": {
     "visualType": "textbox",

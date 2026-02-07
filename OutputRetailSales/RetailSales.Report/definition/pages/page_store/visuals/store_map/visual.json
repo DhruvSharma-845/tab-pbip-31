@@ -3,11 +3,11 @@
   "name": "store_map",
   "position": {
     "x": 20,
-    "y": 480,
-    "z": 7,
-    "height": 250,
-    "width": 970,
-    "tabOrder": 7
+    "y": 500,
+    "z": 12,
+    "height": 220,
+    "width": 940,
+    "tabOrder": 12
   },
   "visual": {
     "visualType": "map",
@@ -35,21 +35,16 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Retail Sales Data"
-                        }
-                      },
-                      "Property": "Sales Amount"
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
                     }
                   },
-                  "Function": 0
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
+              "queryRef": "Retail Sales Data.Total Sales",
               "nativeQueryRef": "Total Sales"
             }
           ]

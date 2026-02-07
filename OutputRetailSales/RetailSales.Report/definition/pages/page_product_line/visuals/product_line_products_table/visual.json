@@ -3,11 +3,11 @@
   "name": "product_line_products_table",
   "position": {
     "x": 20,
-    "y": 480,
-    "z": 7,
-    "height": 250,
-    "width": 970,
-    "tabOrder": 7
+    "y": 430,
+    "z": 12,
+    "height": 290,
+    "width": 940,
+    "tabOrder": 12
   },
   "visual": {
     "visualType": "tableEx",
@@ -31,41 +31,45 @@
             },
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Retail Sales Data"
-                        }
-                      },
-                      "Property": "Store"
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
                     }
                   },
-                  "Function": 5
+                  "Property": "Active Stores"
                 }
               },
-              "queryRef": "CountNonNull(Retail Sales Data.Store)",
-              "nativeQueryRef": "Store Count"
+              "queryRef": "Retail Sales Data.Active Stores",
+              "nativeQueryRef": "Active Stores"
             },
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Retail Sales Data"
-                        }
-                      },
-                      "Property": "Sales Amount"
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
                     }
                   },
-                  "Function": 0
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
+              "queryRef": "Retail Sales Data.Total Sales",
               "nativeQueryRef": "Total Sales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
+                    }
+                  },
+                  "Property": "Sales Growth %"
+                }
+              },
+              "queryRef": "Retail Sales Data.Sales Growth %",
+              "nativeQueryRef": "Sales Growth %"
             }
           ]
         }

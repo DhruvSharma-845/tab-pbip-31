@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_month_oct",
   "position": {
-    "x": 899.13,
-    "y": 78.0,
+    "x": 899.02089552238806,
+    "y": 77.464179104477608,
     "z": 10,
-    "height": 14,
-    "width": 35,
-    "tabOrder": 0
+    "height": 28.367164179104478,
+    "width": 50.188059701492534
   },
   "visual": {
     "visualType": "textbox",

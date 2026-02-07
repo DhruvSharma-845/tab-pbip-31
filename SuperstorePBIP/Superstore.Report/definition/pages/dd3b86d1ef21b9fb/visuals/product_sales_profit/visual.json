@@ -1,64 +1,18 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_sales_profit",
   "position": {
-    "x": 6.75,
-    "y": 443.23,
+    "x": 138.56268656716418,
+    "y": 425.50746268656718,
     "z": 2,
-    "height": 280.33,
-    "width": 1265.67,
+    "height": 296.76417910447759,
+    "width": 1134.686567164179,
     "tabOrder": 2
   },
   "visual": {
     "visualType": "scatterChart",
     "query": {
       "queryState": {
-        "X": {
-          "projections": [
-            {
-              "field": {
-                "Aggregation": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Orders"
-                        }
-                      },
-                      "Property": "Sales"
-                    }
-                  },
-                  "Function": 0
-                }
-              },
-              "queryRef": "Sum(Orders.Sales)",
-              "nativeQueryRef": "Sum of Sales"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Aggregation": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Orders"
-                        }
-                      },
-                      "Property": "Profit"
-                    }
-                  },
-                  "Function": 0
-                }
-              },
-              "queryRef": "Sum(Orders.Profit)",
-              "nativeQueryRef": "Sum of Profit"
-            }
-          ]
-        },
         "Details": {
           "projections": [
             {
@@ -112,27 +66,72 @@
               "nativeQueryRef": "Profit Ratio"
             }
           ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Sales"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Orders.Sales)",
+              "nativeQueryRef": "Sum of Sales",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Orders"
+                        }
+                      },
+                      "Property": "Profit"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Orders.Profit)",
+              "nativeQueryRef": "Sum of Profit"
+            }
+          ]
         }
       }
     },
-    "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": false,
     "objects": {
-      "title": [
+      "dataPoint": [
         {
           "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#4e79a7'"
+                    }
+                  }
                 }
               }
             }
-          }
-        }
-      ],
-      "dataPoint": [
-        {
+          },
           "selector": {
             "data": [
               {
@@ -158,22 +157,22 @@
                 }
               }
             ]
-          },
+          }
+        },
+        {
           "properties": {
             "fill": {
               "solid": {
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#4e79a7'"
+                      "Value": "'#f28e2b'"
                     }
                   }
                 }
               }
             }
-          }
-        },
-        {
+          },
           "selector": {
             "data": [
               {
@@ -199,22 +198,22 @@
                 }
               }
             ]
-          },
+          }
+        },
+        {
           "properties": {
             "fill": {
               "solid": {
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#f28e2b'"
+                      "Value": "'#59a14f'"
                     }
                   }
                 }
               }
             }
-          }
-        },
-        {
+          },
           "selector": {
             "data": [
               {
@@ -240,19 +239,6 @@
                 }
               }
             ]
-          },
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#59a14f'"
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       ]
@@ -284,7 +270,8 @@
           }
         }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
@@ -302,43 +289,87 @@
           }
         },
         "type": "Advanced",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "Orders",
-              "Entity": "Orders"
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "Between": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Orders"
-                        }
-                      },
-                      "Property": "Order Date"
-                    }
-                  },
-                  "LowerBound": {
-                    "Literal": {
-                      "Value": "datetime'2022-01-03T00:00:00'"
-                    }
-                  },
-                  "UpperBound": {
-                    "Literal": {
-                      "Value": "datetime'2025-12-30T00:00:00'"
-                    }
+        "howCreated": "User"
+      },
+      {
+        "name": "a179ea447855c01c273a",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Orders"
                   }
-                }
+                },
+                "Property": "Sales"
               }
-            }
-          ]
-        }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "322a86b429ffee0d41b1",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Orders"
+                  }
+                },
+                "Property": "Profit"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "d84f66b6df48cc86985a",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Product Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "e17c95643823b1bf9818",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Segment"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "450f7b38b4aef4c187b0",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Profit Ratio"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "cat_label_technology",
   "position": {
-    "x": 645.06,
-    "y": 639.62,
+    "x": 644.80746268656719,
+    "y": 639.35223880597016,
     "z": 10,
-    "height": 20,
-    "width": 140,
-    "tabOrder": 0
+    "height": 31.640298507462685,
+    "width": 89.465671641791047
   },
   "visual": {
     "visualType": "textbox",

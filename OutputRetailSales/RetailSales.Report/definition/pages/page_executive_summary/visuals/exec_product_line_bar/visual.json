@@ -3,11 +3,11 @@
   "name": "exec_product_line_bar",
   "position": {
     "x": 20,
-    "y": 310,
-    "z": 10,
+    "y": 370,
+    "z": 25,
     "height": 280,
-    "width": 560,
-    "tabOrder": 10
+    "width": 450,
+    "tabOrder": 25
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -35,21 +35,16 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Retail Sales Data"
-                        }
-                      },
-                      "Property": "Sales Amount"
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
                     }
                   },
-                  "Function": 0
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
+              "queryRef": "Retail Sales Data.Total Sales",
               "nativeQueryRef": "Total Sales"
             }
           ]

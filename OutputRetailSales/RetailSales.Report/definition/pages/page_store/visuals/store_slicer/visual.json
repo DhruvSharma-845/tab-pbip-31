@@ -3,11 +3,11 @@
   "name": "store_slicer",
   "position": {
     "x": 20,
-    "y": 90,
-    "z": 1,
-    "height": 60,
-    "width": 300,
-    "tabOrder": 1
+    "y": 100,
+    "z": 5,
+    "height": 50,
+    "width": 350,
+    "tabOrder": 5
   },
   "visual": {
     "visualType": "slicer",

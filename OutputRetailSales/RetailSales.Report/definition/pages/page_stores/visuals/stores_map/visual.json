@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "stores_map",
   "position": {
-    "x": 540,
-    "y": 100,
-    "z": 6,
-    "height": 350,
-    "width": 450,
-    "tabOrder": 6
+    "x": 20,
+    "y": 520,
+    "z": 12,
+    "height": 200,
+    "width": 940,
+    "tabOrder": 12
   },
   "visual": {
     "visualType": "map",
@@ -23,11 +23,11 @@
                       "Entity": "Retail Sales Data"
                     }
                   },
-                  "Property": "State"
+                  "Property": "City"
                 }
               },
-              "queryRef": "Retail Sales Data.State",
-              "nativeQueryRef": "State"
+              "queryRef": "Retail Sales Data.City",
+              "nativeQueryRef": "City"
             }
           ]
         },
@@ -35,21 +35,16 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Retail Sales Data"
-                        }
-                      },
-                      "Property": "Sales Amount"
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
                     }
                   },
-                  "Function": 0
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
+              "queryRef": "Retail Sales Data.Total Sales",
               "nativeQueryRef": "Total Sales"
             }
           ]
@@ -72,7 +67,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Sales by State'"
+                  "Value": "'Sales by Location'"
                 }
               }
             }

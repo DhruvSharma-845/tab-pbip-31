@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_cat_furniture",
   "position": {
-    "x": 1.81,
-    "y": 481.19,
+    "x": 2.1820895522388057,
+    "y": 481.15074626865669,
     "z": 10,
-    "height": 18,
-    "width": 120,
-    "tabOrder": 0
+    "height": 54.552238805970148,
+    "width": 125.47014925373134
   },
   "visual": {
     "visualType": "textbox",

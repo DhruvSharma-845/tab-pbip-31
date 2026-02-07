@@ -1,16 +1,17 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "b761f216a50c9ff2",
   "position": {
-    "x": 1126.53,
-    "y": 264.0,
+    "x": 1120.5029850746268,
+    "y": 196.38805970149252,
     "z": 3,
-    "height": 36,
-    "width": 160,
+    "height": 36.004477611940295,
+    "width": 159.29253731343283,
     "tabOrder": 3
   },
   "visual": {
     "visualType": "slicer",
+    "autoSelectVisualType": true,
     "query": {
       "queryState": {
         "Values": {
@@ -34,7 +35,24 @@
         }
       }
     },
-    "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": true
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "a1e4f8f1319688d485b7",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Sample - Superstore"
+              }
+            },
+            "Property": "Region"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

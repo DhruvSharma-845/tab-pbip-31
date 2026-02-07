@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_slicer_sales",
   "position": {
-    "x": 1140.0,
-    "y": 35,
+    "x": 1140.141791044776,
+    "y": 176.74925373134329,
     "z": 5,
-    "height": 50,
-    "width": 110,
-    "tabOrder": 0
+    "height": 84.01044776119403,
+    "width": 110.1955223880597
   },
   "visual": {
     "visualType": "slicer",
@@ -27,7 +26,8 @@
                 }
               },
               "queryRef": "Orders.Sales",
-              "nativeQueryRef": "Sales"
+              "nativeQueryRef": "Sales",
+              "active": true
             }
           ]
         }
@@ -49,15 +49,7 @@
       ],
       "general": [
         {
-          "properties": {
-            "orientation": {
-              "expr": {
-                "Literal": {
-                  "Value": "0"
-                }
-              }
-            }
-          }
+          "properties": {}
         }
       ],
       "header": [
@@ -69,18 +61,29 @@
                   "Value": "true"
                 }
               }
-            },
-            "titleText": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Sales'"
-                }
-              }
             }
           }
         }
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "fe9a495c95bedb88bdfe",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Sales"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

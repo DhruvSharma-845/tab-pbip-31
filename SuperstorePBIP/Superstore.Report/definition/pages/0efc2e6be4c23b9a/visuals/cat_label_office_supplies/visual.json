@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "cat_label_office_supplies",
   "position": {
-    "x": 645.06,
-    "y": 540.38,
+    "x": 644.55516014234877,
+    "y": 540.92526690391458,
     "z": 10,
-    "height": 20,
-    "width": 140,
-    "tabOrder": 0
+    "height": 50.106761565836294,
+    "width": 81.992882562277572
   },
   "visual": {
     "visualType": "textbox",

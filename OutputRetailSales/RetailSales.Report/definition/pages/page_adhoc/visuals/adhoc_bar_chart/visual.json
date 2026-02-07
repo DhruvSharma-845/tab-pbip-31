@@ -3,11 +3,11 @@
   "name": "adhoc_bar_chart",
   "position": {
     "x": 20,
-    "y": 170,
-    "z": 5,
-    "height": 300,
-    "width": 640,
-    "tabOrder": 5
+    "y": 130,
+    "z": 10,
+    "height": 580,
+    "width": 650,
+    "tabOrder": 10
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -35,21 +35,16 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Retail Sales Data"
-                        }
-                      },
-                      "Property": "Sales Amount"
+                    "SourceRef": {
+                      "Entity": "Retail Sales Data"
                     }
                   },
-                  "Function": 0
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "Sum(Retail Sales Data.Sales Amount)",
+              "queryRef": "Retail Sales Data.Total Sales",
               "nativeQueryRef": "Total Sales"
             }
           ]

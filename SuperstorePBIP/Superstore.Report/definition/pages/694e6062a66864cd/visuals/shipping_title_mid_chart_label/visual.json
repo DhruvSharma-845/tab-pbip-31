@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "shipping_title_mid_chart_label",
   "position": {
     "x": 525.2,
     "y": 327.65,
     "z": 10,
     "height": 18,
-    "width": 520,
-    "tabOrder": 0
+    "width": 520
   },
   "visual": {
     "visualType": "textbox",

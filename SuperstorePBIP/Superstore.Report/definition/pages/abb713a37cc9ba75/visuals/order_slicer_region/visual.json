@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "order_slicer_region",
   "position": {
     "x": 580,
     "y": 35,
     "z": 5,
     "height": 50,
-    "width": 120,
-    "tabOrder": 0
+    "width": 120
   },
   "visual": {
     "visualType": "slicer",
@@ -27,7 +26,8 @@
                 }
               },
               "queryRef": "Orders.Region",
-              "nativeQueryRef": "Region"
+              "nativeQueryRef": "Region",
+              "active": true
             }
           ]
         }
@@ -49,15 +49,7 @@
       ],
       "general": [
         {
-          "properties": {
-            "orientation": {
-              "expr": {
-                "Literal": {
-                  "Value": "0"
-                }
-              }
-            }
-          }
+          "properties": {}
         }
       ],
       "header": [
@@ -67,13 +59,6 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
-                }
-              }
-            },
-            "titleText": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Region'"
                 }
               }
             }

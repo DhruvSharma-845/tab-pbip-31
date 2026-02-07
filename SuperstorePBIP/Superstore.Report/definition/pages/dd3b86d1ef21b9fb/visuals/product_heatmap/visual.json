@@ -1,50 +1,18 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "product_heatmap",
   "position": {
-    "x": 7.59,
-    "y": 74.42,
+    "x": 7.6373134328358212,
+    "y": 110.1955223880597,
     "z": 1,
-    "height": 288.6,
-    "width": 1118.1,
+    "height": 207.29850746268656,
+    "width": 1053.9492537313433,
     "tabOrder": 1
   },
   "visual": {
     "visualType": "matrix",
     "query": {
       "queryState": {
-        "Rows": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Category"
-                }
-              },
-              "queryRef": "Orders.Category",
-              "nativeQueryRef": "Category"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Orders"
-                    }
-                  },
-                  "Property": "Order Year"
-                }
-              },
-              "queryRef": "Orders.Order Year",
-              "nativeQueryRef": "Order Year"
-            }
-          ]
-        },
         "Columns": {
           "projections": [
             {
@@ -60,6 +28,24 @@
               },
               "queryRef": "Orders.Order Month",
               "nativeQueryRef": "Order Month"
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Category"
+                }
+              },
+              "queryRef": "Orders.Category",
+              "nativeQueryRef": "Category"
             }
           ]
         },
@@ -88,73 +74,20 @@
         }
       }
     },
-    "drillFilterOtherVisuals": true,
-    "autoSelectVisualType": false,
     "objects": {
-      "title": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
       "values": [
         {
-          "properties": {
-            "fontColorPrimary": {
-              "expr": {
-                "Literal": {
-                  "Value": "'#000000'"
-                }
-              }
-            }
-          }
+          "properties": {}
         }
       ],
       "columnHeaders": [
         {
-          "properties": {
-            "fontColor": {
-              "expr": {
-                "Literal": {
-                  "Value": "'#000000'"
-                }
-              }
-            },
-            "backColor": {
-              "expr": {
-                "Literal": {
-                  "Value": "'#f2f2f2'"
-                }
-              }
-            }
-          }
+          "properties": {}
         }
       ],
       "rowHeaders": [
         {
-          "properties": {
-            "fontColor": {
-              "expr": {
-                "Literal": {
-                  "Value": "'#000000'"
-                }
-              }
-            },
-            "backColor": {
-              "expr": {
-                "Literal": {
-                  "Value": "'#f2f2f2'"
-                }
-              }
-            }
-          }
+          "properties": {}
         }
       ]
     },
@@ -185,6 +118,58 @@
           }
         }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "4b3b06ec079f247db73a",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Category"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "5f8b884ed8ae0f14902e",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orders"
+              }
+            },
+            "Property": "Order Month"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "32bec4a11ca2db01dd21",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Orders"
+                  }
+                },
+                "Property": "Sales"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

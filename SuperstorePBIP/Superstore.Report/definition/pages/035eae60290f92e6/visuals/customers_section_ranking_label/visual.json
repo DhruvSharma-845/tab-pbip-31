@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "customers_section_ranking_label",
   "position": {
     "x": 575.92,
     "y": 168.06,
     "z": 10,
     "height": 20,
-    "width": 420,
-    "tabOrder": 0
+    "width": 420
   },
   "visual": {
     "visualType": "textbox",

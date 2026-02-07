@@ -1,13 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
   "name": "seg_label_consumer",
   "position": {
-    "x": 14.33,
-    "y": 451.9,
+    "x": 14.183582089552239,
+    "y": 451.69253731343281,
     "z": 10,
-    "height": 20,
-    "width": 120,
-    "tabOrder": 0
+    "height": 32.731343283582092,
+    "width": 70.917910447761187
   },
   "visual": {
     "visualType": "textbox",
